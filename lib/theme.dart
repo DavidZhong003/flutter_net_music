@@ -32,3 +32,5 @@ class ThemeState {
     _theme = quietThemes.first;
   }
 }
+
+enum ChangeThemeAction { whiteTheme, redTheme, blue, green, amber, teal, dark }

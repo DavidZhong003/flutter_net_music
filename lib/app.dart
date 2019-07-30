@@ -15,6 +15,12 @@ class AppState {
   AppState.initState() {
     _themeState = ThemeState.initState();
   }
+
+  AppState(this._themeState);
+
+  AppState.changeTheme(ThemeData themeData){
+    _themeState = ThemeState(themeData);
+  }
 }
 
 enum AppAction {
@@ -22,6 +28,9 @@ enum AppAction {
 }
 
 AppState _redux(AppState state, action) {
+  if(action == AppAction.changeTheme){
+    return AppState.changeTheme(quietThemes[1]);
+  }
   return state;
 }
 
