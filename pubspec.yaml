@@ -39,7 +39,13 @@ dependencies:
 #  fish_redux: ^0.2.4
   # icon 扩展
   font_awesome_flutter: ^8.5.0
-  path_provider: ^0.4.1
+  path_provider: ^1.2.0
+  # 轮播图
+  flutter_swiper: ^1.1.6
+  # 图片加载
+  cached_network_image: ^1.1.1
+  # 加载
+  flutter_easyrefresh: ^1.2.7
 
 dev_dependencies:
   flutter_test:

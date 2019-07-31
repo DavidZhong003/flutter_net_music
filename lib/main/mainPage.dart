@@ -5,6 +5,7 @@ import 'package:flutter_redux/flutter_redux.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'MainTabPage.dart';
+import 'foundTabPage.dart';
 import 'mainDrawer.dart';
 
 class MainPage extends StatefulWidget {
@@ -21,7 +22,7 @@ class _MainState extends State<MainPage> with SingleTickerProviderStateMixin {
       child: MainTabPage(),
     ),
     Container(
-      child: Text("222"),
+      child: FoundTabPage(),
     ),
     Container(
       child: Text("333"),

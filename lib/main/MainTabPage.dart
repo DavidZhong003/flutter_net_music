@@ -16,6 +16,9 @@ class MainTabPage extends StatelessWidget {
           height: 5,
           color: Theme.of(context).dividerColor,
         ),
+        ExpansionSongList(
+          initExpand: true,
+        ),
         ExpansionSongList()
       ],
     );
@@ -160,44 +163,35 @@ class ItemTab extends StatelessWidget {
 }
 
 final GestureTapCallback emptyTap = () {};
+
 ///
 /// 可展开的歌单列表
 /// 有封面
 /// 歌单名称
 /// 数量信息
 class ExpansionSongList extends StatefulWidget {
-  final bool initExpand = true;
+  final bool initExpand;
+
+  const ExpansionSongList({Key key, this.initExpand = false}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _ExpansionSongListState();
 }
 
-class _ExpansionSongListState extends State<ExpansionSongList>
-    with TickerProviderStateMixin {
+class _ExpansionSongListState extends State<ExpansionSongList> {
   bool isExpand;
-
-  AnimationController _controller;
 
   @override
   void initState() {
     super.initState();
-    _controller = new AnimationController(
-        vsync: this, duration: const Duration(microseconds: 1600));
     isExpand = widget.initExpand;
   }
 
   @override
-  void dispose() {
-    super.dispose();
-    _controller.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    final tween = Tween(begin: 0.0, end: pi / 2).animate(_controller);
     return Column(
       children: <Widget>[
-        buildTitle(tween),
+        buildTitle(context),
         Visibility(
           visible: isExpand,
           child: ListView(
@@ -212,36 +206,24 @@ class _ExpansionSongListState extends State<ExpansionSongList>
     );
   }
 
-  Container buildTitle(Animation<double> tween) {
+  Container buildTitle(BuildContext context) {
     return Container(
       padding: EdgeInsets.all(8),
       child: GestureDetector(
         behavior: HitTestBehavior.translucent,
         onTap: () {
-          PrintUtil.print("????????");
           setState(() {
             isExpand = !isExpand;
           });
-          if (isExpand) {
-            _controller.forward();
-          } else {
-            _controller.reverse();
-          }
         },
         child: Row(
           children: <Widget>[
             Expanded(
                 child: Row(
               children: <Widget>[
-                AnimatedBuilder(
-                  animation: tween,
-                  builder: (context, child) {
-                    return Transform.rotate(angle: tween.value, child: child);
-                  },
-                  child: Icon(widget.initExpand
-                      ? Icons.keyboard_arrow_down
-                      : Icons.keyboard_arrow_right),
-                ),
+                Icon(isExpand
+                    ? Icons.keyboard_arrow_down
+                    : Icons.keyboard_arrow_right),
                 Text(
                   "创建的歌单",
                   style: TextStyle(
@@ -268,6 +250,7 @@ class _ExpansionSongListState extends State<ExpansionSongList>
     );
   }
 }
+
 ///
 /// 歌单条目
 ///
@@ -285,44 +268,44 @@ class SongListItem extends StatelessWidget {
 
   Widget buildContent(BuildContext context) {
     return Padding(
-    padding: EdgeInsets.only(left: 16,top: 8,bottom: 8),
-    child: Row(
-      children: <Widget>[
-        ClipRRect(
-          borderRadius: BorderRadius.circular(5),
-          child: Image.network(
-            url,
-            width: 60,
-            height: 60,
-            fit: BoxFit.fill,
+      padding: EdgeInsets.only(left: 16, top: 8, bottom: 8),
+      child: Row(
+        children: <Widget>[
+          ClipRRect(
+            borderRadius: BorderRadius.circular(5),
+            child: Image.network(
+              url,
+              width: 60,
+              height: 60,
+              fit: BoxFit.fill,
+            ),
           ),
-        ),
-        Expanded(
-          child: Padding(
-              padding: EdgeInsets.all(8),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Text(
-                    "我喜欢的音乐",
-                    style: TextStyle(
-                        fontSize: FontSize.large,
-                        fontWeight: FontWeight.bold),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.only(top: 8),
-                    child: Text("11首"),
-                  )
-                ],
-              )),
-        ),
-        IconButton(
-          iconSize: 20,
-          icon: Icon(Icons.more_vert),
-          onPressed: () {},
-        )
-      ],
-    ),
-  );
+          Expanded(
+            child: Padding(
+                padding: EdgeInsets.all(8),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Text(
+                      "我喜欢的音乐",
+                      style: TextStyle(
+                          fontSize: FontSize.large,
+                          fontWeight: FontWeight.bold),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.only(top: 8),
+                      child: Text("11首"),
+                    )
+                  ],
+                )),
+          ),
+          IconButton(
+            iconSize: 20,
+            icon: Icon(Icons.more_vert),
+            onPressed: () {},
+          )
+        ],
+      ),
+    );
   }
 }
