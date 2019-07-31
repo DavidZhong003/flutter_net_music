@@ -39,6 +39,7 @@ dependencies:
 #  fish_redux: ^0.2.4
   # icon 扩展
   font_awesome_flutter: ^8.5.0
+  path_provider: ^0.4.1
 
 dev_dependencies:
   flutter_test:

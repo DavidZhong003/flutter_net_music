@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 
 final quietThemes = [
-  _buildTheme(Colors.white),
+  _buildTheme(Colors.white,buttonColor: Colors.black),
   _buildTheme(Colors.red),
   _buildTheme(Colors.blue),
   _buildTheme(Colors.green),
@@ -11,11 +11,12 @@ final quietThemes = [
   ThemeData.dark(),
 ];
 
-ThemeData _buildTheme(Color primaryColor) {
+ThemeData _buildTheme(Color primaryColor, {Color buttonColor}) {
   return ThemeData(
     primaryColor: primaryColor,
-    dividerColor: Color(0xfff5f5f5),
-    iconTheme: IconThemeData(color: Color(0xFFb3b3b3)),
+//    dividerColor: Colors.,
+    buttonColor: buttonColor ?? primaryColor,
+    iconTheme: IconThemeData(color: Colors.black45),
   );
 }
 

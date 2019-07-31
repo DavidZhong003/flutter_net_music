@@ -4,6 +4,7 @@ import 'package:flutter_net_music/style/font.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+import 'MainTabPage.dart';
 import 'mainDrawer.dart';
 
 class MainPage extends StatefulWidget {
@@ -17,7 +18,7 @@ class _MainState extends State<MainPage> with SingleTickerProviderStateMixin {
 
   List<Widget> _tabPage = [
     Container(
-      child: Text("1111"),
+      child: MainTabPage(),
     ),
     Container(
       child: Text("222"),
@@ -51,11 +52,12 @@ class _MainState extends State<MainPage> with SingleTickerProviderStateMixin {
 
   AppBar buildAppBar() {
     return AppBar(
+      elevation: 0,
       title: Container(
-        margin: EdgeInsets.only(left: 5, right: 5),
         child: TabBar(
           ///去除下划线
           indicator: const BoxDecoration(),
+          labelPadding: EdgeInsets.only(left: 0,right: 0),
           labelStyle: TextStyle(fontSize: FontSize.normal, fontWeight: FontWeight.bold),
           unselectedLabelStyle:
               TextStyle(fontSize: FontSize.smaller, fontWeight: FontWeight.normal),
