@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_net_music/style/font.dart';
 import 'package:flutter_net_music/utils/print.dart';
@@ -126,6 +127,26 @@ class ItemTab extends StatelessWidget {
 
   final GestureTapCallback onTap;
 
+  final double size;
+
+  final double elevation;
+
+  final EdgeInsetsGeometry padding;
+
+  final double fontSize;
+
+  const ItemTab(this.icon, this.text, this.onTap,
+      {this.size = 35,
+      this.elevation = 2,
+      this.padding = const EdgeInsets.only(top: 8),
+      this.fontSize = FontSize.miner});
+
+  const ItemTab.large(this.icon, this.text, this.onTap)
+      : this.size = 45,
+        this.elevation = 1,
+        this.padding = const EdgeInsets.only(top: 12),
+        fontSize = FontSize.smaller;
+
   @override
   Widget build(BuildContext context) {
     return InkWell(
@@ -136,11 +157,11 @@ class ItemTab extends StatelessWidget {
             children: <Widget>[
               Material(
                 shape: CircleBorder(),
-                elevation: 2,
+                elevation: elevation,
                 child: ClipOval(
                   child: Container(
-                    width: 35,
-                    height: 35,
+                    width: size,
+                    height: size,
                     color: Theme.of(context).primaryColor,
                     child: Icon(
                       icon,
@@ -149,17 +170,15 @@ class ItemTab extends StatelessWidget {
                   ),
                 ),
               ),
-              Padding(padding: EdgeInsets.only(top: 8)),
+              Padding(padding: padding),
               Text(
                 text,
-                style: TextStyle(fontSize: FontSize.miner),
+                style: TextStyle(fontSize: fontSize),
               ),
             ],
           ),
         ));
   }
-
-  ItemTab(this.icon, this.text, this.onTap);
 }
 
 final GestureTapCallback emptyTap = () {};
@@ -273,11 +292,10 @@ class SongListItem extends StatelessWidget {
         children: <Widget>[
           ClipRRect(
             borderRadius: BorderRadius.circular(5),
-            child: Image.network(
-              url,
+            child: NetImageView(
+              url: url,
               width: 60,
               height: 60,
-              fit: BoxFit.fill,
             ),
           ),
           Expanded(
@@ -306,6 +324,59 @@ class SongListItem extends StatelessWidget {
           )
         ],
       ),
+    );
+  }
+}
+
+class NetImageView extends StatelessWidget {
+  final String url;
+
+  final double width;
+
+  final double height;
+
+  final BoxFit fit;
+
+  final Widget placeholder;
+
+  final Widget errorWidget;
+
+  final Widget Function(BuildContext context, ImageProvider imageProvider)
+      imageBuilder;
+
+  const NetImageView(
+      {Key key,
+      @required this.url,
+      this.width,
+      this.height,
+      this.fit = BoxFit.fill,
+      this.placeholder,
+      this.errorWidget,
+      this.imageBuilder})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return CachedNetworkImage(
+      width: width,
+      height: height,
+      imageUrl: url,
+      imageBuilder: imageBuilder,
+      fit: fit,
+      placeholder: (context, url) =>
+          placeholder ??
+          Container(
+            width: width,
+            height: height,
+            child: Icon(FontAwesomeIcons.music),
+          ),
+      errorWidget: (context, url, error) =>
+          errorWidget ??
+          Container(
+            width: width,
+            height: height,
+            child: Icon(Icons.error_outline),
+          ),
     );
   }
 }
