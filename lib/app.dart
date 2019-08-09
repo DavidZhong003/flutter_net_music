@@ -6,7 +6,8 @@ import 'package:redux/redux.dart';
 /// 主要信息:
 /// 全局设置
 /// 路由
-
+@immutable
+// ignore: must_be_immutable
 class AppState {
   ThemeState _themeState;
 

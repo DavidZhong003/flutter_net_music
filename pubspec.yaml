@@ -46,6 +46,13 @@ dependencies:
   cached_network_image: ^1.1.1
   # 加载
   flutter_easyrefresh: ^1.2.7
+  # cookie
+  cookie_jar: ^1.0.0
+  #  权限
+  permission_handler: '^3.2.0'
+  # 日志
+  logger: ^0.7.0+2
+  rxdart: ^0.18.1
 
 dev_dependencies:
   flutter_test:

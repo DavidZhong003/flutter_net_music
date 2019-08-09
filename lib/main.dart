@@ -6,9 +6,11 @@ import 'package:flutter_net_music/routes.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 
 import 'app.dart';
+import 'net/cookie.dart';
 
 void main() {
   runApp(MyApp());
+  initCookieDirectory();
   /// android 平台全透明
   if (Platform.isAndroid) {
     SystemChrome.setSystemUIOverlayStyle(

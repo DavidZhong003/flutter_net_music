@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_net_music/app.dart';
 import 'package:flutter_net_music/style/font.dart';
+import 'package:flutter_net_music/utils/permission.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 import 'MainTabPage.dart';
 import 'foundTabPage.dart';
@@ -36,6 +38,8 @@ class _MainState extends State<MainPage> with SingleTickerProviderStateMixin {
   void initState() {
     super.initState();
     _tabController = TabController(length: tabs.length, vsync: this);
+    // 请求权限
+    requestPermissions();
   }
 
   @override
@@ -58,10 +62,11 @@ class _MainState extends State<MainPage> with SingleTickerProviderStateMixin {
         child: TabBar(
           ///去除下划线
           indicator: const BoxDecoration(),
-          labelPadding: EdgeInsets.only(left: 0,right: 0),
-          labelStyle: TextStyle(fontSize: FontSize.normal, fontWeight: FontWeight.bold),
-          unselectedLabelStyle:
-              TextStyle(fontSize: FontSize.smaller, fontWeight: FontWeight.normal),
+          labelPadding: EdgeInsets.only(left: 0, right: 0),
+          labelStyle:
+              TextStyle(fontSize: FontSize.normal, fontWeight: FontWeight.bold),
+          unselectedLabelStyle: TextStyle(
+              fontSize: FontSize.smaller, fontWeight: FontWeight.normal),
           controller: _tabController,
           tabs: tabs
               .map((e) => Tab(
