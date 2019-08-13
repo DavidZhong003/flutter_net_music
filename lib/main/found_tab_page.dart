@@ -9,7 +9,7 @@ import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-import 'MainTabPage.dart';
+import 'main_tab_page.dart';
 
 class FoundTabPage extends StatefulWidget {
   @override

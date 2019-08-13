@@ -6,17 +6,16 @@ import 'package:flutter_redux/flutter_redux.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-import 'MainTabPage.dart';
-import 'foundTabPage.dart';
-import 'mainDrawer.dart';
+import 'main_tab_page.dart';
+import 'found_tab_page.dart';
+import 'main_drawer.dart';
 
 class MainPage extends StatefulWidget {
   @override
   State<StatefulWidget> createState() => _MainState();
 }
 
-class _MainState extends State<MainPage> with SingleTickerProviderStateMixin {
-  TabController _tabController; //需要定义一个Controller
+class _MainState extends State<MainPage> {
   List tabs = ["我的", "发现", "朋友", "视频"];
 
   List<Widget> _tabPage = [
@@ -37,7 +36,6 @@ class _MainState extends State<MainPage> with SingleTickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: tabs.length, vsync: this);
     // 请求权限
     requestPermissions();
   }
@@ -45,12 +43,15 @@ class _MainState extends State<MainPage> with SingleTickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     ScreenUtil.instance = ScreenUtil(width: 720, height: 1280)..init(context);
-    return Scaffold(
-      drawer: MainDrawer(),
-      appBar: buildAppBar(),
-      body: TabBarView(
-        controller: _tabController,
-        children: _tabPage,
+    return DefaultTabController(
+      length: tabs.length,
+      initialIndex: 1,
+      child: Scaffold(
+        drawer: MainDrawer(),
+        appBar: buildAppBar(),
+        body: TabBarView(
+          children: _tabPage,
+        ),
       ),
     );
   }
@@ -67,7 +68,6 @@ class _MainState extends State<MainPage> with SingleTickerProviderStateMixin {
               TextStyle(fontSize: FontSize.normal, fontWeight: FontWeight.bold),
           unselectedLabelStyle: TextStyle(
               fontSize: FontSize.smaller, fontWeight: FontWeight.normal),
-          controller: _tabController,
           tabs: tabs
               .map((e) => Tab(
                     text: e,

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'main/mainPage.dart';
+import 'main/main_page.dart';
 
 class Path {
   static const ROUTE_MAIN = Navigator.defaultRouteName;
