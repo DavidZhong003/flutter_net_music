@@ -52,7 +52,8 @@ dependencies:
   permission_handler: '^3.2.0'
   # 日志
   logger: ^0.7.0+2
-  rxdart: ^0.18.1
+  # loading 动画
+  flutter_spinkit: ^3.1.0
 
 dev_dependencies:
   flutter_test:

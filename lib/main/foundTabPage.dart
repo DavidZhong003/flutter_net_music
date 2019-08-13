@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/material_footer.dart';
 import 'package:flutter_easyrefresh/material_header.dart';
+import 'package:flutter_net_music/net/NetWidget.dart';
 import 'package:flutter_net_music/net/netApi.dart';
 import 'package:flutter_net_music/style/font.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
@@ -81,25 +82,17 @@ class FoundPageState extends State<StatefulWidget> {
 
 /// 轮播图
 class BannerWidget extends StatefulWidget {
-
   @override
   State<StatefulWidget> createState() => _BannerState();
 }
 
-
 class _BannerState extends State<BannerWidget> {
   SwiperController controller;
 
-  Map _banner;
   @override
   void initState() {
     super.initState();
     controller = SwiperController();
-    ApiService.getBanner().then((banner){
-      setState(() {
-        _banner = banner;
-      });
-    });
   }
 
   @override
@@ -110,44 +103,49 @@ class _BannerState extends State<BannerWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return buildRefreshSafeArea(context);
+    return NetFutureWidget(
+      future: ApiService.getBanner(),
+      child: (context, map) {
+        return buildRefreshSafeArea(context, map);
+      },
+    );
   }
 
-
-  Widget buildRefreshSafeArea(BuildContext context) {
-    if(_banner==null){
+  Widget buildRefreshSafeArea(BuildContext context,
+      [Map<String, dynamic> map]) {
+    var banners = map["banners"];
+    if (banners == null) {
       return Container();
     }
-    var banners = _banner["banners"];
     return RefreshSafeArea(
-      child: Stack(
-    children: <Widget>[
-      Container(
-        height: 90,
-        color: Theme.of(context).primaryColor,
-      ),
-      Container(
-        margin: EdgeInsets.all(8),
-        height: 150,
-        child: Swiper(
-          itemCount: banners?.length??0,
-          itemBuilder: (context, index) {
-            Map banner = banners[index];
-            return GestureDetector(
-                onTap: emptyTap,
-                child: buildImage(context, banner["pic"]??"", index));
-          },
-          autoplay: true,
-          pagination: SwiperPagination(
-              builder: DotSwiperPaginationBuilder(
-                  activeSize: 9,
-                  size: 8,
-                  activeColor: Theme.of(context).iconTheme.color)),
-          controller: controller,
+        child: Stack(
+      children: <Widget>[
+        Container(
+          height: 90,
+          color: Theme.of(context).primaryColor,
         ),
-      )
-    ],
-  ));
+        Container(
+          margin: EdgeInsets.all(8),
+          height: 150,
+          child: Swiper(
+            itemCount: banners?.length ?? 0,
+            itemBuilder: (context, index) {
+              Map banner = banners[index];
+              return GestureDetector(
+                  onTap: emptyTap,
+                  child: buildImage(context, banner["pic"] ?? "", index));
+            },
+            autoplay: true,
+            pagination: SwiperPagination(
+                builder: DotSwiperPaginationBuilder(
+                    activeSize: 9,
+                    size: 8,
+                    activeColor: Theme.of(context).iconTheme.color)),
+            controller: controller,
+          ),
+        )
+      ],
+    ));
   }
 
   Widget buildImage(BuildContext context, String url, int index) {

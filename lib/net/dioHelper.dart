@@ -26,7 +26,7 @@ class DioUtils {
   static const int RECEIVE_TIMEOUT = 3000;
 
   /// request method
-  static Future<Map> request(String url,
+  static Future<Map<String,dynamic>> request(String url,
       {data,
       String method,
       SuccessHandler successHandler,
