@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_net_music/screen/main_page.dart';
 
-import 'main/main_page.dart';
 
 class Path {
   static const ROUTE_MAIN = Navigator.defaultRouteName;

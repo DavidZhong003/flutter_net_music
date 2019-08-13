@@ -172,19 +172,23 @@ class _BannerState extends State<BannerWidget> {
 
 /// 推荐歌单
 ///
-class PersonalizedSongListWidget extends StatefulWidget {
-  @override
-  State<StatefulWidget> createState() => PersonalizedSongState();
-}
-
-class PersonalizedSongState extends State<PersonalizedSongListWidget> {
+class PersonalizedSongListWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    return NetFutureWidget(
+      future: ApiService.getPersonalized(),
+      child: (context, map) {
+        return buildContent(map);
+      },
+    );
+  }
+
+  Container buildContent(Map<String, dynamic> map) {
     return Container(
       padding: EdgeInsets.only(left: 16, right: 16, top: 8),
       child: Column(
         children: <Widget>[
-          buildTitle(),
+          buildTitle(map),
           GridView.builder(
               padding: EdgeInsets.only(top: 8),
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -194,14 +198,20 @@ class PersonalizedSongState extends State<PersonalizedSongListWidget> {
               itemCount: 6,
               shrinkWrap: true,
               itemBuilder: (context, index) {
-                return SongCoverWidget();
+                List<dynamic> list = map["result"];
+                Map<String, dynamic> songs = list[index];
+                return SongCoverWidget(
+                  image: songs["picUrl"],
+                  name: songs["name"],
+                  onTap: emptyTap,
+                );
               })
         ],
       ),
     );
   }
 
-  Widget buildTitle() {
+  Widget buildTitle(Map<String, dynamic> map) {
     return Row(
       children: <Widget>[
         Expanded(
@@ -268,12 +278,22 @@ class OutRoundButton extends StatelessWidget {
     );
   }
 }
-
+///歌单列表
 class SongCoverWidget extends StatelessWidget {
+  final String image;
+
+  final String name;
+
+  final GestureTapCallback onTap;
+
+  const SongCoverWidget(
+      {Key key, @required this.image, @required this.name, this.onTap})
+      : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: emptyTap,
+      onTap: onTap,
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: 4, vertical: 4),
         child: Column(
@@ -281,15 +301,13 @@ class SongCoverWidget extends StatelessWidget {
             ClipRRect(
               borderRadius: BorderRadius.circular(5),
               child: Image(
-                  fit: BoxFit.cover,
-                  image: CachedNetworkImageProvider(
-                      "https://p2.music.126.net/QCJQ-7OA-WVZgjipwXNB9g==/18602637232541777.jpg")),
+                  fit: BoxFit.cover, image: CachedNetworkImageProvider(image)),
             ),
             Expanded(
               child: Padding(
                 padding: EdgeInsets.only(top: 2),
                 child: Text(
-                  "深情布鲁斯，浓情老酒馆。",
+                  name,
                   style: TextStyle(fontSize: FontSize.smaller),
                 ),
               ),
