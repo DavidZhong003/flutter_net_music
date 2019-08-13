@@ -4,7 +4,6 @@ import 'package:flutter_net_music/style/font.dart';
 import 'package:flutter_net_music/utils/permission.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:permission_handler/permission_handler.dart';
 
 import 'main_tab_page.dart';
 import 'found_tab_page.dart';
@@ -16,7 +15,7 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainState extends State<MainPage> {
-  List tabs = ["我的", "发现", "朋友", "视频"];
+  List tabs = ["我的", "发现", "云村", "视频"];
 
   List<Widget> _tabPage = [
     Container(
