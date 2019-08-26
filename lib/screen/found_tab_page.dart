@@ -114,8 +114,24 @@ class _BannerState extends State<BannerWidget> {
   Widget buildRefreshSafeArea(BuildContext context,
       [Map<String, dynamic> map]) {
     var banners = map["banners"];
-    if (banners == null) {
-      return Container();
+    Widget content;
+    if (banners != null) {
+      content = Swiper(
+        itemCount: banners?.length ?? 0,
+        itemBuilder: (context, index) {
+          Map banner = banners[index];
+          return GestureDetector(
+              onTap: emptyTap,
+              child: buildImage(context, banner["pic"] ?? "", index));
+        },
+        autoplay: true,
+        pagination: SwiperPagination(
+            builder: DotSwiperPaginationBuilder(
+                activeSize: 9,
+                size: 8,
+                activeColor: Theme.of(context).iconTheme.color)),
+        controller: controller,
+      );
     }
     return RefreshSafeArea(
         child: Stack(
@@ -125,25 +141,9 @@ class _BannerState extends State<BannerWidget> {
           color: Theme.of(context).primaryColor,
         ),
         Container(
-          margin: EdgeInsets.all(8),
-          height: 150,
-          child: Swiper(
-            itemCount: banners?.length ?? 0,
-            itemBuilder: (context, index) {
-              Map banner = banners[index];
-              return GestureDetector(
-                  onTap: emptyTap,
-                  child: buildImage(context, banner["pic"] ?? "", index));
-            },
-            autoplay: true,
-            pagination: SwiperPagination(
-                builder: DotSwiperPaginationBuilder(
-                    activeSize: 9,
-                    size: 8,
-                    activeColor: Theme.of(context).iconTheme.color)),
-            controller: controller,
-          ),
-        )
+            margin: EdgeInsets.all(8),
+            height: 150,
+            child: content ?? Container())
       ],
     ));
   }
@@ -278,6 +278,7 @@ class OutRoundButton extends StatelessWidget {
     );
   }
 }
+
 ///歌单列表
 class SongCoverWidget extends StatelessWidget {
   final String image;

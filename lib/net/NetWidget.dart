@@ -84,7 +84,7 @@ class WaveLoading extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       child: Center(
-        child: SpinKitFadingCircle(
+        child: SpinKitWave(
           itemBuilder: (_, int index) {
             return DecoratedBox(
               decoration: BoxDecoration(color: Theme.of(context).primaryColor),
