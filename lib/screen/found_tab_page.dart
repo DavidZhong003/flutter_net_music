@@ -2,9 +2,14 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/material_footer.dart';
 import 'package:flutter_easyrefresh/material_header.dart';
-import 'package:flutter_net_music/net/NetWidget.dart';
+import 'package:flutter_net_music/net/net_widget.dart';
 import 'package:flutter_net_music/net/netApi.dart';
+import 'package:flutter_net_music/redux/actions/home_found.dart';
+import 'package:flutter_net_music/redux/onInit/home_found.dart';
+import 'package:flutter_net_music/redux/reducers/home_found.dart';
+import 'package:flutter_net_music/redux/reducers/main.dart';
 import 'package:flutter_net_music/style/font.dart';
+import 'package:flutter_redux/flutter_redux.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -103,25 +108,27 @@ class _BannerState extends State<BannerWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return RefreshSafeArea(
-        child: Stack(
-      children: <Widget>[
-        Container(
-          height: 90,
-          color: Theme.of(context).primaryColor,
-        ),
-        Container(
-          margin: EdgeInsets.all(8),
-          height: 150,
-          child: NetFutureWidget(
-            future: ApiService.getBanner(),
-            child: (context, map) {
-              return buildRefreshSafeArea(context, map);
-            },
-          ),
-        )
-      ],
-    ));
+    return StoreConnector<AppState, BannerState>(
+        builder: (context, banner) {
+          return RefreshSafeArea(
+              child: Stack(
+            children: <Widget>[
+              Container(
+                height: 90,
+                color: Theme.of(context).primaryColor,
+              ),
+              Container(
+                margin: EdgeInsets.all(8),
+                height: 150,
+                child: banner.isLoading
+                    ? WaveLoading()
+                    : buildRefreshSafeArea(context, banner.banner),
+              )
+            ],
+          ));
+        },
+        onInit: bannerInit,
+        converter: (store) => store.state.homeFoundState.bannerState);
   }
 
   Widget buildRefreshSafeArea(BuildContext context,

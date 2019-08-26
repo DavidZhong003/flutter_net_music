@@ -35,6 +35,9 @@ dependencies:
 #  # redux
   redux: ^3.0.0
   flutter_redux: ^0.5.3
+  redux_logging: ^0.3.0
+  redux_thunk: ^0.2.1
+  redux_remote_devtools: ^0.0.7
   # fish redux
 #  fish_redux: ^0.2.4
   # icon 扩展

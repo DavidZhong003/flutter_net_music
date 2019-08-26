@@ -48,7 +48,7 @@ class ChangeThemeAction extends ActionType<int> {
 
 class ThemeReducer extends Reducer<ThemeState> {
   @override
-  ThemeState redux(ThemeState state, ActionType action) {
+  ThemeState redux(ThemeState state, action) {
     switch (action.runtimeType) {
       case ChangeThemeAction:
         return ThemeState(quietThemes[action.payload < 0 ? 0 : action.payload]);

@@ -165,6 +165,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "0.7.0+2"
+  logging:
+    dependency: transitive
+    description:
+      name: logging
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "0.11.3+2"
   matcher:
     dependency: transitive
     description:
@@ -221,6 +228,34 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "3.0.0"
+  redux_dev_tools:
+    dependency: transitive
+    description:
+      name: redux_dev_tools
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "0.4.0"
+  redux_logging:
+    dependency: "direct main"
+    description:
+      name: redux_logging
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "0.3.0"
+  redux_remote_devtools:
+    dependency: "direct main"
+    description:
+      name: redux_remote_devtools
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "0.0.9"
+  redux_thunk:
+    dependency: "direct main"
+    description:
+      name: redux_thunk
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "0.2.1"
   shared_preferences:
     dependency: "direct main"
     description:
@@ -233,6 +268,13 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.99"
+  socketcluster_client:
+    dependency: transitive
+    description:
+      name: socketcluster_client
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "0.0.3"
   source_span:
     dependency: transitive
     description:

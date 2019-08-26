@@ -10,12 +10,13 @@ import 'net/cookie.dart';
 
 void main() {
   runApp(MyApp());
-  initCookieDirectory();
   /// android 平台全透明
   if (Platform.isAndroid) {
     SystemChrome.setSystemUIOverlayStyle(
         SystemUiOverlayStyle(statusBarColor: Colors.transparent));
   }
+  /// 远程action debug
+  StoreContainer.connect();
 }
 
 class MyApp extends StatelessWidget {

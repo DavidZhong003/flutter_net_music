@@ -1,25 +1,32 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_net_music/net/netApi.dart';
 import 'package:flutter_net_music/redux/actions/main.dart';
+import 'package:flutter_net_music/redux/middleware/main.dart';
 import 'package:flutter_net_music/theme.dart';
 import 'package:redux/redux.dart';
+import 'package:redux_thunk/redux_thunk.dart';
+import 'home_found.dart';
 
 @immutable
 class AppState {
   final ThemeState themeState;
 
+  final HomeFoundState homeFoundState;
 
-  const AppState({this.themeState});
+  const AppState({this.themeState, this.homeFoundState});
 }
 
 AppState _initReduxState() {
   return AppState(
-      themeState: ThemeState.initState(),
+    themeState: ThemeState.initState(),
+    homeFoundState: HomeFoundState.initialState(),
   );
 }
 
-AppState reduxReducer(AppState state, action) =>
-    AppState(themeState: ThemeReducer().redux(state.themeState, action));
+AppState reduxReducer(AppState state, action) => AppState(
+      themeState: ThemeReducer().redux(state.themeState, action),
+      homeFoundState: HomeFoundReducer().redux(state.homeFoundState, action),
+    );
 
 abstract class ViewModel {
   final Store<AppState> store;
@@ -31,13 +38,24 @@ class StoreContainer {
   static final Store<AppState> global = reduxStore();
 
   static dispatch(dynamic action) => global.dispatch(action);
+
+  static connect() async{
+    remoteDevelopTools.store = global;
+    await remoteDevelopTools.connect();
+  }
 }
 
 Store reduxStore() => Store<AppState>(reduxReducer,
-    initialState: _initReduxState(), distinct: true);
+    middleware: [
+      loggingMiddleware,
+      remoteDevelopTools,
+      thunkMiddleware,
+    ],
+    initialState: _initReduxState(),
+    distinct: true);
 
 abstract class Reducer<T> {
-  T redux(T state, ActionType action);
+  T redux(T state, action);
 }
 
 abstract class RequestState<T> {

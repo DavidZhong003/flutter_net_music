@@ -39,7 +39,7 @@ class DioUtils {
       }
     });
 
-    Dio dio = createInstance();
+    Dio dio = await createInstance();
     var result;
     try {
       Response response = await dio.request(url,
@@ -58,7 +58,7 @@ class DioUtils {
   }
 
   /// 创建 dio 实例对象
-  static Dio createInstance() {
+  static Future<Dio> createInstance() async {
     if (dio == null) {
       BaseOptions options = BaseOptions(
         baseUrl: API_PREFIX,
@@ -67,8 +67,9 @@ class DioUtils {
       );
 
       dio = new Dio(options);
+      var directory = await getCookieDirectory();
       dio.interceptors
-        ..add(CookieManager(PersistCookieJar(dir: cookie.path)))
+        ..add(CookieManager(PersistCookieJar(dir: directory.path)))
         ..add(LogInterceptor());
     }
 

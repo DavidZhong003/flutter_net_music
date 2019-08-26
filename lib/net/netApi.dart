@@ -1,6 +1,6 @@
 
 
-import 'dioHelper.dart';
+import 'dio_helper.dart';
 
 class ApiService {
   static Future<Map<String,dynamic>> getBanner()  async{
