@@ -103,12 +103,25 @@ class _BannerState extends State<BannerWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return NetFutureWidget(
-      future: ApiService.getBanner(),
-      child: (context, map) {
-        return buildRefreshSafeArea(context, map);
-      },
-    );
+    return RefreshSafeArea(
+        child: Stack(
+      children: <Widget>[
+        Container(
+          height: 90,
+          color: Theme.of(context).primaryColor,
+        ),
+        Container(
+          margin: EdgeInsets.all(8),
+          height: 150,
+          child: NetFutureWidget(
+            future: ApiService.getBanner(),
+            child: (context, map) {
+              return buildRefreshSafeArea(context, map);
+            },
+          ),
+        )
+      ],
+    ));
   }
 
   Widget buildRefreshSafeArea(BuildContext context,
@@ -133,19 +146,7 @@ class _BannerState extends State<BannerWidget> {
         controller: controller,
       );
     }
-    return RefreshSafeArea(
-        child: Stack(
-      children: <Widget>[
-        Container(
-          height: 90,
-          color: Theme.of(context).primaryColor,
-        ),
-        Container(
-            margin: EdgeInsets.all(8),
-            height: 150,
-            child: content ?? Container())
-      ],
-    ));
+    return content ?? Container();
   }
 
   Widget buildImage(BuildContext context, String url, int index) {

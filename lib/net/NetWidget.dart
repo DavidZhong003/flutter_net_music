@@ -82,15 +82,13 @@ class _SingleFutureWidgetState<T> extends State<SingleFutureWidget> {
 class WaveLoading extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Center(
-        child: SpinKitWave(
-          itemBuilder: (_, int index) {
-            return DecoratedBox(
-              decoration: BoxDecoration(color: Theme.of(context).primaryColor),
-            );
-          },
-        ),
+    return Center(
+      child: SpinKitWave(
+        itemBuilder: (_, int index) {
+          return DecoratedBox(
+            decoration: BoxDecoration(color: Theme.of(context).primaryColor),
+          );
+        },
       ),
     );
   }
