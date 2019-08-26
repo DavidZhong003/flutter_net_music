@@ -2,10 +2,10 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_net_music/redux/reducers/main.dart';
 import 'package:flutter_net_music/routes.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 
-import 'app.dart';
 import 'net/cookie.dart';
 
 void main() {
@@ -22,7 +22,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StoreProvider<AppState>(
-      store: appStore,
+      store: StoreContainer.global,
       child: StoreConnector<AppState, ThemeData>(
           builder: (context, theme) {
             return buildMaterialApp(theme);

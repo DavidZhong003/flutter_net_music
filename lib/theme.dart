@@ -1,5 +1,7 @@
 //app主题
 import 'package:flutter/material.dart';
+import 'package:flutter_net_music/redux/actions/main.dart';
+import 'package:flutter_net_music/redux/reducers/main.dart';
 
 final quietThemes = [
   ThemeData(
@@ -20,7 +22,7 @@ ThemeData _buildTheme(Color primaryColor, {Color buttonColor}) {
       primaryColor: primaryColor,
 //    dividerColor: Colors.,
       buttonColor: buttonColor ?? primaryColor,
-      iconTheme: IconThemeData(color: Color(primaryColor.value-200)),
+      iconTheme: IconThemeData(color: Color(primaryColor.value - 200)),
       accentColor: primaryColor);
 }
 
@@ -38,4 +40,19 @@ class ThemeState {
   }
 }
 
-enum ChangeThemeAction { whiteTheme, redTheme, blue, green, amber, teal, dark }
+class ChangeThemeAction extends ActionType<int> {
+  final int index;
+
+  ChangeThemeAction(this.index) : super(payload: index);
+}
+
+class ThemeReducer extends Reducer<ThemeState> {
+  @override
+  ThemeState redux(ThemeState state, ActionType action) {
+    switch (action.runtimeType) {
+      case ChangeThemeAction:
+        return ThemeState(quietThemes[action.payload < 0 ? 0 : action.payload]);
+    }
+    return state;
+  }
+}

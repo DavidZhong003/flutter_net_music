@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_net_music/app.dart';
+import 'package:flutter_net_music/redux/reducers/main.dart';
 import 'package:flutter_net_music/style/font.dart';
+import 'package:flutter_net_music/theme.dart';
 import 'package:flutter_net_music/utils/permission.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -77,7 +78,7 @@ class _MainState extends State<MainPage> {
       actions: <Widget>[
         StoreConnector<AppState, VoidCallback>(
           converter: (store) {
-            return () => store.dispatch(AppAction.changeTheme);
+            return () => store.dispatch(ChangeThemeAction(2));
           },
           builder: (context, callback) {
             return IconButton(icon: Icon(Icons.search), onPressed: callback);
