@@ -9,6 +9,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'main_tab_page.dart';
 import 'found_tab_page.dart';
 import 'main_drawer.dart';
+import 'dart:math';
 
 class MainPage extends StatefulWidget {
   @override
@@ -78,7 +79,7 @@ class _MainState extends State<MainPage> {
       actions: <Widget>[
         StoreConnector<AppState, VoidCallback>(
           converter: (store) {
-            return () => store.dispatch(ChangeThemeAction(2));
+            return () => store.dispatch(ChangeThemeAction(Random().nextInt(7)));
           },
           builder: (context, callback) {
             return IconButton(icon: Icon(Icons.search), onPressed: callback);
