@@ -9,6 +9,7 @@ import 'package:flutter_net_music/redux/onInit/home_found.dart';
 import 'package:flutter_net_music/redux/reducers/home_found.dart';
 import 'package:flutter_net_music/redux/reducers/main.dart';
 import 'package:flutter_net_music/style/font.dart';
+import 'package:flutter_net_music/utils/print.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
@@ -183,43 +184,43 @@ class _BannerState extends State<BannerWidget> {
 class PersonalizedSongListWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return NetFutureWidget(
-      future: ApiService.getPersonalized(),
-      child: (context, map) {
-        return buildContent(map);
-      },
-    );
-  }
-
-  Container buildContent(Map<String, dynamic> map) {
     return Container(
       padding: EdgeInsets.only(left: 16, right: 16, top: 8),
       child: Column(
-        children: <Widget>[
-          buildTitle(map),
-          GridView.builder(
-              padding: EdgeInsets.only(top: 8),
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 3,
-                childAspectRatio: 10 / 12.5,
-              ),
-              itemCount: 6,
-              shrinkWrap: true,
-              itemBuilder: (context, index) {
-                List<dynamic> list = map["result"];
-                Map<String, dynamic> songs = list[index];
-                return SongCoverWidget(
-                  image: songs["picUrl"],
-                  name: songs["name"],
-                  onTap: emptyTap,
-                );
-              })
-        ],
+        children: <Widget>[buildTitle(), buildSongContent()],
       ),
     );
   }
 
-  Widget buildTitle(Map<String, dynamic> map) {
+  Widget buildSongContent() {
+    return StoreConnector<AppState, PersonalizedSongState>(
+      converter: (store) => store.state.homeFoundState.personalizedSongState,
+      onInit: requestPersonalizedSongAction,
+      builder: (BuildContext context, PersonalizedSongState state) {
+        List<dynamic> list=state.showList;
+        return GridView.builder(
+            padding: EdgeInsets.only(top: 8),
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 3,
+              childAspectRatio: 10 / 12.5,
+            ),
+            itemCount: list.length ?? 6,
+            shrinkWrap: true,
+            itemBuilder: (context, index) {
+              Map<String, dynamic> songs = list[index] ?? [];
+              return state.isLoading
+                  ? Container(color: Colors.grey[300],)
+                  : SongCoverWidget(
+                      image: songs["picUrl"],
+                      name: songs["name"],
+                      onTap: emptyTap,
+                    );
+            });
+      },
+    );
+  }
+
+  Widget buildTitle() {
     return Row(
       children: <Widget>[
         Expanded(

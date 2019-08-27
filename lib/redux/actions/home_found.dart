@@ -20,8 +20,30 @@ class LoadBannerSuccess extends ActionType<Map<String, dynamic>> {
   LoadBannerSuccess(this.banner) : super(payload: banner);
 }
 
-void requestBannerAction(Store<AppState> store) async{
-  ApiService.getBanner().then((map){
+void requestBannerAction(Store<AppState> store) async {
+  ApiService.getBanner().then((map) {
     store.dispatch(LoadBannerSuccess(map));
+  });
+}
+
+/// 推荐歌单源数据加载成功
+class LoadPersonalizedSongSuccess extends ActionType<Map<String, dynamic>> {
+  final Map<String, dynamic> data;
+
+  LoadPersonalizedSongSuccess(this.data) : super(payload: data);
+}
+
+/// 加载显示推荐歌单数据
+class ObtainPersonalizedSong extends ActionType<List<dynamic>> {
+  final List<dynamic> list;
+
+  ObtainPersonalizedSong({this.list}) : super(payload: list);
+}
+
+class LoadPersonalizedSong extends VoidAction {}
+
+void requestPersonalizedSongAction(Store<AppState> store) async {
+  ApiService.getPersonalized().then((map) {
+    store.dispatch(LoadPersonalizedSongSuccess(map));
   });
 }
