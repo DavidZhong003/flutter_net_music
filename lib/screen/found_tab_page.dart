@@ -169,8 +169,9 @@ class _BannerState extends State<BannerWidget> {
               image: DecorationImage(
                   image: imageProvider,
                   fit: BoxFit.cover,
-                  colorFilter:
-                      ColorFilter.mode(Colors.red, BlendMode.colorBurn)),
+                  colorFilter: ColorFilter.mode(
+                      Theme.of(context).primaryColorLight,
+                      BlendMode.colorBurn)),
             ),
           ),
         ),
