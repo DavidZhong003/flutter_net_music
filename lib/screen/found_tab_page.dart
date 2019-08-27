@@ -59,7 +59,7 @@ class FoundPageState extends State<StatefulWidget> {
         BannerWidget(),
         buildCenterButton(),
         Divider(),
-        PersonalizedSongListWidget()
+        PersonalizedSongListWidget(),
       ],
     );
   }
@@ -198,19 +198,22 @@ class PersonalizedSongListWidget extends StatelessWidget {
       converter: (store) => store.state.homeFoundState.personalizedSongState,
       onInit: requestPersonalizedSongAction,
       builder: (BuildContext context, PersonalizedSongState state) {
-        List<dynamic> list=state.showList;
+        List<dynamic> list = state.showList;
         return GridView.builder(
             padding: EdgeInsets.only(top: 8),
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 3,
               childAspectRatio: 10 / 12.5,
             ),
+            physics: NeverScrollableScrollPhysics(),
             itemCount: list.length ?? 6,
             shrinkWrap: true,
             itemBuilder: (context, index) {
               Map<String, dynamic> songs = list[index] ?? [];
               return state.isLoading
-                  ? Container(color: Colors.grey[300],)
+                  ? Container(
+                      color: Colors.grey[300],
+                    )
                   : SongCoverWidget(
                       image: songs["picUrl"],
                       name: songs["name"],
