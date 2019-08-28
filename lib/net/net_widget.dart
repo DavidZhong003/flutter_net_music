@@ -109,6 +109,7 @@ abstract class ErrorCallback {
 }
 
 /// Dio网络请求
+@deprecated
 class NetFutureWidget extends SingleFutureWidget<Map<String, dynamic>> {
   final ContentBuilder<Map<String, dynamic>> child;
 

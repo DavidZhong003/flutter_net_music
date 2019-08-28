@@ -3,13 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/material_footer.dart';
 import 'package:flutter_easyrefresh/material_header.dart';
 import 'package:flutter_net_music/net/net_widget.dart';
-import 'package:flutter_net_music/net/netApi.dart';
 import 'package:flutter_net_music/redux/actions/home_found.dart';
 import 'package:flutter_net_music/redux/onInit/home_found.dart';
 import 'package:flutter_net_music/redux/reducers/home_found.dart';
 import 'package:flutter_net_music/redux/reducers/main.dart';
+import 'package:flutter_net_music/routes.dart';
+import 'package:flutter_net_music/screen/song_list.dart';
 import 'package:flutter_net_music/style/font.dart';
-import 'package:flutter_net_music/utils/print.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
@@ -217,7 +217,10 @@ class PersonalizedSongListWidget extends StatelessWidget {
                   : SongCoverWidget(
                       image: songs["picUrl"],
                       name: songs["name"],
-                      onTap: emptyTap,
+                      onTap: () {
+                        // 动态路由
+                        jumpSongList(context,songs["id"].toString());
+                      },
                     );
             });
       },
