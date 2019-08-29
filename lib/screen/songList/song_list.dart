@@ -26,12 +26,22 @@ class SongsListPage extends StatelessWidget {
           SliverAppBar(
             pinned: true,
             elevation: 0,
-            expandedHeight: 280.0 + 56,
+            expandedHeight: 336,
             flexibleSpace: SongFlexibleSpaceBar(
-              collapsedTitle:
-                  "FlexibleSpaceBarFlexibleSpaceBarFlexibleSpaceBarFlexibleSpaceBarFlexibleSpaceBar",
+              collapsedTitle: "请一定要努力 你会值得未来所有美好的期待",
               expandedTitle: "歌单",
-              content: HeadContentWidget(),
+              content: SongCoverContent(
+                coverUrl: testImageUrl,
+                title: "请一定要努力 你会值得未来所有美好的期待",
+                creatorName: "作者名称",
+                creatorUrl:
+                    "http://p1.music.126.net/Dj86YWsr3ubX2p-ZYF_E6w==/109951163521340821.jpg",
+                playCount: "111",
+//                description: "这是简短描述",
+                description: "我们从出生开始的那一声啼哭开始,就注定这一生不是那么容易过去的,从蹒跚学步的跌跌撞撞",
+                onCoverTap: emptyTap,
+                onCreatorTap: emptyTap,
+              ),
               background: HeadBlurBackground(
                 imageUrl: testImageUrl,
               ),
@@ -52,7 +62,7 @@ class SongsListPage extends StatelessWidget {
                 })
               ],
             ),
-            bottom: MusicListHeader(30),
+            bottom: SuspendedMusicHeader(30),
           ),
           SliverList(
               delegate: SliverChildListDelegate([
@@ -179,8 +189,9 @@ class _SongFlexibleSpaceBarState extends State<SongFlexibleSpaceBar> {
 ///音乐列表头
 ///[count] 列表数量
 ///[tail] 尾部收藏按钮
-class MusicListHeader extends StatelessWidget implements PreferredSizeWidget {
-  MusicListHeader(this.count, {this.tail});
+class SuspendedMusicHeader extends StatelessWidget
+    implements PreferredSizeWidget {
+  SuspendedMusicHeader(this.count, {this.tail});
 
   final int count;
 
@@ -256,8 +267,57 @@ class HeadBlurBackground extends StatelessWidget {
   }
 }
 
-/// 头部主要内容
-class HeadContentWidget extends StatelessWidget {
+/// 头部封面
+///
+///
+///
+class SongCoverContent extends StatelessWidget {
+  final String coverUrl;
+
+  final String title;
+
+  final String description;
+
+  final String creatorUrl;
+
+  final String creatorName;
+
+  final String playCount;
+
+  final String commentCount;
+
+  final String shareCount;
+
+  final GestureTapCallback onCoverTap;
+
+  final GestureTapCallback onCreatorTap;
+
+  final GestureTapCallback onCommentTap;
+
+  final GestureTapCallback onShareTap;
+
+  final GestureTapCallback onDownTap;
+
+  final GestureTapCallback onMultipleSelectTap;
+
+  const SongCoverContent(
+      {Key key,
+      @required this.coverUrl,
+      @required this.title,
+      @required this.description,
+      @required this.creatorUrl,
+      @required this.creatorName,
+      @required this.onCoverTap,
+      @required this.onCreatorTap,
+      @required this.playCount,
+      this.onCommentTap,
+      this.onShareTap,
+      this.onDownTap,
+      this.onMultipleSelectTap,
+      @required this.commentCount,
+      @required this.shareCount})
+      : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -265,16 +325,17 @@ class HeadContentWidget extends StatelessWidget {
       padding: EdgeInsets.only(),
       child: Column(
         children: <Widget>[
-          buildContent(context),
-          SizedBox(height: 10),
+          _buildContent(context),
+          SizedBox(height: 16),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: <Widget>[
-              _ActionButton(FontAwesomeIcons.commentDots, "留言", emptyTap),
-              _ActionButton(Icons.share, "分享", emptyTap),
-              _ActionButton(FontAwesomeIcons.cloudDownloadAlt, "下载", emptyTap),
-              _ActionButton(FontAwesomeIcons.checkDouble
-                  , "多选", emptyTap),
+              _ActionButton(FontAwesomeIcons.commentDots, commentCount ?? "留言",
+                  onCommentTap),
+              _ActionButton(Icons.share, shareCount ?? "分享", onShareTap),
+              _ActionButton(FontAwesomeIcons.cloudDownloadAlt, "下载", onDownTap),
+              _ActionButton(
+                  FontAwesomeIcons.checkDouble, "多选", onMultipleSelectTap),
             ],
           ),
         ],
@@ -282,76 +343,144 @@ class HeadContentWidget extends StatelessWidget {
     );
   }
 
-  Widget buildContent(BuildContext context) {
-    return Container(
-      height: 146,
-      padding: EdgeInsets.only(top: 20),
-      child: Row(
-        children: <Widget>[
-          SizedBox(width: 16),
-          ClipRRect(
-            borderRadius: BorderRadius.all(Radius.circular(3)),
-            child: Stack(
-              children: <Widget>[
-                Image(fit: BoxFit.cover, image: NetworkImage(testImageUrl)),
-                Container(
-                  padding: EdgeInsets.all(4),
-                  decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                          colors: [
-                        Colors.black54,
-                        Colors.black26,
-                        Colors.transparent,
-                        Colors.transparent,
-                      ])),
-                  child: Align(
-                    alignment: Alignment.topRight,
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: <Widget>[
-                        Icon(Icons.play_arrow,
-                            color: Theme.of(context).primaryIconTheme.color,
-                            size: 12),
-                        Text("1111",
-                            style: Theme.of(context)
-                                .primaryTextTheme
-                                .body1
-                                .copyWith(fontSize: 11))
-                      ],
+  Widget _buildContent(BuildContext context) {
+    final theme = Theme.of(context);
+    final gradient = LinearGradient(
+        begin: Alignment.topCenter,
+        end: Alignment.bottomCenter,
+        colors: [
+          Colors.black54,
+          Colors.black26,
+          Colors.transparent,
+          Colors.transparent,
+        ]);
+    return GestureDetector(
+      onTap: onCoverTap,
+      child: Container(
+        height: 150,
+        padding: EdgeInsets.only(top: 20, left: 16, right: 16),
+        child: Row(
+          children: <Widget>[
+            ///图片
+            ClipRRect(
+              borderRadius: BorderRadius.all(Radius.circular(5)),
+              child: DecoratedBox(
+                decoration: BoxDecoration(gradient: gradient),
+                child: Stack(
+                  children: <Widget>[
+                    NetImageView(
+                      url: coverUrl,
+                      fit: BoxFit.cover,
+                    ),
+                    Positioned(
+                      top: 4,
+                      right: 8,
+                      child: Row(
+                        children: <Widget>[
+                          Icon(Icons.play_arrow,
+                              color: theme.primaryIconTheme.color, size: 14),
+                          Text(
+                            playCount ?? "",
+                            style: theme.primaryTextTheme.caption,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+            ///间隔
+            SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  SizedBox(
+                    height: 8,
+                  ),
+                  Text(
+                    title ?? "",
+                    style: theme.primaryTextTheme.title.copyWith(
+                      fontSize: 17,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  //作者封面
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: onCreatorTap,
+                      child: Padding(
+                        padding: EdgeInsets.only(top: 8),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: <Widget>[
+                            ClipOval(
+                              child: NetImageView(
+                                width: 24,
+                                height: 24,
+                                url: creatorUrl ?? "",
+                              ),
+                            ),
+                            SizedBox(
+                              width: 8,
+                            ),
+                            Text(
+                              creatorName ?? "",
+                              style: theme.primaryTextTheme.caption,
+                            ),
+                            SizedBox(
+                              width: 8,
+                            ),
+                            Icon(
+                              Icons.keyboard_arrow_right,
+                              size: 18,
+                              color: theme.primaryIconTheme.color,
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
                   ),
-                )
-              ],
+                  SizedBox(
+                    height: 8,
+                  ),
+                  //描述
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      ConstrainedBox(
+                        constraints: BoxConstraints(maxWidth: 160),
+                        child: Opacity(
+                          opacity: 0.8,
+                          child: Text(
+                            description ?? "",
+                            softWrap: true,
+                            style: theme.primaryTextTheme.caption,
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 2,
+                          ),
+                        ),
+                      ),
+                      Icon(
+                        Icons.keyboard_arrow_right,
+                        size: 18,
+                        color: theme.primaryIconTheme.color,
+                      ),
+                    ],
+                  )
+                ],
+              ),
             ),
-          ),
-          SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                SizedBox(height: 10),
-                Text(
-                  "???????",
-                  style: Theme.of(context)
-                      .primaryTextTheme
-                      .title
-                      .copyWith(fontSize: 17),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                SizedBox(height: 10),
-              ],
-            ),
-          ),
-          SizedBox(width: 16),
-        ],
+            SizedBox(width: 16),
+          ],
+        ),
       ),
     );
   }
 }
-
 
 class _ActionButton extends StatelessWidget {
   _ActionButton(this.icon, this.text, this.onTap);
@@ -369,20 +498,23 @@ class _ActionButton extends StatelessWidget {
     return InkResponse(
       onTap: onTap,
       splashColor: textTheme.body1.color,
-      child: Opacity(
-        opacity: onTap == null ? 0.7 : 1,
-        child: Column(
-          children: <Widget>[
-            Icon(
-              icon,
-              color: textTheme.body1.color,
-            ),
-            const Padding(padding: EdgeInsets.only(top: 4)),
-            Text(
-              text,
-              style: textTheme.caption,
-            )
-          ],
+      child: Padding(
+        padding: const EdgeInsets.only(left: 16, right: 16),
+        child: Opacity(
+          opacity: onTap == null ? 0.7 : 1,
+          child: Column(
+            children: <Widget>[
+              Icon(
+                icon,
+                color: textTheme.body1.color,
+              ),
+              const Padding(padding: EdgeInsets.only(top: 4)),
+              Text(
+                text,
+                style: textTheme.caption,
+              )
+            ],
+          ),
         ),
       ),
     );
