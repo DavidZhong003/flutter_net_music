@@ -86,7 +86,7 @@ class WaveLoading extends StatelessWidget {
       child: SpinKitWave(
         itemBuilder: (_, int index) {
           return DecoratedBox(
-            decoration: BoxDecoration(color: Theme.of(context).primaryColor),
+            decoration: BoxDecoration(color: Theme.of(context).iconTheme.color),
           );
         },
       ),
