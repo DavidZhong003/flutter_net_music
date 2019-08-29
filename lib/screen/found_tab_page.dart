@@ -8,7 +8,6 @@ import 'package:flutter_net_music/redux/onInit/home_found.dart';
 import 'package:flutter_net_music/redux/reducers/home_found.dart';
 import 'package:flutter_net_music/redux/reducers/main.dart';
 import 'package:flutter_net_music/routes.dart';
-import 'package:flutter_net_music/screen/song_list.dart';
 import 'package:flutter_net_music/style/font.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
@@ -68,18 +67,17 @@ class FoundPageState extends State<StatefulWidget> {
     return Container(
       padding: EdgeInsets.only(left: 8, right: 8, top: 16, bottom: 16),
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: <Widget>[
-          Expanded(
-              child: ItemTab.large(Icons.calendar_today, "每日推荐", emptyTap)),
-          Expanded(child: ItemTab.large(Icons.queue_music, "歌单", emptyTap)),
-          Expanded(
-              child: ItemTab.large(
+          ItemTab.large(Icons.calendar_today, "每日推荐", emptyTap),
+          ItemTab.large(Icons.queue_music, "歌单", emptyTap),
+          ItemTab.large(
             FontAwesomeIcons.gitter,
             "排行榜",
             emptyTap,
-          )),
-          Expanded(child: ItemTab.large(Icons.radio, "电台", emptyTap)),
-          Expanded(child: ItemTab.large(Icons.live_tv, "直播", emptyTap))
+          ),
+          ItemTab.large(Icons.radio, "电台", emptyTap),
+          ItemTab.large(Icons.live_tv, "直播", emptyTap)
         ],
       ),
     );
