@@ -45,7 +45,7 @@ class MainTabPage extends StatelessWidget {
     );
   }
 
-  Map<String, IconData> _airMap = {
+  final Map<String, IconData> _airMap = {
     "私人FM": Icons.radio,
     "古典专区": FontAwesomeIcons.guitar,
     "驾驶模式": Icons.directions_car,

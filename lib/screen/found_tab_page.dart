@@ -201,7 +201,9 @@ class PersonalizedSongListWidget extends StatelessWidget {
             padding: EdgeInsets.only(top: 8),
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 3,
-              childAspectRatio: 10 / 12.5,
+              mainAxisSpacing: 3,
+              crossAxisSpacing: 6,
+              childAspectRatio: 10 / 12.8,
             ),
             physics: NeverScrollableScrollPhysics(),
             itemCount: list.length ?? 6,
@@ -312,6 +314,7 @@ class SongCoverWidget extends StatelessWidget {
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: 4, vertical: 4),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             ClipRRect(
               borderRadius: BorderRadius.circular(5),
@@ -323,7 +326,9 @@ class SongCoverWidget extends StatelessWidget {
                 padding: EdgeInsets.only(top: 2),
                 child: Text(
                   name,
-                  style: TextStyle(fontSize: FontSize.smaller),
+                  style: Theme.of(context).textTheme.caption,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
             ),
