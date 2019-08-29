@@ -7,6 +7,7 @@ import 'package:flutter_net_music/redux/actions/song_list.dart';
 import 'package:flutter_net_music/redux/reducers/main.dart';
 import 'package:flutter_net_music/redux/reducers/song_list.dart';
 import 'package:flutter_net_music/screen/main_tab_page.dart';
+import 'package:flutter_net_music/utils/string.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -50,7 +51,7 @@ class SongsListPage extends StatelessWidget {
                     title: playlist["name"],
                     creatorName: creator["nickname"],
                     creatorUrl: creator["avatarUrl"],
-                    playCount: playlist["playCount"].toString(),
+                    playCount: formattedNumber(playlist["playCount"]),
                     description: playlist["description"],
                     onCoverTap: emptyTap,
                     onCreatorTap: emptyTap,
@@ -147,7 +148,6 @@ class _SongFlexibleSpaceBarState extends State<SongFlexibleSpaceBar> {
     final double t =
         (1.0 - (settings.currentExtent - settings.minExtent) / deltaExtent)
             .clamp(0.0, 1.0);
-
     // background image
     if (widget.background != null) {
       // 去除不透明
