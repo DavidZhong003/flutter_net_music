@@ -43,7 +43,7 @@ class FoundPageState extends State<StatefulWidget> {
         refreshHeader: MaterialHeader(
           key: _headerKey,
         ),
-        firstRefresh: true,
+        firstRefresh: false,
         refreshFooter: MaterialFooter(key: _footerKey),
         child: SingleChildScrollView(
           child: buildContent(context),
