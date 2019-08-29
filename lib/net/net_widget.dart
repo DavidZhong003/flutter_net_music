@@ -43,7 +43,7 @@ class SingleFutureWidget<T> extends StatefulWidget {
 
   Widget buildErrorWidget(BuildContext context, T t) =>
       error ??
-      (errorBuilder != null ? errorBuilder(context, t) : ErrorWidget());
+      (errorBuilder != null ? errorBuilder(context, t) : CommonErrorWidget());
 
   Widget buildLoadWidget(BuildContext context) =>
       loading ?? (loadBuilder != null ? loadBuilder(context) : WaveLoading());
@@ -96,10 +96,26 @@ class WaveLoading extends StatelessWidget {
 
 /// 通用ErrorWidget
 ///
-class ErrorWidget extends StatelessWidget {
+class CommonErrorWidget extends StatelessWidget {
+  final String errorMsg;
+
+  final GestureTapCallback onTap;
+
+  const CommonErrorWidget({Key key, this.errorMsg, this.onTap}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
-    return Container();
+    return Container(
+      child: GestureDetector(
+        onTap: onTap,
+        child: Center(
+          child: Text(
+            errorMsg ?? "未知错误",
+            style: Theme.of(context).textTheme.display1,
+          ),
+        ),
+      ),
+    );
   }
 }
 

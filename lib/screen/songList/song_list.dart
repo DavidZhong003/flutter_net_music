@@ -2,17 +2,18 @@ import 'dart:ui';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_net_music/net/net_widget.dart';
+import 'package:flutter_net_music/redux/actions/song_list.dart';
+import 'package:flutter_net_music/redux/reducers/main.dart';
+import 'package:flutter_net_music/redux/reducers/song_list.dart';
 import 'package:flutter_net_music/screen/main_tab_page.dart';
-import 'dart:math';
+import 'package:flutter_redux/flutter_redux.dart';
 
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 ///歌单列表
 ///
 ///
-final String testImageUrl =
-    "https://p1.music.126.net/cx2OS7N5saENHQQ9HoYpZQ==/109951164327301283.jpg";
-
 class SongsListPage extends StatelessWidget {
   final String id;
 
@@ -21,61 +22,80 @@ class SongsListPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: CustomScrollView(
-        slivers: <Widget>[
-          SliverAppBar(
-            pinned: true,
-            elevation: 0,
-            expandedHeight: 336,
-            flexibleSpace: SongFlexibleSpaceBar(
-              collapsedTitle: "请一定要努力 你会值得未来所有美好的期待",
-              expandedTitle: "歌单",
-              content: SongCoverContent(
-                coverUrl: testImageUrl,
-                title: "请一定要努力 你会值得未来所有美好的期待",
-                creatorName: "作者名称",
-                creatorUrl:
-                    "http://p1.music.126.net/Dj86YWsr3ubX2p-ZYF_E6w==/109951163521340821.jpg",
-                playCount: "111",
-//                description: "这是简短描述",
-                description: "我们从出生开始的那一声啼哭开始,就注定这一生不是那么容易过去的,从蹒跚学步的跌跌撞撞",
-                onCoverTap: emptyTap,
-                onCreatorTap: emptyTap,
+      body: StoreConnector<AppState, SongListPageState>(
+        converter: (store) => store.state.songListPageState,
+        onInit: requestSongDetail(),
+        builder: (BuildContext context, SongListPageState state) {
+          if (state.isLoading) {
+            return WaveLoading();
+          }
+          final map = state.songsDetail;
+          if (map.isEmpty) {
+            return CommonErrorWidget(onTap: requestSongDetail(),);
+          }
+          final Map<String, dynamic> playlist = map["playlist"];
+          final Map<String, dynamic> creator = playlist["creator"];
+          return CustomScrollView(
+            slivers: <Widget>[
+              SliverAppBar(
+                pinned: true,
+                elevation: 0,
+                expandedHeight: 336,
+                flexibleSpace: SongFlexibleSpaceBar(
+                  collapsedTitle: playlist["name"],
+                  expandedTitle: "歌单",
+                  content: SongCoverContent(
+                    shareCount: playlist["shareCount"].toString(),
+                    coverUrl: playlist["coverImgUrl"],
+                    title: playlist["name"],
+                    creatorName: creator["nickname"],
+                    creatorUrl: creator["avatarUrl"],
+                    playCount: playlist["playCount"].toString(),
+                    description: playlist["description"],
+                    onCoverTap: emptyTap,
+                    onCreatorTap: emptyTap,
+                    commentCount: playlist["commentCount"].toString(),
+                  ),
+                  background: HeadBlurBackground(
+                    imageUrl: playlist["coverImgUrl"],
+                  ),
+                  actions: <Widget>[
+                    IconButton(icon: Icon(Icons.search), onPressed: emptyTap),
+                    PopupMenuButton(itemBuilder: (BuildContext context) {
+                      return [
+                        PopupMenuItem(
+                          child: Text("选择歌曲排序"),
+                        ),
+                        PopupMenuItem(
+                          child: Text("选择歌曲排序"),
+                        ),
+                        PopupMenuItem(
+                          child: Text("选择歌曲排序"),
+                        ),
+                      ];
+                    })
+                  ],
+                ),
+                bottom: SuspendedMusicHeader(playlist["trackCount"]),
               ),
-              background: HeadBlurBackground(
-                imageUrl: testImageUrl,
-              ),
-              actions: <Widget>[
-                IconButton(icon: Icon(Icons.search), onPressed: emptyTap),
-                PopupMenuButton(itemBuilder: (BuildContext context) {
-                  return [
-                    PopupMenuItem(
-                      child: Text("选择歌曲排序"),
-                    ),
-                    PopupMenuItem(
-                      child: Text("选择歌曲排序"),
-                    ),
-                    PopupMenuItem(
-                      child: Text("选择歌曲排序"),
-                    ),
-                  ];
-                })
-              ],
-            ),
-            bottom: SuspendedMusicHeader(30),
-          ),
-          SliverList(
-              delegate: SliverChildListDelegate([
-            Container(
-              color: Colors.grey,
-              height: 1000,
-            )
-          ]))
-        ],
+              SliverList(
+                  delegate: SliverChildListDelegate([
+                    Container(
+                      color: Colors.grey,
+                      height: 1000,
+                    )
+                  ]))
+            ],
+          );
+        },
       ),
     );
   }
+
+  requestSongDetail() => StoreContainer.dispatch(SongsListRequestAction(id));
+
 }
+
 
 /// 歌单表头Bar
 /// 类似[FlexibleSpaceBar]
@@ -450,6 +470,7 @@ class SongCoverContent extends StatelessWidget {
                   //描述
                   Row(
                     mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
                       ConstrainedBox(
                         constraints: BoxConstraints(maxWidth: 160),

@@ -1,16 +1,22 @@
-
-
 import 'dio_helper.dart';
 
 class ApiService {
-  static Future<Map<String,dynamic>> getBanner()  async{
-     return DioUtils.request("/banner?type=1", data: {});
+  static Future<Map<String, dynamic>> getBanner() async {
+    return DioUtils.request("/banner?type=1", data: {});
   }
+
   ///推荐歌单
-  static Future<Map<String,dynamic>> getPersonalized(){
+  static Future<Map<String, dynamic>> getPersonalized() {
     return DioUtils.request("/personalized");
   }
+
+  ///歌单详情
+  ////playlist/detail?id=2948171497
+  static Future<Map<String, dynamic>> getSongListDetails(String id) {
+    return DioUtils.request("/playlist/detail?id=$id");
+  }
 }
+
 /// 错误信息
 class RequestFailureInfo {
   String errorCode;
@@ -26,8 +32,8 @@ class RequestFailureInfo {
   }
 
   bool get hasErrorInfo =>
-      !(errorCode==null||errorCode.isEmpty) ||
-          !(errorMessage==null||errorMessage.isEmpty);
+      !(errorCode == null || errorCode.isEmpty) ||
+      !(errorMessage == null || errorMessage.isEmpty);
 
   @override
   String toString() {
@@ -41,8 +47,8 @@ class RequestFailureInfo {
   @override
   bool operator ==(other) =>
       identical(this, other) ||
-          other is RequestFailureInfo &&
-              errorCode == other.errorCode &&
-              errorMessage == other.errorMessage &&
-              dateTime == other.dateTime;
+      other is RequestFailureInfo &&
+          errorCode == other.errorCode &&
+          errorMessage == other.errorMessage &&
+          dateTime == other.dateTime;
 }
