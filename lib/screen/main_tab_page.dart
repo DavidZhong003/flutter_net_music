@@ -133,18 +133,21 @@ class ItemTab extends StatelessWidget {
 
   final EdgeInsetsGeometry padding;
 
+  final EdgeInsetsGeometry margin;
   final double fontSize;
 
   const ItemTab(this.icon, this.text, this.onTap,
       {this.size = 35,
       this.elevation = 2,
       this.padding = const EdgeInsets.only(top: 8),
-      this.fontSize = FontSize.miner});
+      this.fontSize = FontSize.miner,
+      this.margin = const EdgeInsets.symmetric(vertical: 8, horizontal: 16)});
 
   const ItemTab.large(this.icon, this.text, this.onTap)
       : this.size = 45,
         this.elevation = 1,
         this.padding = const EdgeInsets.only(top: 12),
+        this.margin = null,
         fontSize = FontSize.smaller;
 
   @override
@@ -152,7 +155,7 @@ class ItemTab extends StatelessWidget {
     return InkWell(
         onTap: onTap,
         child: Container(
-          padding: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+          padding: margin,
           child: Column(
             children: <Widget>[
               Material(
