@@ -245,7 +245,7 @@ class SongListItemWidget extends StatelessWidget {
           songName,
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
-          style: theme.textTheme.subhead.copyWith(fontSize: 18),
+          style: theme.textTheme.subhead.copyWith(fontSize: 16),
         ),
         SizedBox(
           height: 4,
