@@ -4,12 +4,12 @@ import 'package:flutter_net_music/redux/actions/main.dart';
 import 'package:flutter_net_music/redux/reducers/main.dart';
 
 final quietThemes = [
+  _buildTheme(Colors.red),
   ThemeData(
       primaryColor: Colors.white,
       buttonColor: Colors.black,
       iconTheme: IconThemeData(color: Colors.black87),
       accentColor: Colors.black),
-  _buildTheme(Colors.red),
   _buildTheme(Colors.blue),
   _buildTheme(Colors.green),
   _buildTheme(Colors.amber),

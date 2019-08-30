@@ -32,7 +32,9 @@ class SongsListPage extends StatelessWidget {
           }
           final map = state.songsDetail;
           if (map.isEmpty) {
-            return CommonErrorWidget(onTap: requestSongDetail(StoreContainer.global),);
+            return CommonErrorWidget(
+              onTap: requestSongDetail(StoreContainer.global),
+            );
           }
           final Map<String, dynamic> playlist = map["playlist"];
           final Map<String, dynamic> creator = playlist["creator"];
@@ -79,13 +81,10 @@ class SongsListPage extends StatelessWidget {
                 ),
                 bottom: SuspendedMusicHeader(playlist["trackCount"]),
               ),
-              SliverList(
-                  delegate: SliverChildListDelegate([
-                    Container(
-                      color: Colors.grey,
-                      height: 1000,
-                    )
-                  ]))
+              _buildSongList(context, state),
+              SliverToBoxAdapter(
+                child: _buildSubscribed(context, state),
+              ),
             ],
           );
         },
@@ -93,10 +92,194 @@ class SongsListPage extends StatelessWidget {
     );
   }
 
+  ///歌曲列表内容
+  Widget _buildSongList(BuildContext context, SongListPageState state) {
+    final List<dynamic> tracks = state.songsDetail["playlist"]["tracks"];
+    return SliverList(
+      delegate: SliverChildBuilderDelegate((context, index) {
+        final track = tracks[index];
+        return SongListItemWidget(
+//          isPlaying: index == 1,
+          haveMv: track["mv"]!=0,
+          index: index,
+          songName: track["name"],
+          arName: track["ar"][0]["name"],
+          albumName: track["al"]["name"],
+          onItemTap: emptyTap,
+          onMvTap: emptyTap,
+          onMoreTap: emptyTap,
+        );
+      }, childCount: tracks.length),
+    );
+  }
+
   requestSongDetail(store) => store.dispatch(RequestSongsListAction(id));
 
+  Widget _buildSubscribed(BuildContext context, SongListPageState state) {
+    final Map<String, dynamic> playlist = state.songsDetail["playlist"];
+    final List<dynamic> subscribers = playlist["subscribers"];
+    final subscribedCount = playlist["subscribedCount"];
+    if (subscribedCount <= 0 || subscribers == null || subscribers.isEmpty) {
+      return Container();
+    }
+    List<Widget> content = [];
+    List<Widget> head = subscribers.take(5).map((sub) {
+      return Padding(
+        padding: EdgeInsets.all(8),
+        child: UserHeadImageView(
+          creatorUrl: sub["avatarUrl"],
+        ),
+      );
+    }).toList();
+    content.addAll(head);
+    content.add(Spacer());
+    content.add(Text(
+      "${formattedNumber(subscribedCount)}人收藏",
+      style: Theme.of(context).textTheme.caption.copyWith(fontSize: 14),
+    ));
+    return Container(
+      padding: EdgeInsets.only(left: 8, right: 16, top: 8, bottom: 16),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: content,
+      ),
+    );
+  }
 }
 
+///播放条目view
+class SongListItemWidget extends StatelessWidget {
+  final bool isPlaying;
+  final bool haveMv;
+  final int index;
+  final String songName;
+  final String arName;
+  final String albumName;
+  final GestureTapCallback onMoreTap;
+  final GestureTapCallback onItemTap;
+  final GestureTapCallback onMvTap;
+
+  const SongListItemWidget(
+      {Key key,
+      this.isPlaying = false,
+      this.haveMv,
+      this.index,
+      this.songName,
+      this.arName,
+      this.albumName,
+      this.onMoreTap,
+      this.onItemTap,
+      this.onMvTap})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Container(
+      height: 56,
+      child: InkWell(
+        onTap: onItemTap,
+        child: Padding(
+          padding: const EdgeInsets.only(left: 16, top: 4, bottom: 4),
+          child: Row(
+            children: <Widget>[
+              //leading
+              _buildLeading(context),
+              SizedBox(
+                width: 16,
+              ),
+              _buildContent(context, theme),
+              //play icon,
+              _buildPlayIcon(context),
+              _buildMore(theme)
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMore(ThemeData theme) {
+    return InkWell(
+      onTap: onMoreTap,
+      child: Padding(
+        padding: const EdgeInsets.only(left: 8, right: 16, top: 8, bottom: 8),
+        child: Opacity(
+          opacity: 0.45,
+          child: Icon(
+            Icons.more_vert,
+            size: 24,
+            color: theme.textTheme.subtitle.color,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildContent(BuildContext context, ThemeData theme) {
+    return Expanded(
+        child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: <Widget>[
+        Text(
+          songName,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: theme.textTheme.subhead.copyWith(fontSize: 18),
+        ),
+        SizedBox(
+          height: 4,
+        ),
+        Text(
+          "$arName - $albumName",
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: theme.textTheme.caption,
+        )
+      ],
+    ));
+  }
+
+  Widget _buildLeading(BuildContext context) {
+    final theme = Theme.of(context);
+    Widget leading;
+    if (isPlaying) {
+      leading = Icon(Icons.volume_up, color: theme.primaryColor);
+    } else {
+      leading = Opacity(
+        opacity: 0.45,
+        child: Text(
+          (index + 1).toString(),
+          style: Theme.of(context).textTheme.title.copyWith(fontSize: 18),
+        ),
+      );
+    }
+    return SizedBox(
+      width: 24,
+      child: Center(
+        child: leading,
+      ),
+    );
+  }
+
+  Widget _buildPlayIcon(BuildContext context) {
+    if (!haveMv) {
+      return Container();
+    }
+    return InkWell(
+      onTap: onMvTap,
+      child: Container(
+        padding: EdgeInsets.all(8),
+        child: Icon(
+          FontAwesomeIcons.youtube,
+          size: 16,
+          color: Theme.of(context).textTheme.caption.color,
+        ),
+      ),
+    );
+  }
+}
 
 /// 歌单表头Bar
 /// 类似[FlexibleSpaceBar]
@@ -229,21 +412,25 @@ class SuspendedMusicHeader extends StatelessWidget
           child: SizedBox.fromSize(
             size: preferredSize,
             child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 Padding(padding: EdgeInsets.only(left: 16)),
                 Icon(
                   Icons.play_circle_outline,
                   color: Theme.of(context).iconTheme.color,
                 ),
-                Padding(padding: EdgeInsets.only(left: 4)),
+                Padding(padding: EdgeInsets.only(left: 16)),
                 Text(
                   "播放全部",
-                  style: Theme.of(context).textTheme.body1,
+                  style:
+                      Theme.of(context).textTheme.body1.copyWith(fontSize: 18),
                 ),
-                Padding(padding: EdgeInsets.only(left: 2)),
                 Text(
                   "(共$count首)",
-                  style: Theme.of(context).textTheme.caption,
+                  style: Theme.of(context)
+                      .textTheme
+                      .caption
+                      .copyWith(fontSize: 16),
                 ),
                 Spacer(),
                 tail,
@@ -437,13 +624,7 @@ class SongCoverContent extends StatelessWidget {
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: <Widget>[
-                            ClipOval(
-                              child: NetImageView(
-                                width: 24,
-                                height: 24,
-                                url: creatorUrl ?? "",
-                              ),
-                            ),
+                            UserHeadImageView(creatorUrl: creatorUrl),
                             SizedBox(
                               width: 8,
                             ),
@@ -498,6 +679,43 @@ class SongCoverContent extends StatelessWidget {
             SizedBox(width: 16),
           ],
         ),
+      ),
+    );
+  }
+}
+
+///用户头像
+class UserHeadImageView extends StatelessWidget {
+  final String creatorUrl;
+
+  final double size;
+
+  final GestureTapCallback onTap;
+
+  const UserHeadImageView(
+      {Key key, @required this.creatorUrl, this.size = 24, this.onTap})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    Widget content;
+    if (creatorUrl == null) {
+      content = Container(
+        width: size,
+        height: size,
+        color: Theme.of(context).buttonTheme.colorScheme.error,
+      );
+    } else {
+      content = NetImageView(
+        width: size,
+        height: size,
+        url: creatorUrl,
+      );
+    }
+    return GestureDetector(
+      onTap: onTap,
+      child: ClipOval(
+        child: content,
       ),
     );
   }
