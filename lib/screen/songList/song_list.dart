@@ -25,14 +25,14 @@ class SongsListPage extends StatelessWidget {
     return Scaffold(
       body: StoreConnector<AppState, SongListPageState>(
         converter: (store) => store.state.songListPageState,
-        onInit: requestSongDetail(),
+        onInit: requestSongDetail,
         builder: (BuildContext context, SongListPageState state) {
           if (state.isLoading) {
             return WaveLoading();
           }
           final map = state.songsDetail;
           if (map.isEmpty) {
-            return CommonErrorWidget(onTap: requestSongDetail(),);
+            return CommonErrorWidget(onTap: requestSongDetail(StoreContainer.global),);
           }
           final Map<String, dynamic> playlist = map["playlist"];
           final Map<String, dynamic> creator = playlist["creator"];
@@ -93,7 +93,7 @@ class SongsListPage extends StatelessWidget {
     );
   }
 
-  requestSongDetail() => StoreContainer.dispatch(SongsListRequestAction(id));
+  requestSongDetail(store) => store.dispatch(RequestSongsListAction(id));
 
 }
 

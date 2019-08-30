@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_net_music/utils/color.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 typedef LoadBuilder = Widget Function(BuildContext context);
@@ -80,13 +81,23 @@ class _SingleFutureWidgetState<T> extends State<SingleFutureWidget> {
 
 /// 通用Loading
 class WaveLoading extends StatelessWidget {
+  final double size;
+
+  const WaveLoading({Key key, this.size = 36}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
+    final color = Theme.of(context).primaryColor;
     return Center(
       child: SpinKitWave(
+        size: size,
         itemBuilder: (_, int index) {
           return DecoratedBox(
-            decoration: BoxDecoration(color: Theme.of(context).iconTheme.color),
+            decoration: BoxDecoration(
+              color: color == Colors.white
+                  ? Theme.of(context).iconTheme.color
+                  : color,
+            ),
           );
         },
       ),
@@ -101,7 +112,8 @@ class CommonErrorWidget extends StatelessWidget {
 
   final GestureTapCallback onTap;
 
-  const CommonErrorWidget({Key key, this.errorMsg, this.onTap}) : super(key: key);
+  const CommonErrorWidget({Key key, this.errorMsg, this.onTap})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {

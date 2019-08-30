@@ -35,7 +35,7 @@ class SongListReducer extends Reducer<SongListPageState> {
     switch (action.runtimeType) {
       case SongListRequestSuccess:
         return state.copyWith(isLoading: false, songsDetail: action.payload);
-      case SongsListRequestAction:
+      case RequestSongsListAction:
         String id = action.payload;
         if(state.id==id&&state.songsDetail.isNotEmpty){
           return state;

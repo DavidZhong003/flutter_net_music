@@ -5,7 +5,7 @@ class SongListRequestSuccess extends ActionType<Map<String, dynamic>> {
 
   SongListRequestSuccess(this.data) : super(payload: data);
 }
-class SongsListRequestAction extends ActionType<String>{
+class RequestSongsListAction extends ActionType<String>{
   final String id;
-  SongsListRequestAction(this.id):super(payload:id);
+  RequestSongsListAction(this.id):super(payload:id);
 }
