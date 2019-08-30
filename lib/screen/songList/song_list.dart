@@ -8,6 +8,7 @@ import 'package:flutter_net_music/redux/reducers/main.dart';
 import 'package:flutter_net_music/redux/reducers/song_list.dart';
 import 'package:flutter_net_music/screen/main_tab_page.dart';
 import 'package:flutter_net_music/utils/string.dart';
+import 'package:flutter_net_music/utils/weak_prompt.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -114,7 +115,7 @@ class SongsListPage extends StatelessWidget {
       delegate: SliverChildBuilderDelegate((context, index) {
         final track = tracks[index];
         return SongListItemWidget(
-//          isPlaying: index == 1,
+          isPlaying: index == 1,
           haveMv: track["mv"] != 0,
           index: index,
           songName: track["name"],
@@ -139,10 +140,13 @@ class SongsListPage extends StatelessWidget {
     }
     List<Widget> content = [];
     List<Widget> head = subscribers.take(5).map((sub) {
-      return Padding(
-        padding: EdgeInsets.all(8),
-        child: UserHeadImageView(
-          creatorUrl: sub["avatarUrl"],
+      return InkWell(
+        onTap: emptyTap,
+        child: Padding(
+          padding: EdgeInsets.all(8),
+          child: UserHeadImageView(
+            creatorUrl: sub["avatarUrl"],
+          ),
         ),
       );
     }).toList();
@@ -195,13 +199,13 @@ class SongListItemWidget extends StatelessWidget {
       child: InkWell(
         onTap: onItemTap,
         child: Padding(
-          padding: const EdgeInsets.only(left: 16, top: 4, bottom: 4),
+          padding: const EdgeInsets.only(left: 4, top: 4, bottom: 4),
           child: Row(
             children: <Widget>[
               //leading
               _buildLeading(context),
               SizedBox(
-                width: 16,
+                width: 4,
               ),
               _buildContent(context, theme),
               //play icon,
@@ -260,18 +264,22 @@ class SongListItemWidget extends StatelessWidget {
     final theme = Theme.of(context);
     Widget leading;
     if (isPlaying) {
-      leading = Icon(Icons.volume_up, color: theme.primaryColor);
+      leading = SizedBox(
+        width: 24,
+        child: Icon(Icons.volume_up, color: theme.primaryColor),
+      );
     } else {
       leading = Opacity(
         opacity: 0.45,
         child: Text(
           (index + 1).toString(),
-          style: Theme.of(context).textTheme.title.copyWith(fontSize: 18),
+          style: Theme.of(context).textTheme.title.copyWith(fontSize: 16),
+          maxLines: 1,
         ),
       );
     }
     return SizedBox(
-      width: 24,
+      width: 48,
       child: Center(
         child: leading,
       ),
