@@ -67,13 +67,28 @@ class SongsListPage extends StatelessWidget {
                     PopupMenuButton(itemBuilder: (BuildContext context) {
                       return [
                         PopupMenuItem(
-                          child: Text("选择歌曲排序"),
+                          child: ListIconTitle(
+                            Icons.storage,
+                            "选择歌曲排序",
+                            emptyTap,
+                            showDivider: false,
+                          ),
                         ),
                         PopupMenuItem(
-                          child: Text("选择歌曲排序"),
+                          child: ListIconTitle(
+                            FontAwesomeIcons.trashAlt,
+                            "选择歌曲排序",
+                            emptyTap,
+                            showDivider: false,
+                          ),
                         ),
                         PopupMenuItem(
-                          child: Text("选择歌曲排序"),
+                          child: ListIconTitle(
+                            Icons.warning,
+                            "举报",
+                            emptyTap,
+                            showDivider: false,
+                          ),
                         ),
                       ];
                     })
@@ -100,7 +115,7 @@ class SongsListPage extends StatelessWidget {
         final track = tracks[index];
         return SongListItemWidget(
 //          isPlaying: index == 1,
-          haveMv: track["mv"]!=0,
+          haveMv: track["mv"] != 0,
           index: index,
           songName: track["name"],
           arName: track["ar"][0]["name"],
