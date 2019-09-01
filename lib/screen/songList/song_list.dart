@@ -8,10 +8,11 @@ import 'package:flutter_net_music/redux/reducers/main.dart';
 import 'package:flutter_net_music/redux/reducers/song_list.dart';
 import 'package:flutter_net_music/screen/main_tab_page.dart';
 import 'package:flutter_net_music/utils/string.dart';
-import 'package:flutter_net_music/utils/weak_prompt.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+
+import '../../routes.dart';
 
 ///歌单列表
 ///
@@ -19,7 +20,10 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 class SongsListPage extends StatelessWidget {
   final String id;
 
-  const SongsListPage({Key key, @required this.id}) : super(key: key);
+  final String copywriter;
+
+  const SongsListPage({Key key, @required this.id, this.copywriter})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -48,6 +52,7 @@ class SongsListPage extends StatelessWidget {
                 flexibleSpace: SongFlexibleSpaceBar(
                   collapsedTitle: playlist["name"],
                   expandedTitle: "歌单",
+                  subTitle: copywriter,
                   content: SongCoverContent(
                     shareCount: playlist["shareCount"].toString(),
                     coverUrl: playlist["coverImgUrl"],
@@ -318,6 +323,8 @@ class SongFlexibleSpaceBar extends StatefulWidget {
   //收时候title
   final String collapsedTitle;
 
+  final String subTitle;
+
   final List<Widget> actions;
 
   const SongFlexibleSpaceBar({
@@ -327,6 +334,7 @@ class SongFlexibleSpaceBar extends StatefulWidget {
     this.collapsedTitle,
     this.content,
     this.actions,
+    this.subTitle,
   }) : super(key: key);
 
   @override
@@ -379,7 +387,27 @@ class _SongFlexibleSpaceBarState extends State<SongFlexibleSpaceBar> {
       settings.maxExtent - settings.currentExtent > barHeight
           ? widget.collapsedTitle
           : widget.expandedTitle,
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis,
     );
+    if (widget.subTitle != null) {
+      title = Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          title,
+          ConstrainedBox(
+            constraints: BoxConstraints(maxWidth: 200),
+            child: Text(
+              widget.subTitle,
+              style: Theme.of(context).primaryTextTheme.caption,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          )
+        ],
+      );
+    }
     children.add(AppBar(
       backgroundColor: Colors.transparent,
       title: title,
@@ -431,7 +459,9 @@ class SuspendedMusicHeader extends StatelessWidget
         color: Theme.of(context).scaffoldBackgroundColor,
         elevation: 0,
         child: InkWell(
-          onTap: () {},
+          onTap: () {
+            Navigator.of(context).pushNamed(PathName.ROUTE_MUSIC_PLAY);
+          },
           child: SizedBox.fromSize(
             size: preferredSize,
             child: Row(
@@ -473,8 +503,22 @@ class SuspendedMusicHeader extends StatelessWidget
 class HeadBlurBackground extends StatelessWidget {
   final String imageUrl;
 
-  const HeadBlurBackground({Key key, @required this.imageUrl})
-      : super(key: key);
+  final double opacity;
+
+  final double sigmaX;
+
+  final double sigmaY;
+
+  final Color filterColor;
+
+  const HeadBlurBackground({
+    Key key,
+    @required this.imageUrl,
+    this.opacity = 0.9,
+    this.sigmaX = 30,
+    this.sigmaY = 30,
+    this.filterColor,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -482,15 +526,15 @@ class HeadBlurBackground extends StatelessWidget {
       fit: StackFit.passthrough,
       children: <Widget>[
         Opacity(
-          opacity: 0.9,
+          opacity: opacity,
           child: NetImageView(
-            fit: BoxFit.cover,
+            fit: BoxFit.fill,
             url: imageUrl,
           ),
         ),
         BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 30, sigmaY: 30),
-          child: Container(color: Colors.black.withOpacity(0.3)),
+          filter: ImageFilter.blur(sigmaX: sigmaX, sigmaY: sigmaY),
+          child: Container(color: filterColor ?? Colors.black.withOpacity(0.3)),
         )
       ],
     );
@@ -530,23 +574,23 @@ class SongCoverContent extends StatelessWidget {
 
   final GestureTapCallback onMultipleSelectTap;
 
-  const SongCoverContent(
-      {Key key,
-      @required this.coverUrl,
-      @required this.title,
-      @required this.description,
-      @required this.creatorUrl,
-      @required this.creatorName,
-      @required this.onCoverTap,
-      @required this.onCreatorTap,
-      @required this.playCount,
-      this.onCommentTap,
-      this.onShareTap,
-      this.onDownTap,
-      this.onMultipleSelectTap,
-      @required this.commentCount,
-      @required this.shareCount})
-      : super(key: key);
+  const SongCoverContent({
+    Key key,
+    @required this.coverUrl,
+    @required this.title,
+    @required this.description,
+    @required this.creatorUrl,
+    @required this.creatorName,
+    @required this.onCoverTap,
+    @required this.onCreatorTap,
+    @required this.playCount,
+    this.onCommentTap,
+    this.onShareTap,
+    this.onDownTap,
+    this.onMultipleSelectTap,
+    @required this.commentCount,
+    @required this.shareCount,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

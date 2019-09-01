@@ -219,7 +219,8 @@ class PersonalizedSongListWidget extends StatelessWidget {
                       name: songs["name"],
                       onTap: () {
                         // 动态路由
-                        jumpSongList(context,songs["id"].toString());
+                        jumpSongList(context, songs["id"].toString(),
+                            songs["copywriter"] ?? null);
                       },
                     );
             });
