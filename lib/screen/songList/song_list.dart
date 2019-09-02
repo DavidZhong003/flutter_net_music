@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_net_music/my_font/my_icon.dart';
 import 'package:flutter_net_music/net/net_widget.dart';
 import 'package:flutter_net_music/redux/actions/song_list.dart';
 import 'package:flutter_net_music/redux/reducers/main.dart';
@@ -604,12 +605,12 @@ class SongCoverContent extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: <Widget>[
-              _ActionButton(FontAwesomeIcons.commentDots, commentCount ?? "留言",
+              _ActionButton(MyIcons.comment_lines, commentCount ?? "留言",
                   onCommentTap),
-              _ActionButton(Icons.share, shareCount ?? "分享", onShareTap),
-              _ActionButton(FontAwesomeIcons.cloudDownloadAlt, "下载", onDownTap),
+              _ActionButton(MyIcons.share, shareCount ?? "分享", onShareTap),
+              _ActionButton(MyIcons.download_cloud, "下载", onDownTap),
               _ActionButton(
-                  FontAwesomeIcons.checkDouble, "多选", onMultipleSelectTap),
+                  MyIcons.check_all, "多选", onMultipleSelectTap),
             ],
           ),
         ],
