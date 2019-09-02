@@ -397,6 +397,7 @@ class _SongFlexibleSpaceBarState extends State<SongFlexibleSpaceBar> {
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           title,
+          SizedBox(height: 2,),
           ConstrainedBox(
             constraints: BoxConstraints(maxWidth: 200),
             child: Text(
@@ -414,7 +415,6 @@ class _SongFlexibleSpaceBarState extends State<SongFlexibleSpaceBar> {
       title: title,
       actions: widget.actions ?? [],
     ));
-
     /// 添加content
     children.add(Positioned(
       top: settings.currentExtent -
