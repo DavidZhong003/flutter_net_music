@@ -50,6 +50,7 @@ class SongsListPage extends StatelessWidget {
                 pinned: true,
                 elevation: 0,
                 expandedHeight: 336,
+                backgroundColor: Colors.transparent,
                 flexibleSpace: SongFlexibleSpaceBar(
                   collapsedTitle: playlist["name"],
                   expandedTitle: "歌单",
@@ -389,6 +390,7 @@ class _SongFlexibleSpaceBarState extends State<SongFlexibleSpaceBar> {
           ? widget.collapsedTitle
           : widget.expandedTitle,
       maxLines: 1,
+      style: Theme.of(context).primaryTextTheme.title.copyWith(fontSize: 16),
       overflow: TextOverflow.ellipsis,
     );
     if (widget.subTitle != null) {
@@ -397,12 +399,16 @@ class _SongFlexibleSpaceBarState extends State<SongFlexibleSpaceBar> {
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           title,
-          SizedBox(height: 2,),
+          SizedBox(
+            height: 2,
+          ),
           ConstrainedBox(
             constraints: BoxConstraints(maxWidth: 200),
             child: Text(
               widget.subTitle,
-              style: Theme.of(context).primaryTextTheme.caption,
+              style: Theme.of(context).primaryTextTheme.caption.copyWith(
+                    fontSize: 11,
+                  ),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),
@@ -415,6 +421,7 @@ class _SongFlexibleSpaceBarState extends State<SongFlexibleSpaceBar> {
       title: title,
       actions: widget.actions ?? [],
     ));
+
     /// 添加content
     children.add(Positioned(
       top: settings.currentExtent -
@@ -605,12 +612,11 @@ class SongCoverContent extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: <Widget>[
-              _ActionButton(MyIcons.comment_lines, commentCount ?? "留言",
-                  onCommentTap),
+              _ActionButton(
+                  MyIcons.comment_lines, commentCount ?? "留言", onCommentTap),
               _ActionButton(MyIcons.share, shareCount ?? "分享", onShareTap),
               _ActionButton(MyIcons.download_cloud, "下载", onDownTap),
-              _ActionButton(
-                  MyIcons.check_all, "多选", onMultipleSelectTap),
+              _ActionButton(MyIcons.check_all, "多选", onMultipleSelectTap),
             ],
           ),
         ],
