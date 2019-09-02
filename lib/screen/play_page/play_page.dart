@@ -1,7 +1,16 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_net_music/my_font/my_icon.dart';
 import 'package:flutter_net_music/screen/songList/song_list.dart';
 import 'package:flutter_net_music/screen/main_tab_page.dart';
+
+import 'lyric_widget.dart';
+
+///爱在夏天 563563366
+final String _testImageUrl =
+    "http://p1.music.126.net/PlRQ5L8bo8FAuoL5T8vWoA==/109951163304680451.jpg";
+
 ///音乐播放界面
 class MusicPlayPage extends StatelessWidget {
   @override
@@ -19,9 +28,11 @@ class MusicPlayPage extends StatelessWidget {
               Expanded(
                 //淡入和淡出的view
                 child: AnimatedCrossFade(
-                    firstChild: MusicLyric(),
-                    secondChild: Container(),
-                    crossFadeState: CrossFadeState.showFirst,
+                    firstChild: LyricWidget(),
+                    secondChild: RotateCoverWidget(
+                      coverUrl: _testImageUrl,
+                    ),
+                    crossFadeState: CrossFadeState.showSecond,
                     duration: Duration(milliseconds: 300)),
               ),
               //进度条
@@ -70,10 +81,12 @@ class MusicPlayPage extends StatelessWidget {
           ),
         ],
       ),
-      actions: <Widget>[Padding(
-        padding: const EdgeInsets.only(right: 8),
-        child: Icon(Icons.share),
-      )],
+      actions: <Widget>[
+        Padding(
+          padding: const EdgeInsets.only(right: 8),
+          child: Icon(Icons.share),
+        )
+      ],
     );
   }
 
@@ -81,24 +94,8 @@ class MusicPlayPage extends StatelessWidget {
   Widget _buildBlurBackground() {
     return HeadBlurBackground(
       opacity: 0.9,
-      imageUrl:
-          "https://p1.music.126.net/wc_4zG3XMFlku4AdeUHg1g==/109951163561148208.jpg",
+      imageUrl: _testImageUrl,
     );
-  }
-}
-
-///歌词界面
-class MusicLyric extends StatefulWidget {
-  @override
-  State<StatefulWidget> createState() {
-    return _MusicLyricState();
-  }
-}
-
-class _MusicLyricState extends State<MusicLyric> {
-  @override
-  Widget build(BuildContext context) {
-    return Container();
   }
 }
 
@@ -184,5 +181,92 @@ class _MusicControllerBar extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+///旋转封面
+class RotateCoverWidget extends StatefulWidget {
+  final String coverUrl;
+
+  const RotateCoverWidget({Key key, @required this.coverUrl}) : super(key: key);
+
+  @override
+  State<StatefulWidget> createState() {
+    return _RotateCoverWidgetState();
+  }
+}
+
+class _RotateCoverWidgetState extends State<RotateCoverWidget>
+    with SingleTickerProviderStateMixin {
+  bool _isPlaying = false;
+
+  double rotation = 0;
+
+  AnimationController _animationController;
+
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(
+        duration: Duration(seconds: 20),
+        vsync: this,
+        animationBehavior: AnimationBehavior.normal);
+    _animationController
+      ..addListener(() {
+        setState(() {
+          rotation = _animationController.value * 2 * pi;
+        });
+      })
+      ..addStatusListener((status) {
+        ///重新播放
+        if (_isPlaying &&
+            status == AnimationStatus.completed &&
+            _animationController.value == 1) {
+          _animationController.forward(from: 0);
+        }
+      });
+    _playOrStopAction();
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: <Widget>[
+        Center(
+          child: GestureDetector(
+            onTap: () {
+              setState(() {
+                _isPlaying = !_isPlaying;
+                _playOrStopAction();
+              });
+            },
+            child: SizedBox(
+              width: 250,
+              child: Transform.rotate(
+                angle: rotation,
+                child: ClipOval(
+                  child: NetImageView(url: widget.coverUrl),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  void _playOrStopAction() {
+    if (!_isPlaying) {
+      _animationController.stop();
+    } else {
+      _animationController.forward(
+          from: _animationController.value);
+    }
   }
 }
