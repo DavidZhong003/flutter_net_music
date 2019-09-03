@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_net_music/model/song_item_model.dart';
 import 'package:flutter_net_music/my_font/my_icon.dart';
 import 'package:flutter_net_music/net/net_widget.dart';
 import 'package:flutter_net_music/redux/actions/song_list.dart';
@@ -117,22 +118,26 @@ class SongsListPage extends StatelessWidget {
 
   ///歌曲列表内容
   Widget _buildSongList(BuildContext context, SongListPageState state) {
-    final List<dynamic> tracks = state.songsDetail["playlist"]["tracks"];
+    final List<MusicTrackBean> musics = state.musics;
     return SliverList(
       delegate: SliverChildBuilderDelegate((context, index) {
-        final track = tracks[index];
+        final song = musics[index];
         return SongListItemWidget(
+          //todo
           isPlaying: index == 1,
-          haveMv: track["mv"] != 0,
+          haveMv: song.haveMv(),
           index: index,
-          songName: track["name"],
-          arName: track["ar"][0]["name"],
-          albumName: track["al"]["name"],
-          onItemTap: emptyTap,
+          songName: song.name,
+          arName: song.getArName(),
+          albumName: song.album.name,
+          onItemTap: (){
+            //播放歌曲,todo
+
+          },
           onMvTap: emptyTap,
           onMoreTap: emptyTap,
         );
-      }, childCount: tracks.length),
+      }, childCount: musics.length),
     );
   }
 
@@ -468,7 +473,8 @@ class SuspendedMusicHeader extends StatelessWidget
         elevation: 0,
         child: InkWell(
           onTap: () {
-            Navigator.of(context).pushNamed(PathName.ROUTE_MUSIC_PLAY);
+            //播放全部
+            StoreContainer.dispatch(PlayAllAction(context));
           },
           child: SizedBox.fromSize(
             size: preferredSize,

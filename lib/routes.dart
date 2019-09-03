@@ -26,3 +26,6 @@ void jumpSongList(BuildContext context, String id,[String copywriter]) {
     );
   }));
 }
+void jumpPage(BuildContext context,Widget page){
+  Navigator.of(context).push(MaterialPageRoute(builder: (context){return page;}));
+}

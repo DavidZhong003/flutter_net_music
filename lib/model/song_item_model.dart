@@ -1,12 +1,13 @@
 /// 歌条目模型
 ///
-class Music {
-  Music({this.id, this.title, this.url, this.album, this.artist, int mvId})
+class MusicTrackBean {
+  MusicTrackBean(
+      {this.id, this.name, this.url, this.album, this.artist, int mvId})
       : this.mvId = mvId ?? 0;
 
   int id;
 
-  String title;
+  String name;
 
   String url;
 
@@ -16,56 +17,71 @@ class Music {
 
   int mvId;
 
-  String get subTitle {
-    var ar = artist.map((a) => a.name).join('/');
-    var al = album.name;
-    return "$al - $ar";
-  }
-
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-          other is Music && runtimeType == other.runtimeType && id == other.id;
+      other is MusicTrackBean &&
+          runtimeType == other.runtimeType &&
+          id == other.id;
 
   @override
   int get hashCode => id.hashCode;
 
   @override
   String toString() {
-    return 'Music{id: $id, title: $title, url: $url, album: $album, artist: $artist}';
+    return 'Music{id: $id, title: $name, url: $url, album: $album, artist: $artist}';
   }
 
-  static Music fromMap(Map map) {
+  static MusicTrackBean fromMap(Map map) {
     if (map == null) {
       return null;
     }
-    return Music(
+    return MusicTrackBean(
         id: map["id"],
-        title: map["title"],
+        name: map["name"],
         url: map["url"],
-        album: Album.fromMap(map["album"]),
-        mvId: map['mvId'] ?? 0,
-        artist:
-        (map["artist"] as List).cast<Map>().map(Artist.fromMap).toList());
+        album: Album.fromMap(map["al"]),
+        mvId: map['mv'] ?? 0,
+        artist: (map["ar"] as List).cast<Map>().map(Artist.fromMap).toList());
   }
 
   Map toMap() {
     return {
       "id": id,
-      "title": title,
+      "name": name,
       "url": url,
-      "subTitle": subTitle,
       'mvId': mvId,
-      "album": album.toMap(),
-      "artist": artist.map((e) => e.toMap()).toList()
+      "al": album.toMap(),
+      "ar": artist.map((e) => e.toMap()).toList()
     };
   }
+
+  bool haveMv() => this.mvId != 0;
+
+  String getArName() {
+    if (artist != null && artist.isNotEmpty) {
+      if(artist.length==1){
+        return artist[0].name;
+      }
+      String result="";
+      artist.forEach((art){
+        if(art == artist.last){
+          result += "${art.name}";
+        }else{
+          result += "${art.name}/";
+        }
+      });
+      return result;
+    }
+    return "";
+  }
 }
+
 ///专辑
 class Album {
-  Album({this.coverImageUrl, this.name, this.id});
+  Album({this.picUrl, this.name, this.id});
 
-  String coverImageUrl;
+  String picUrl;
 
   String name;
 
@@ -74,10 +90,10 @@ class Album {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-          other is Album &&
-              runtimeType == other.runtimeType &&
-              name == other.name &&
-              id == other.id;
+      other is Album &&
+          runtimeType == other.runtimeType &&
+          name == other.name &&
+          id == other.id;
 
   @override
   int get hashCode => name.hashCode ^ id.hashCode;
@@ -88,27 +104,28 @@ class Album {
   }
 
   static Album fromMap(Map map) {
-    return Album(
-        id: map["id"], name: map["name"], coverImageUrl: map["coverImageUrl"]);
+    return Album(id: map["id"], name: map["name"], picUrl: map["picUrl"]);
   }
 
   Map toMap() {
-    return {"id": id, "name": name, "coverImageUrl": coverImageUrl};
+    return {"id": id, "name": name, "picUrl": picUrl};
   }
 }
+
 ///歌手
 class Artist {
-  Artist({this.name, this.id, this.imageUrl});
+  Artist({
+    this.name,
+    this.id,
+  });
 
   String name;
 
   int id;
 
-  String imageUrl;
-
   @override
   String toString() {
-    return 'Artist{name: $name, id: $id, imageUrl: $imageUrl}';
+    return 'Artist{name: $name, id: $id}';
   }
 
   static Artist fromMap(Map map) {

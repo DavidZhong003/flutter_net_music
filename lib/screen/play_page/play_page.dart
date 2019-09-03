@@ -1,18 +1,19 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_net_music/model/song_item_model.dart';
 import 'package:flutter_net_music/my_font/my_icon.dart';
 import 'package:flutter_net_music/screen/songList/song_list.dart';
 import 'package:flutter_net_music/screen/main_tab_page.dart';
 
 import 'lyric_widget.dart';
 
-///爱在夏天 563563366
-final String _testImageUrl =
-    "http://p1.music.126.net/PlRQ5L8bo8FAuoL5T8vWoA==/109951163304680451.jpg";
-
 ///音乐播放界面
 class MusicPlayPage extends StatelessWidget {
+  final MusicTrackBean music;
+
+  const MusicPlayPage({Key key, this.music}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -30,7 +31,7 @@ class MusicPlayPage extends StatelessWidget {
                 child: AnimatedCrossFade(
                     firstChild: LyricWidget(),
                     secondChild: RotateCoverWidget(
-                      coverUrl: _testImageUrl,
+                      coverUrl: music.album.picUrl,
                     ),
                     crossFadeState: CrossFadeState.showSecond,
                     duration: Duration(milliseconds: 300)),
@@ -48,6 +49,7 @@ class MusicPlayPage extends StatelessWidget {
 
   ///标题 AppBar
   AppBar _buildAppBar(BuildContext context) {
+    print(music);
     return AppBar(
       elevation: 0,
       backgroundColor: Colors.transparent,
@@ -56,7 +58,7 @@ class MusicPlayPage extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           Text(
-            "值得",
+            music.name,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
@@ -67,7 +69,7 @@ class MusicPlayPage extends StatelessWidget {
               ConstrainedBox(
                 constraints: BoxConstraints(maxWidth: 200),
                 child: Text(
-                  "迪克牛仔迪克牛仔迪克牛仔迪克牛仔迪克牛仔",
+                  music.getArName(),
                   style: Theme.of(context).primaryTextTheme.caption,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
@@ -94,7 +96,7 @@ class MusicPlayPage extends StatelessWidget {
   Widget _buildBlurBackground() {
     return HeadBlurBackground(
       opacity: 0.9,
-      imageUrl: _testImageUrl,
+      imageUrl: music.album.picUrl,
     );
   }
 }

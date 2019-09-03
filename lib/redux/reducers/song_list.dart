@@ -1,6 +1,9 @@
+import 'package:flutter_net_music/model/song_item_model.dart';
 import 'package:flutter_net_music/net/netApi.dart';
 import 'package:flutter_net_music/redux/actions/song_list.dart';
+import 'package:flutter_net_music/screen/play_page/play_page.dart';
 
+import '../../routes.dart';
 import 'main.dart';
 
 import 'package:flutter/material.dart';
@@ -13,19 +16,26 @@ class SongListPageState {
 
   final Map<String, dynamic> songsDetail;
 
-  SongListPageState({this.id, this.isLoading, this.songsDetail});
+  final List<MusicTrackBean> musics;
+
+  SongListPageState({this.id, this.isLoading, this.songsDetail, this.musics});
 
   SongListPageState copyWith(
-      {bool isLoading, Map<String, dynamic> songsDetail, String id}) {
+      {bool isLoading,
+      Map<String, dynamic> songsDetail,
+      String id,
+      List<MusicTrackBean> musics}) {
     return SongListPageState(
         isLoading: isLoading ?? this.isLoading,
         id: id ?? this.id,
-        songsDetail: songsDetail ?? this.songsDetail);
+        songsDetail: songsDetail ?? this.songsDetail,
+        musics: musics ?? this.musics);
   }
 
   SongListPageState.initialState()
       : isLoading = true,
         id = "",
+        musics = [],
         songsDetail = {};
 }
 
@@ -34,17 +44,30 @@ class SongListReducer extends Reducer<SongListPageState> {
   SongListPageState redux(SongListPageState state, action) {
     switch (action.runtimeType) {
       case SongListRequestSuccess:
-        return state.copyWith(isLoading: false, songsDetail: action.payload);
+        List<MusicTrackBean> music;
+        List<dynamic> tracks = action.payload["playlist"]["tracks"];
+        music = tracks.map((tracks) {
+          return MusicTrackBean.fromMap(tracks);
+        }).toList();
+        return state.copyWith(
+            isLoading: false, songsDetail: action.payload, musics: music);
       case RequestSongsListAction:
         String id = action.payload;
-        if(state.id==id&&state.songsDetail.isNotEmpty){
+        if (state.id == id && state.songsDetail.isNotEmpty) {
           return state;
-        }else{
+        } else {
           ApiService.getSongListDetails(id).then((map) {
             StoreContainer.dispatch(SongListRequestSuccess(map));
           });
         }
         return state.copyWith(isLoading: true, id: id);
+      case PlayAllAction:
+        jumpPage(
+            action.payload,
+            MusicPlayPage(
+              music: state.musics[0],
+            ));
+        return state;
     }
     return state;
   }
