@@ -29,3 +29,7 @@ void jumpSongList(BuildContext context, String id,[String copywriter]) {
 void jumpPage(BuildContext context,Widget page){
   Navigator.of(context).push(MaterialPageRoute(builder: (context){return page;}));
 }
+
+void jumpPageByName(BuildContext context,String name){
+  Navigator.of(context).pushNamed(name);
+}

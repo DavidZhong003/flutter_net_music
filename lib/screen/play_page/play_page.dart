@@ -3,53 +3,62 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_net_music/model/song_item_model.dart';
 import 'package:flutter_net_music/my_font/my_icon.dart';
+import 'package:flutter_net_music/redux/actions/play_page.dart';
+import 'package:flutter_net_music/redux/reducers/main.dart';
+import 'package:flutter_net_music/redux/reducers/play_page.dart';
+import 'package:flutter_net_music/redux/reducers/song_list.dart';
 import 'package:flutter_net_music/screen/songList/song_list.dart';
 import 'package:flutter_net_music/screen/main_tab_page.dart';
+import 'package:flutter_redux/flutter_redux.dart';
 
 import 'lyric_widget.dart';
-
+String _testPicUrl = "http://p2.music.126.net/t9FzacVQw6CC-P1-X5Pquw==/109951164308230490.jpg";
 ///音乐播放界面
 class MusicPlayPage extends StatelessWidget {
-  final MusicTrackBean music;
-
-  const MusicPlayPage({Key key, this.music}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    var content=  StoreConnector<AppState, PlayPageState>(
+      converter: (store) => store.state.playPageState,
+      onInit: (store)=>store.dispatch(LoadMusicInfoAction()),
+      builder: (BuildContext context, PlayPageState state) {
+        final music = state.music;
+        return Stack(
+          children: <Widget>[
+            //背景
+            _buildBlurBackground(music?.album?.picUrl??_testPicUrl),
+            Column(
+              children: <Widget>[
+                //appbar,
+                _buildAppBar(context,music?.name??"",music?.getArName()??""),
+                //歌词or 旋转唱片
+                Expanded(
+                  //淡入和淡出的view
+                  child: AnimatedCrossFade(
+                      firstChild: LyricWidget(),
+                      secondChild: RotateCoverWidget(
+                        coverUrl: music?.album?.picUrl??_testPicUrl,
+                      ),
+                      crossFadeState: CrossFadeState.showSecond,
+                      duration: Duration(milliseconds: 300)),
+                ),
+                //进度条
+                MusicDurationProgressBar(),
+                //底部控制器
+                _MusicControllerBar(),
+              ],
+            )
+          ],
+        );
+      },
+    );
     return Scaffold(
-      body: Stack(
-        children: <Widget>[
-          //背景
-          _buildBlurBackground(),
-          Column(
-            children: <Widget>[
-              //appbar,
-              _buildAppBar(context),
-              //歌词or 旋转唱片
-              Expanded(
-                //淡入和淡出的view
-                child: AnimatedCrossFade(
-                    firstChild: LyricWidget(),
-                    secondChild: RotateCoverWidget(
-                      coverUrl: music.album.picUrl,
-                    ),
-                    crossFadeState: CrossFadeState.showSecond,
-                    duration: Duration(milliseconds: 300)),
-              ),
-              //进度条
-              MusicDurationProgressBar(),
-              //底部控制器
-              _MusicControllerBar(),
-            ],
-          )
-        ],
-      ),
+      body: content,
     );
   }
 
   ///标题 AppBar
-  AppBar _buildAppBar(BuildContext context) {
-    print(music);
+  AppBar _buildAppBar(BuildContext context,String name,String arName) {
     return AppBar(
       elevation: 0,
       backgroundColor: Colors.transparent,
@@ -58,7 +67,7 @@ class MusicPlayPage extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           Text(
-            music.name,
+            name,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
@@ -69,7 +78,7 @@ class MusicPlayPage extends StatelessWidget {
               ConstrainedBox(
                 constraints: BoxConstraints(maxWidth: 200),
                 child: Text(
-                  music.getArName(),
+                  arName,
                   style: Theme.of(context).primaryTextTheme.caption,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
@@ -93,10 +102,10 @@ class MusicPlayPage extends StatelessWidget {
   }
 
   /// 背景
-  Widget _buildBlurBackground() {
+  Widget _buildBlurBackground(String picUrl) {
     return HeadBlurBackground(
       opacity: 0.9,
-      imageUrl: music.album.picUrl,
+      imageUrl: picUrl,
     );
   }
 }
@@ -267,8 +276,7 @@ class _RotateCoverWidgetState extends State<RotateCoverWidget>
     if (!_isPlaying) {
       _animationController.stop();
     } else {
-      _animationController.forward(
-          from: _animationController.value);
+      _animationController.forward(from: _animationController.value);
     }
   }
 }

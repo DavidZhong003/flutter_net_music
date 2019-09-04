@@ -1,7 +1,9 @@
 import 'package:flutter_net_music/model/song_item_model.dart';
 import 'package:flutter_net_music/net/netApi.dart';
+import 'package:flutter_net_music/redux/actions/play_page.dart';
 import 'package:flutter_net_music/redux/actions/song_list.dart';
 import 'package:flutter_net_music/screen/play_page/play_page.dart';
+import 'package:flutter_net_music/screen/play_page/player.dart';
 
 import '../../routes.dart';
 import 'main.dart';
@@ -62,11 +64,10 @@ class SongListReducer extends Reducer<SongListPageState> {
         }
         return state.copyWith(isLoading: true, id: id);
       case PlayAllAction:
-        jumpPage(
-            action.payload,
-            MusicPlayPage(
-              music: state.musics[0],
-            ));
+        // 绑定播放列表
+        MusicPlayer.bindMusicList(state.musics);
+        // 跳转播放页面
+        jumpPageByName(action.payload, PathName.ROUTE_MUSIC_PLAY);
         return state;
     }
     return state;

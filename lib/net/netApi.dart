@@ -15,6 +15,11 @@ class ApiService {
   static Future<Map<String, dynamic>> getSongListDetails(String id) {
     return DioUtils.request("/playlist/detail?id=$id");
   }
+  ///获取歌曲Url
+  ///id 用,拼接
+  static Future<Map<String, dynamic>> getSongsDetail(String ids) {
+    return DioUtils.request("/song/url?id=$ids");
+  }
 }
 
 /// 错误信息
