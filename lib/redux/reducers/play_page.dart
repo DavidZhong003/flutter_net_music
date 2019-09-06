@@ -1,8 +1,8 @@
 import 'dart:core';
 
 import 'package:flutter_net_music/model/song_item_model.dart';
-import 'package:flutter_net_music/redux/actions/music_play.dart';
-import 'package:flutter_net_music/screen/music_play.dart';
+import 'package:flutter_net_music/redux/actions/play_page.dart';
+import 'package:flutter_net_music/screen/music_play_contorl.dart';
 
 import 'main.dart';
 import 'package:flutter/material.dart';
@@ -10,12 +10,9 @@ import 'package:flutter/material.dart';
 const int EMPTY_MUSIC_ID = -1;
 
 @immutable
-class MusicPlayState {
-  // 播放列表
-  final List<MusicTrackBean> playList;
-
+class PlayPageState {
   //当前播放的歌曲
-  final int current;
+  final MusicTrackBean music;
 
   // 当前进度
   final DurationState durationState;
@@ -29,77 +26,74 @@ class MusicPlayState {
   // 播放错误信息
   final String errorMsg;
 
-  MusicPlayState({
-    this.playList,
-    this.current,
+  PlayPageState({
+    this.music,
     this.durationState,
     this.playMode,
     this.readyPlay,
     this.errorMsg,
   });
 
-  MusicPlayState copyWith({
-    List<MusicTrackBean> playList,
-    int current,
+  PlayPageState copyWith({
+    MusicTrackBean music,
     DurationState duration,
     MusicPlayMode playMode,
     bool readyPlay,
     String errorMsg,
   }) {
-    return MusicPlayState(
-        playList: playList ?? this.playList,
-        current: current ?? this.current,
+    print("2222222,$music,this.music=${this.music}");
+    return PlayPageState(
+        music: music ?? this.music,
         durationState: duration ?? this.durationState,
         playMode: playMode ?? this.playMode,
         readyPlay: readyPlay ?? this.readyPlay,
         errorMsg: errorMsg ?? this.errorMsg);
   }
 
-  MusicPlayState.initState()
-      : playList = [],
-        current = -1,
+  PlayPageState.initState()
+      : music = MusicPlayList.currentSong,
         durationState = DurationState.initState(),
         playMode = MusicPlayMode.repeat_one,
         errorMsg = "",
         readyPlay = false;
 
-  int get currentMusicId => playList[current].id ?? EMPTY_MUSIC_ID;
-
-  MusicTrackBean get currentMusic {
-    if(current>=0&& current<playList.length-1){
-      return playList[current];
-    }
-    return null;
+  @override
+  String toString() {
+    return "PlayPageState={music:$music,durationState:$durationState,playMode:$playMode,errorMsg:$errorMsg,readyPlay=$readyPlay}";
   }
 }
 
 /// 播放模式
 enum MusicPlayMode { repeat_one, repeat, random, heartbeat }
 
-class MusicPlayRedux extends Reducer<MusicPlayState> {
+class PlayPageRedux extends Reducer<PlayPageState> {
   @override
-  MusicPlayState redux(MusicPlayState state, action) {
+  PlayPageState redux(PlayPageState state, action) {
     var duration = DurationRedux().redux(state.durationState, action);
     switch (action.runtimeType) {
-      case LoadPlaylistAction:
-      //播放歌单
-        return state.copyWith(
-            playList: action.payload,
-            current: 0, duration: duration);
-      case RequestPlayMusicAction:
-        var id = state.currentMusicId;
-        print(id);
+      case InitPlayPageAction:
+        ///加载歌曲信息S
+        return state.copyWith(music: MusicPlayList.currentSong);
+      case PlayMusicWithIndexAction:
+        ///播放歌曲
+        var id = MusicPlayList.currentSongId;
         if (id != EMPTY_MUSIC_ID) {
           MusicPlayer.playWithId(id);
         }
-        return state.copyWith(duration: duration);
-      case PlayNextAction:
-        //todo
-        return state.copyWith(current: state.current+1);
+        return state.copyWith(
+            music: MusicPlayList.currentSong, duration: duration);
+      case ChangNextSongIdAction:
+        return state.copyWith(music: MusicPlayList.currentSong);
+      case MusicPlayingAction:
+        // 可以成功播放
+        return state.copyWith(music:MusicPlayList.currentSong,readyPlay: true);
+      case RequestPlayMusicFailed:
+        return state.copyWith(readyPlay: false, errorMsg: action.payload);
     }
     return state.copyWith(duration: duration);
   }
 }
+
 ///进度管理器
 @immutable
 class DurationState {
@@ -109,17 +103,15 @@ class DurationState {
   // 总时长
   final Duration duration;
 
-
   DurationState({this.position, this.duration});
 
   DurationState copyWith({
     Duration position,
     Duration duration,
   }) {
-    print("fffffff.${position},${duration}");
     return DurationState(
       position: position ?? this.position,
-      duration: duration?? this.duration,
+      duration: duration ?? this.duration,
     );
   }
 
@@ -127,22 +119,23 @@ class DurationState {
       : position = Duration.zero,
         duration = Duration.zero;
 
-  String get durationString =>_durationFormat(duration);
+  String get durationString => _durationFormat(duration);
 
   String get positionString => _durationFormat(position);
 
   double get positionValue {
     print("eeeeee,$position,$duration");
-    if(position==null||duration==null||duration==Duration.zero){
+    if (position == null || duration == null || duration == Duration.zero) {
       return 0;
     }
-    var value=(position.inMilliseconds)/(duration.inMilliseconds);
+    var value = (position.inMilliseconds) / (duration.inMilliseconds);
     return value;
   }
 }
+
 //进度文本格式化 00:00
-String _durationFormat(Duration duration){
-  if(duration==null){
+String _durationFormat(Duration duration) {
+  if (duration == null) {
     return "00:00";
   }
   String twoDigits(int n) {
@@ -161,15 +154,15 @@ String _durationFormat(Duration duration){
 class DurationRedux extends Reducer<DurationState> {
   @override
   DurationState redux(DurationState state, action) {
-    switch(action.runtimeType){
+    switch (action.runtimeType) {
       case PlayPositionChangeAction:
         //如果长度异常重新请求下
-        if((state.duration==null||state.duration==Duration.zero)&&action.payload!=null){
+        if ((state.duration == null || state.duration == Duration.zero) &&
+            action.payload != null) {
           MusicPlayer.notifyDurationChange();
         }
         return state.copyWith(position: action.payload);
       case ChangeDurationAction:
-
         return state.copyWith(duration: action.payload);
     }
     return state;

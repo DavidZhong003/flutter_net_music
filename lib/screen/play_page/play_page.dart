@@ -2,41 +2,47 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_net_music/my_font/my_icon.dart';
-import 'package:flutter_net_music/redux/actions/music_play.dart';
+import 'package:flutter_net_music/redux/actions/play_page.dart';
 import 'package:flutter_net_music/redux/reducers/main.dart';
-import 'package:flutter_net_music/redux/reducers/music_play.dart';
+import 'package:flutter_net_music/redux/reducers/play_page.dart';
 import 'package:flutter_net_music/screen/songList/song_list.dart';
 import 'package:flutter_net_music/screen/main_tab_page.dart';
 import 'package:flutter_redux/flutter_redux.dart';
+import 'package:toast/toast.dart';
 
+import '../music_play_contorl.dart';
 import 'lyric_widget.dart';
 
-String _testPicUrl = "http://p2.music.126.net/t9FzacVQw6CC-P1-X5Pquw==/109951164308230490.jpg";
+String _testPicUrl =
+    "http://p2.music.126.net/t9FzacVQw6CC-P1-X5Pquw==/109951164308230490.jpg";
+
 ///音乐播放界面
 class MusicPlayPage extends StatelessWidget {
-
   @override
   Widget build(BuildContext context) {
-    var content=  StoreConnector<AppState, MusicPlayState>(
+    var content = StoreConnector<AppState, PlayPageState>(
       converter: (store) => store.state.musicPlayState,
-      builder: (BuildContext context, MusicPlayState state) {
-        //todo 缺乏一个判断位
-        final music = state.currentMusic;
+      onInit: (store)=>store.dispatch(InitPlayPageAction()),
+      builder: (BuildContext context, PlayPageState state) {
+        final readyPlay = state.readyPlay;
+        final music = state.music;
+        print("11111111,state=$state");
         return Stack(
           children: <Widget>[
             //背景
-            _buildBlurBackground(music?.album?.picUrl??_testPicUrl),
+            _buildBlurBackground(music?.album?.picUrl ?? _testPicUrl),
             Column(
               children: <Widget>[
                 //appbar,
-                _buildAppBar(context,music?.name??"",music?.getArName()??""),
+                _buildAppBar(
+                    context, music?.name ?? "", music?.getArName() ?? ""),
                 //歌词or 旋转唱片
                 Expanded(
                   //淡入和淡出的view
                   child: AnimatedCrossFade(
                       firstChild: LyricWidget(),
                       secondChild: RotateCoverWidget(
-                        coverUrl: music?.album?.picUrl??_testPicUrl,
+                        coverUrl: music?.album?.picUrl ?? _testPicUrl,
                       ),
                       crossFadeState: CrossFadeState.showSecond,
                       duration: Duration(milliseconds: 300)),
@@ -57,7 +63,7 @@ class MusicPlayPage extends StatelessWidget {
   }
 
   ///标题 AppBar
-  AppBar _buildAppBar(BuildContext context,String name,String arName) {
+  AppBar _buildAppBar(BuildContext context, String name, String arName) {
     return AppBar(
       elevation: 0,
       backgroundColor: Colors.transparent,
@@ -118,13 +124,14 @@ class MusicDurationProgressBar extends StatelessWidget {
       converter: (store) => store.state.musicPlayState.durationState,
       builder: (BuildContext context, DurationState duration) {
         return Padding(
-          padding: const EdgeInsets.only(left: 16, right: 16, top: 8, bottom: 8),
+          padding:
+              const EdgeInsets.only(left: 16, right: 16, top: 8, bottom: 8),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               Text(duration.positionString, style: theme.body1),
               Expanded(
-                child: _buildProgressIndicator(context,duration),
+                child: _buildProgressIndicator(context, duration),
               ),
               Text(duration.durationString, style: theme.body1),
             ],
@@ -188,8 +195,9 @@ class _MusicControllerBar extends StatelessWidget {
               icon: Icon(
                 MyIcons.skip_next,
               ),
-              onPressed: (){
-                StoreContainer.dispatch(PlayNextAction());
+              onPressed: () {
+                //下一首
+                MusicPlayer.playNext();
               },
             ),
             IconButton(

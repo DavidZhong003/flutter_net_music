@@ -1,7 +1,8 @@
 import 'package:flutter_net_music/model/song_item_model.dart';
 import 'package:flutter_net_music/net/netApi.dart';
-import 'package:flutter_net_music/redux/actions/music_play.dart';
+import 'package:flutter_net_music/redux/actions/play_page.dart';
 import 'package:flutter_net_music/redux/actions/song_list.dart';
+import 'package:flutter_net_music/screen/music_play_contorl.dart';
 import '../../routes.dart';
 import 'main.dart';
 
@@ -62,8 +63,8 @@ class SongListReducer extends Reducer<SongListPageState> {
         return state.copyWith(isLoading: true, id: id);
       case PlayAllAction:
         //加载歌单,播放歌曲,跳转页面
-        StoreContainer.dispatch(LoadPlaylistAction(state.musics));
-        StoreContainer.dispatch(RequestPlayMusicAction());
+        MusicPlayList.bindMusicList(state.musics, state.id);
+        StoreContainer.dispatch(PlayMusicWithIndexAction(0));
         // 跳转播放页面
         jumpPageByName(action.payload, PathName.ROUTE_MUSIC_PLAY);
         return state;
