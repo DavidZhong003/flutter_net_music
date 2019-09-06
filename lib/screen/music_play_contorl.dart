@@ -24,6 +24,10 @@ class MusicPlayer {
 
   static MusicPlayMode get playMode => _SwitchController.mode;
 
+  static Stream<Duration> get positionStream => _audioPlayer.onAudioPositionChanged;
+
+  static Stream<Duration> get durationStream => _audioPlayer.onDurationChanged;
+
   static int lastId;
 
   static bool get isPlaying => AudioPlayerState.PLAYING == lastState;
@@ -34,19 +38,6 @@ class MusicPlayer {
     }
     _audioPlayer = AudioPlayer();
     AudioPlayer.logEnabled = false;
-    _audioPlayer.onAudioPositionChanged.listen((duration) {
-      if (durationFormat(showDuration) != durationFormat(duration)) {
-        showDuration = duration;
-        StoreContainer.dispatch(PlayPositionChangeAction(duration));
-      }
-    });
-    _audioPlayer.onDurationChanged.listen((duration) {
-      if (durationFormat(lastSongDuration) != durationFormat(duration)) {
-        //长度改变
-        lastSongDuration = duration;
-        StoreContainer.dispatch(ChangeDurationAction(duration));
-      }
-    });
     _audioPlayer.onPlayerStateChanged.listen((state) {
       lastState = state;
       switch (state) {
@@ -81,11 +72,6 @@ class MusicPlayer {
 
   static Future<int> getSongsDuration() {
     return _audioPlayer.getDuration();
-  }
-
-  static void notifyDurationChange() async {
-    var int = await _audioPlayer.getDuration();
-    _dispatchAction(ChangeDurationAction(Duration(microseconds: int)));
   }
 
   static void playWithId(int id) async {

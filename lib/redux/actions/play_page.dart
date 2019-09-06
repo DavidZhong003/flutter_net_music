@@ -17,20 +17,9 @@ class RequestPlayMusicFailed extends ActionType<String> {
   RequestPlayMusicFailed(this.errorMsg) : super(payload: errorMsg);
 }
 
-class PlayPositionChangeAction extends ActionType<Duration> {
-  final Duration duration;
-
-  PlayPositionChangeAction(this.duration) : super(payload: duration);
-}
 ///初始化播放页
 class InitPlayPageAction extends VoidAction{}
 
-//歌曲长度改变动作
-class ChangeDurationAction extends ActionType<Duration> {
-  final Duration duration;
-
-  ChangeDurationAction(this.duration) : super(payload: duration);
-}
 
 class ChangePlayModeAction extends VoidAction {}
 

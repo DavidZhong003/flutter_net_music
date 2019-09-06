@@ -48,9 +48,12 @@ class MusicPlayPage extends StatelessWidget {
                       duration: Duration(milliseconds: 300)),
                 ),
                 //进度条
-                MusicDurationProgressBar(),
+                DurationProgressBar(),
                 //底部控制器
-                _MusicControllerBar(isPlaying: state.isPlaying,playMode: state.playMode,),
+                _MusicControllerBar(
+                  isPlaying: state.isPlaying,
+                  playMode: state.playMode,
+                ),
               ],
             )
           ],
@@ -116,32 +119,61 @@ class MusicPlayPage extends StatelessWidget {
 }
 
 ///音乐进度条
-class MusicDurationProgressBar extends StatelessWidget {
+class DurationProgressBar extends StatefulWidget {
+  @override
+  State<StatefulWidget> createState() {
+    return _DurationProgressState();
+  }
+}
+
+class _DurationProgressState extends State<DurationProgressBar> {
+  Duration position = Duration.zero;
+
+  Duration duration = Duration.zero;
+
+  @override
+  void initState() {
+    super.initState();
+    MusicPlayer.durationStream.listen((duration){
+      if(_durationFormat(this.duration)!=_durationFormat(duration)){
+        setState(() {
+          this.duration = duration;
+        });
+      }
+    });
+    MusicPlayer.positionStream.listen((position){
+      if(_durationFormat(this.position)!=_durationFormat(position)){
+        setState(() {
+          this.position = position;
+        });
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context).primaryTextTheme;
-    return StoreConnector<AppState, DurationState>(
-      converter: (store) => store.state.musicPlayState.durationState,
-      builder: (BuildContext context, DurationState duration) {
-        return Padding(
-          padding:
-              const EdgeInsets.only(left: 16, right: 16, top: 8, bottom: 8),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Text(duration.positionString, style: theme.body1),
-              Expanded(
-                child: _buildProgressIndicator(context, duration),
-              ),
-              Text(duration.durationString, style: theme.body1),
-            ],
+    return Padding(
+      padding: const EdgeInsets.only(left: 16, right: 16, top: 8, bottom: 8),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          Text(_durationFormat(position), style: theme.body1),
+          Expanded(
+            child: _buildProgressIndicator(context),
           ),
-        );
-      },
+          Text(_durationFormat(duration), style: theme.body1),
+        ],
+      ),
     );
   }
 
-  Widget _buildProgressIndicator(BuildContext context, DurationState duration) {
+  Widget _buildProgressIndicator(BuildContext context) {
     final theme = Theme.of(context);
     return SliderTheme(
       data: Theme.of(context).sliderTheme.copyWith(
@@ -149,13 +181,36 @@ class MusicDurationProgressBar extends StatelessWidget {
             thumbShape: RoundSliderThumbShape(enabledThumbRadius: 5),
           ),
       child: Slider(
-          value: duration.positionValue,
+          value: _positionValue,
           activeColor: theme.primaryIconTheme.color.withOpacity(0.8),
           inactiveColor: theme.primaryIconTheme.color.withOpacity(0.4),
-          onChanged: (value) {
-            print("value===========$value");
-          }),
+          onChanged: (value) {}),
     );
+  }
+
+  double get _positionValue {
+    if (position == null || duration == null || duration == Duration.zero) {
+      return 0;
+    }
+    var value = (position.inMilliseconds) / (duration.inMilliseconds);
+    return value;
+  }
+
+  String _durationFormat(Duration duration) {
+    if (duration == null) {
+      return "00:00";
+    }
+    String twoDigits(int n) {
+      if (n >= 10) return "$n";
+      return "0$n";
+    }
+
+    if (duration.inSeconds < 0) {
+      return "-${-duration}";
+    }
+    String twoDigitMinutes = twoDigits(duration.inMinutes.remainder(60));
+    String twoDigitSeconds = twoDigits(duration.inSeconds.remainder(60));
+    return "$twoDigitMinutes:$twoDigitSeconds";
   }
 }
 
@@ -171,7 +226,7 @@ class _MusicControllerBar extends StatelessWidget {
 
   Widget buildPlayModel(BuildContext context) {
     var icons;
-    switch(playMode){
+    switch (playMode) {
       case MusicPlayMode.heartbeat:
         icons = Icons.cast;
         break;
@@ -185,11 +240,13 @@ class _MusicControllerBar extends StatelessWidget {
         icons = MyIcons.repeat_one;
         break;
     }
-    return IconButton(icon: Icon(icons), onPressed: (){
-      var mode= MusicPlayer.changePlayMode();
-      Toast.show(playModeName(mode), context);
-      StoreContainer.dispatch(ChangePlayModeAction());
-    });
+    return IconButton(
+        icon: Icon(icons),
+        onPressed: () {
+          var mode = MusicPlayer.changePlayMode();
+          Toast.show(playModeName(mode), context);
+          StoreContainer.dispatch(ChangePlayModeAction());
+        });
   }
 
   @override
@@ -217,7 +274,7 @@ class _MusicControllerBar extends StatelessWidget {
             ),
             IconButton(
               icon: Icon(
-                isPlaying?MyIcons.pause:MyIcons.play,
+                isPlaying ? MyIcons.pause : MyIcons.play,
                 size: 36,
               ),
               onPressed: () {
