@@ -7,7 +7,9 @@ import 'package:flutter_net_music/redux/reducers/main.dart';
 import 'package:flutter_net_music/redux/reducers/play_page.dart';
 import 'package:flutter_net_music/screen/songList/song_list.dart';
 import 'package:flutter_net_music/screen/main_tab_page.dart';
+import 'package:flutter_net_music/utils/string.dart';
 import 'package:flutter_redux/flutter_redux.dart';
+import 'package:toast/toast.dart';
 
 import '../music_play_contorl.dart';
 import 'lyric_widget.dart';
@@ -48,7 +50,7 @@ class MusicPlayPage extends StatelessWidget {
                 //进度条
                 MusicDurationProgressBar(),
                 //底部控制器
-                _MusicControllerBar(),
+                _MusicControllerBar(isPlaying: state.isPlaying,playMode: state.playMode,),
               ],
             )
           ],
@@ -158,8 +160,36 @@ class MusicDurationProgressBar extends StatelessWidget {
 }
 
 class _MusicControllerBar extends StatelessWidget {
+  final bool isPlaying;
+
+  // 当前播放模式
+  final MusicPlayMode playMode;
+
+  const _MusicControllerBar(
+      {Key key, @required this.isPlaying, @required this.playMode})
+      : super(key: key);
+
   Widget buildPlayModel(BuildContext context) {
-    return IconButton(icon: Icon(MyIcons.random), onPressed: emptyTap);
+    var icons;
+    switch(playMode){
+      case MusicPlayMode.heartbeat:
+        icons = Icons.cast;
+        break;
+      case MusicPlayMode.random:
+        icons = MyIcons.random;
+        break;
+      case MusicPlayMode.repeat:
+        icons = MyIcons.repeat;
+        break;
+      case MusicPlayMode.repeat_one:
+        icons = MyIcons.repeat_one;
+        break;
+    }
+    return IconButton(icon: Icon(icons), onPressed: (){
+      var mode= MusicPlayer.changePlayMode();
+      Toast.show(playModeName(mode), context);
+      StoreContainer.dispatch(ChangePlayModeAction());
+    });
   }
 
   @override
@@ -179,15 +209,20 @@ class _MusicControllerBar extends StatelessWidget {
           children: <Widget>[
             buildPlayModel(context),
             IconButton(
+              ///上一首
               icon: Icon(MyIcons.skip_previous),
-              onPressed: emptyTap,
+              onPressed: () {
+                MusicPlayer.playPre();
+              },
             ),
             IconButton(
               icon: Icon(
-                MyIcons.pause,
+                isPlaying?MyIcons.pause:MyIcons.play,
                 size: 36,
               ),
-              onPressed: emptyTap,
+              onPressed: () {
+                MusicPlayer.pauseOrStart();
+              },
             ),
             IconButton(
               icon: Icon(
@@ -215,7 +250,8 @@ class RotateCoverWidget extends StatefulWidget {
 
   final bool isPlaying;
 
-  const RotateCoverWidget({Key key, @required this.coverUrl, @required this.isPlaying})
+  const RotateCoverWidget(
+      {Key key, @required this.coverUrl, @required this.isPlaying})
       : super(key: key);
 
   @override

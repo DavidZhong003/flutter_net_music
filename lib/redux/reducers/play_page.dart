@@ -53,7 +53,7 @@ class PlayPageState {
   PlayPageState.initState()
       : music = MusicPlayList.currentSong,
         durationState = DurationState.initState(),
-        playMode = MusicPlayMode.repeat_one,
+        playMode = MusicPlayer.playMode,
         errorMsg = "",
         isPlaying = false;
 
@@ -63,40 +63,39 @@ class PlayPageState {
   }
 }
 
-/// 播放模式
-enum MusicPlayMode { repeat_one, repeat, random, heartbeat }
-
 class PlayPageRedux extends Reducer<PlayPageState> {
   @override
   PlayPageState redux(PlayPageState state, action) {
     var duration = DurationRedux().redux(state.durationState, action);
     switch (action.runtimeType) {
       case InitPlayPageAction:
-
         ///加载歌曲信息S
         return state.copyWith(
             music: MusicPlayList.currentSong, isPlaying: MusicPlayer.isPlaying);
-      case PlayMusicWithIndexAction:
-
+      case PlayMusicWithIdAction:
         ///播放歌曲
-        var id = MusicPlayList.currentSongId;
+        var id = action.payload;
         if (id != EMPTY_MUSIC_ID) {
           MusicPlayer.playWithId(id);
         }
         return state.copyWith(
             music: MusicPlayList.currentSong, duration: duration);
-      case ChangNextSongIdAction:
-        return state.copyWith(
-            music: MusicPlayList.currentSong,
-            isPlaying: MusicPlayer.isPlayerAvailable);
       case MusicPlayingAction:
-        // 可以成功播放
+        // 正在播放歌曲
         return state.copyWith(
             music: MusicPlayList.currentSong, isPlaying: true);
-      case MusicCompleteAction:
+      case MusicPauseAction:
+        //暂停歌曲
         return state.copyWith(isPlaying: false);
+      case MusicResumeAction:
+        //恢复歌曲
+        return state.copyWith(isPlaying: true);
       case RequestPlayMusicFailed:
+        //播放失败
         return state.copyWith(isPlaying: false, errorMsg: action.payload);
+      case ChangePlayModeAction:
+        //更改模式
+        return state.copyWith(playMode:  MusicPlayer.playMode);
     }
     return state.copyWith(duration: duration);
   }

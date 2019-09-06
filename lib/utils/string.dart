@@ -1,3 +1,6 @@
+import 'package:flutter_net_music/screen/music_play_contorl.dart';
+import 'package:intl/intl.dart';
+
 ///格式化数字
 ///
 /// <10000 直接返回
@@ -32,4 +35,23 @@ String durationFormat(Duration duration) {
   String twoDigitMinutes = twoDigits(duration.inMinutes.remainder(60));
   String twoDigitSeconds = twoDigits(duration.inSeconds.remainder(60));
   return "$twoDigitMinutes:$twoDigitSeconds";
+}
+
+String playModeName(MusicPlayMode mode){
+  String result;
+  switch(mode){
+    case MusicPlayMode.heartbeat:
+      result = "心动模式";
+      break;
+    case MusicPlayMode.random:
+      result = "随机播放";
+      break;
+    case MusicPlayMode.repeat:
+      result = "列表循环";
+      break;
+    case MusicPlayMode.repeat_one:
+      result = "单曲循环";
+      break;
+  }
+  return result;
 }

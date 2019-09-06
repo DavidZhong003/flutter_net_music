@@ -64,9 +64,13 @@ class SongListReducer extends Reducer<SongListPageState> {
       case PlayAllAction:
         //加载歌单,播放歌曲,跳转页面
         MusicPlayList.bindMusicList(state.musics, state.id);
-        StoreContainer.dispatch(PlayMusicWithIndexAction(0));
+        StoreContainer.dispatch(PlayMusicWithIdAction(state.musics[0].id));
         // 跳转播放页面
         jumpPageByName(action.payload, PathName.ROUTE_MUSIC_PLAY);
+        return state;
+      case PlaySongAction:
+        MusicPlayList.bindMusicList(state.musics, state.id);
+        StoreContainer.dispatch(PlayMusicWithIdAction(action.payload));
         return state;
     }
     return state;

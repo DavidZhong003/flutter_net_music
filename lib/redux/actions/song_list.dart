@@ -19,3 +19,8 @@ class PlayAllAction extends ActionType<BuildContext> {
 
   PlayAllAction(this.context) : super(payload: context);
 }
+
+class PlaySongAction extends ActionType<int> {
+  final int id;
+  PlaySongAction(this.id) : super(payload: id);
+}

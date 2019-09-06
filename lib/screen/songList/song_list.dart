@@ -7,14 +7,12 @@ import 'package:flutter_net_music/my_font/my_icon.dart';
 import 'package:flutter_net_music/net/net_widget.dart';
 import 'package:flutter_net_music/redux/actions/song_list.dart';
 import 'package:flutter_net_music/redux/reducers/main.dart';
+import 'package:flutter_net_music/redux/reducers/play_page.dart';
 import 'package:flutter_net_music/redux/reducers/song_list.dart';
 import 'package:flutter_net_music/screen/main_tab_page.dart';
 import 'package:flutter_net_music/utils/string.dart';
 import 'package:flutter_redux/flutter_redux.dart';
-
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-
-import '../../routes.dart';
 
 ///歌单列表
 ///
@@ -122,20 +120,24 @@ class SongsListPage extends StatelessWidget {
     return SliverList(
       delegate: SliverChildBuilderDelegate((context, index) {
         final song = musics[index];
-        return SongListItemWidget(
-          //todo
-          isPlaying: index == 1,
-          haveMv: song.haveMv(),
-          index: index,
-          songName: song.name,
-          arName: song.getArName(),
-          albumName: song.album.name,
-          onItemTap: (){
-            //播放歌曲,todo
-
+        return StoreConnector<AppState, PlayPageState>(
+          converter: (store) => store.state.musicPlayState,
+          builder: (context, playState) {
+            return SongListItemWidget(
+              isPlaying: song.id == playState.music?.id,
+              haveMv: song.haveMv(),
+              index: index,
+              songName: song.name,
+              arName: song.getArName(),
+              albumName: song.album.name,
+              onItemTap: () {
+                //播放某个歌曲
+                StoreContainer.dispatch(PlaySongAction(song.id));
+              },
+              onMvTap: emptyTap,
+              onMoreTap: emptyTap,
+            );
           },
-          onMvTap: emptyTap,
-          onMoreTap: emptyTap,
         );
       }, childCount: musics.length),
     );
