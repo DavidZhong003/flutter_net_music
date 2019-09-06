@@ -1,28 +1,27 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_net_music/model/song_item_model.dart';
 import 'package:flutter_net_music/my_font/my_icon.dart';
-import 'package:flutter_net_music/redux/actions/play_page.dart';
+import 'package:flutter_net_music/redux/actions/music_play.dart';
 import 'package:flutter_net_music/redux/reducers/main.dart';
-import 'package:flutter_net_music/redux/reducers/play_page.dart';
-import 'package:flutter_net_music/redux/reducers/song_list.dart';
+import 'package:flutter_net_music/redux/reducers/music_play.dart';
 import 'package:flutter_net_music/screen/songList/song_list.dart';
 import 'package:flutter_net_music/screen/main_tab_page.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 
 import 'lyric_widget.dart';
+
 String _testPicUrl = "http://p2.music.126.net/t9FzacVQw6CC-P1-X5Pquw==/109951164308230490.jpg";
 ///音乐播放界面
 class MusicPlayPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var content=  StoreConnector<AppState, PlayPageState>(
-      converter: (store) => store.state.playPageState,
-      onInit: (store)=>store.dispatch(LoadMusicInfoAction()),
-      builder: (BuildContext context, PlayPageState state) {
-        final music = state.music;
+    var content=  StoreConnector<AppState, MusicPlayState>(
+      converter: (store) => store.state.musicPlayState,
+      builder: (BuildContext context, MusicPlayState state) {
+        //todo 缺乏一个判断位
+        final music = state.currentMusic;
         return Stack(
           children: <Widget>[
             //背景
@@ -115,22 +114,27 @@ class MusicDurationProgressBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context).primaryTextTheme;
-    return Padding(
-      padding: const EdgeInsets.only(left: 16, right: 16, top: 8, bottom: 8),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          Text("00:00", style: theme.body1),
-          Expanded(
-            child: _buildProgressIndicator(context),
+    return StoreConnector<AppState, DurationState>(
+      converter: (store) => store.state.musicPlayState.durationState,
+      builder: (BuildContext context, DurationState duration) {
+        return Padding(
+          padding: const EdgeInsets.only(left: 16, right: 16, top: 8, bottom: 8),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Text(duration.positionString, style: theme.body1),
+              Expanded(
+                child: _buildProgressIndicator(context,duration),
+              ),
+              Text(duration.durationString, style: theme.body1),
+            ],
           ),
-          Text("03:30", style: theme.body1),
-        ],
-      ),
+        );
+      },
     );
   }
 
-  Widget _buildProgressIndicator(BuildContext context) {
+  Widget _buildProgressIndicator(BuildContext context, DurationState duration) {
     final theme = Theme.of(context);
     return SliderTheme(
       data: Theme.of(context).sliderTheme.copyWith(
@@ -138,10 +142,12 @@ class MusicDurationProgressBar extends StatelessWidget {
             thumbShape: RoundSliderThumbShape(enabledThumbRadius: 5),
           ),
       child: Slider(
-          value: 0.3,
+          value: duration.positionValue,
           activeColor: theme.primaryIconTheme.color.withOpacity(0.8),
           inactiveColor: theme.primaryIconTheme.color.withOpacity(0.4),
-          onChanged: (value) {}),
+          onChanged: (value) {
+            print("value===========$value");
+          }),
     );
   }
 }
@@ -182,7 +188,9 @@ class _MusicControllerBar extends StatelessWidget {
               icon: Icon(
                 MyIcons.skip_next,
               ),
-              onPressed: emptyTap,
+              onPressed: (){
+                StoreContainer.dispatch(PlayNextAction());
+              },
             ),
             IconButton(
               icon: Icon(MyIcons.play_list),

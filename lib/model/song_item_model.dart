@@ -2,14 +2,12 @@
 ///
 class MusicTrackBean {
   MusicTrackBean(
-      {this.id, this.name, this.url, this.album, this.artist, int mvId})
+      {this.id, this.name, this.album, this.artist, int mvId})
       : this.mvId = mvId ?? 0;
 
   int id;
 
   String name;
-
-  String url;
 
   Album album;
 
@@ -29,7 +27,7 @@ class MusicTrackBean {
 
   @override
   String toString() {
-    return 'Music{id: $id, title: $name, url: $url, album: $album, artist: $artist}';
+    return 'Music{id: $id, title: $name, album: $album, artist: $artist}';
   }
 
   static MusicTrackBean fromMap(Map map) {
@@ -39,7 +37,6 @@ class MusicTrackBean {
     return MusicTrackBean(
         id: map["id"],
         name: map["name"],
-        url: map["url"],
         album: Album.fromMap(map["al"]),
         mvId: map['mv'] ?? 0,
         artist: (map["ar"] as List).cast<Map>().map(Artist.fromMap).toList());
@@ -49,7 +46,6 @@ class MusicTrackBean {
     return {
       "id": id,
       "name": name,
-      "url": url,
       'mvId': mvId,
       "al": album.toMap(),
       "ar": artist.map((e) => e.toMap()).toList()
