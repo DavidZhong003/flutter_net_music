@@ -21,7 +21,7 @@ class PlayPageState {
   final MusicPlayMode playMode;
 
   // readyToPlay 是否可以播放
-  final bool readyPlay;
+  final bool isPlaying;
 
   // 播放错误信息
   final String errorMsg;
@@ -30,7 +30,7 @@ class PlayPageState {
     this.music,
     this.durationState,
     this.playMode,
-    this.readyPlay,
+    this.isPlaying,
     this.errorMsg,
   });
 
@@ -38,7 +38,7 @@ class PlayPageState {
     MusicTrackBean music,
     DurationState duration,
     MusicPlayMode playMode,
-    bool readyPlay,
+    bool isPlaying,
     String errorMsg,
   }) {
     print("2222222,$music,this.music=${this.music}");
@@ -46,7 +46,7 @@ class PlayPageState {
         music: music ?? this.music,
         durationState: duration ?? this.durationState,
         playMode: playMode ?? this.playMode,
-        readyPlay: readyPlay ?? this.readyPlay,
+        isPlaying: isPlaying ?? this.isPlaying,
         errorMsg: errorMsg ?? this.errorMsg);
   }
 
@@ -55,11 +55,11 @@ class PlayPageState {
         durationState = DurationState.initState(),
         playMode = MusicPlayMode.repeat_one,
         errorMsg = "",
-        readyPlay = false;
+        isPlaying = false;
 
   @override
   String toString() {
-    return "PlayPageState={music:$music,durationState:$durationState,playMode:$playMode,errorMsg:$errorMsg,readyPlay=$readyPlay}";
+    return "PlayPageState={music:$music,durationState:$durationState,playMode:$playMode,errorMsg:$errorMsg,readyPlay=$isPlaying}";
   }
 }
 
@@ -72,9 +72,12 @@ class PlayPageRedux extends Reducer<PlayPageState> {
     var duration = DurationRedux().redux(state.durationState, action);
     switch (action.runtimeType) {
       case InitPlayPageAction:
+
         ///加载歌曲信息S
-        return state.copyWith(music: MusicPlayList.currentSong);
+        return state.copyWith(
+            music: MusicPlayList.currentSong, isPlaying: MusicPlayer.isPlaying);
       case PlayMusicWithIndexAction:
+
         ///播放歌曲
         var id = MusicPlayList.currentSongId;
         if (id != EMPTY_MUSIC_ID) {
@@ -83,12 +86,17 @@ class PlayPageRedux extends Reducer<PlayPageState> {
         return state.copyWith(
             music: MusicPlayList.currentSong, duration: duration);
       case ChangNextSongIdAction:
-        return state.copyWith(music: MusicPlayList.currentSong);
+        return state.copyWith(
+            music: MusicPlayList.currentSong,
+            isPlaying: MusicPlayer.isPlayerAvailable);
       case MusicPlayingAction:
         // 可以成功播放
-        return state.copyWith(music:MusicPlayList.currentSong,readyPlay: true);
+        return state.copyWith(
+            music: MusicPlayList.currentSong, isPlaying: true);
+      case MusicCompleteAction:
+        return state.copyWith(isPlaying: false);
       case RequestPlayMusicFailed:
-        return state.copyWith(readyPlay: false, errorMsg: action.payload);
+        return state.copyWith(isPlaying: false, errorMsg: action.payload);
     }
     return state.copyWith(duration: duration);
   }
@@ -124,7 +132,6 @@ class DurationState {
   String get positionString => _durationFormat(position);
 
   double get positionValue {
-    print("eeeeee,$position,$duration");
     if (position == null || duration == null || duration == Duration.zero) {
       return 0;
     }

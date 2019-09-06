@@ -20,6 +20,8 @@ class MusicPlayer {
 
   static int lastId;
 
+  static bool get isPlaying => AudioPlayerState.PLAYING==lastState;
+
   static init() {
     if (isPlayerAvailable) {
       return;

@@ -8,7 +8,6 @@ import 'package:flutter_net_music/redux/reducers/play_page.dart';
 import 'package:flutter_net_music/screen/songList/song_list.dart';
 import 'package:flutter_net_music/screen/main_tab_page.dart';
 import 'package:flutter_redux/flutter_redux.dart';
-import 'package:toast/toast.dart';
 
 import '../music_play_contorl.dart';
 import 'lyric_widget.dart';
@@ -22,11 +21,9 @@ class MusicPlayPage extends StatelessWidget {
   Widget build(BuildContext context) {
     var content = StoreConnector<AppState, PlayPageState>(
       converter: (store) => store.state.musicPlayState,
-      onInit: (store)=>store.dispatch(InitPlayPageAction()),
+      onInit: (store) => store.dispatch(InitPlayPageAction()),
       builder: (BuildContext context, PlayPageState state) {
-        final readyPlay = state.readyPlay;
         final music = state.music;
-        print("11111111,state=$state");
         return Stack(
           children: <Widget>[
             //背景
@@ -43,6 +40,7 @@ class MusicPlayPage extends StatelessWidget {
                       firstChild: LyricWidget(),
                       secondChild: RotateCoverWidget(
                         coverUrl: music?.album?.picUrl ?? _testPicUrl,
+                        isPlaying: state.isPlaying,
                       ),
                       crossFadeState: CrossFadeState.showSecond,
                       duration: Duration(milliseconds: 300)),
@@ -215,7 +213,10 @@ class _MusicControllerBar extends StatelessWidget {
 class RotateCoverWidget extends StatefulWidget {
   final String coverUrl;
 
-  const RotateCoverWidget({Key key, @required this.coverUrl}) : super(key: key);
+  final bool isPlaying;
+
+  const RotateCoverWidget({Key key, @required this.coverUrl, @required this.isPlaying})
+      : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
@@ -225,8 +226,6 @@ class RotateCoverWidget extends StatefulWidget {
 
 class _RotateCoverWidgetState extends State<RotateCoverWidget>
     with SingleTickerProviderStateMixin {
-  bool _isPlaying = false;
-
   double rotation = 0;
 
   AnimationController _animationController;
@@ -246,7 +245,7 @@ class _RotateCoverWidgetState extends State<RotateCoverWidget>
       })
       ..addStatusListener((status) {
         ///重新播放
-        if (_isPlaying &&
+        if (widget.isPlaying &&
             status == AnimationStatus.completed &&
             _animationController.value == 1) {
           _animationController.forward(from: 0);
@@ -267,18 +266,16 @@ class _RotateCoverWidgetState extends State<RotateCoverWidget>
       children: <Widget>[
         Center(
           child: GestureDetector(
-            onTap: () {
-              setState(() {
-                _isPlaying = !_isPlaying;
-                _playOrStopAction();
-              });
-            },
+            onTap: () {},
             child: SizedBox(
               width: 250,
               child: Transform.rotate(
                 angle: rotation,
                 child: ClipOval(
-                  child: NetImageView(url: widget.coverUrl),
+                  child: NetImageView(
+                    url: widget.coverUrl,
+                    fit: BoxFit.fill,
+                  ),
                 ),
               ),
             ),
@@ -289,7 +286,7 @@ class _RotateCoverWidgetState extends State<RotateCoverWidget>
   }
 
   void _playOrStopAction() {
-    if (!_isPlaying) {
+    if (!widget.isPlaying) {
       _animationController.stop();
     } else {
       _animationController.forward(from: _animationController.value);
