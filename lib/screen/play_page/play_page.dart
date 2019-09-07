@@ -87,10 +87,7 @@ class MusicPlayPage extends StatelessWidget {
                 constraints: BoxConstraints(maxWidth: 200),
                 child: Text(
                   arName,
-                  style: Theme
-                      .of(context)
-                      .primaryTextTheme
-                      .caption,
+                  style: Theme.of(context).primaryTextTheme.caption,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -141,14 +138,14 @@ class _DurationProgressState extends State<DurationProgressBar> {
   @override
   void initState() {
     super.initState();
-    _durationSub=MusicPlayer.durationStream.listen((duration) {
+    _durationSub = MusicPlayer.durationStream.listen((duration) {
       if (_durationFormat(this.duration) != _durationFormat(duration)) {
         setState(() {
           this.duration = duration;
         });
       }
     });
-    _positionSub=MusicPlayer.positionStream.listen((position) {
+    _positionSub = MusicPlayer.positionStream.listen((position) {
       if (_durationFormat(this.position) != _durationFormat(position)) {
         setState(() {
           this.position = position;
@@ -166,9 +163,7 @@ class _DurationProgressState extends State<DurationProgressBar> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme
-        .of(context)
-        .primaryTextTheme;
+    final theme = Theme.of(context).primaryTextTheme;
     return Padding(
       padding: const EdgeInsets.only(left: 16, right: 16, top: 8, bottom: 8),
       child: Row(
@@ -187,13 +182,10 @@ class _DurationProgressState extends State<DurationProgressBar> {
   Widget _buildProgressIndicator(BuildContext context) {
     final theme = Theme.of(context);
     return SliderTheme(
-      data: Theme
-          .of(context)
-          .sliderTheme
-          .copyWith(
-        //修改圆形半价,默认为10
-        thumbShape: RoundSliderThumbShape(enabledThumbRadius: 5),
-      ),
+      data: Theme.of(context).sliderTheme.copyWith(
+            //修改圆形半价,默认为10
+            thumbShape: RoundSliderThumbShape(enabledThumbRadius: 5),
+          ),
       child: Slider(
           value: _positionValue,
           activeColor: theme.primaryIconTheme.color.withOpacity(0.8),
@@ -278,7 +270,6 @@ class _MusicControllerBar extends StatelessWidget {
           children: <Widget>[
             buildPlayModel(context),
             IconButton(
-
               ///上一首
               icon: Icon(MyIcons.skip_previous),
               onPressed: () {
@@ -332,7 +323,7 @@ class _RotateCoverWidgetState extends State<RotateCoverWidget>
   @override
   void initState() {
     super.initState();
-    _isDispose=false;
+    _isDispose = false;
     //动画控制
     _animationController = AnimationController(
         duration: Duration(seconds: 20),
@@ -353,8 +344,8 @@ class _RotateCoverWidgetState extends State<RotateCoverWidget>
         }
       });
 
-    _playingSub=MusicPlayer.playStateStream.listen((AudioPlayerState state) {
-      if(_isDispose){
+    _playingSub = MusicPlayer.playStateStream.listen((AudioPlayerState state) {
+      if (_isDispose) {
         return;
       }
       if (state == AudioPlayerState.PLAYING) {
@@ -368,7 +359,7 @@ class _RotateCoverWidgetState extends State<RotateCoverWidget>
   }
 
   @override
-  void dispose(){
+  void dispose() {
     _isDispose = true;
     _playingSub?.cancel();
     _animationController.dispose();
@@ -407,6 +398,10 @@ class _RotateCoverWidgetState extends State<RotateCoverWidget>
 
 //播放暂停按钮
 class PlayPauseControllerButton extends StatefulWidget {
+  final double size;
+
+  const PlayPauseControllerButton({Key key, this.size}) : super(key: key);
+
   @override
   State<StatefulWidget> createState() {
     return _PlayOrPauseState();
@@ -417,16 +412,18 @@ class _PlayOrPauseState extends State<PlayPauseControllerButton> {
   bool _isPlaying = false;
 
   StreamSubscription _playSub;
+
   @override
   void initState() {
     super.initState();
     _isPlaying = MusicPlayer.lastState == AudioPlayerState.PLAYING;
-    _playSub=MusicPlayer.playStateStream.listen((AudioPlayerState state) {
+    _playSub = MusicPlayer.playStateStream.listen((AudioPlayerState state) {
       setState(() {
         _isPlaying = state == AudioPlayerState.PLAYING;
       });
     });
   }
+
   @override
   void dispose() {
     _playSub?.cancel();
@@ -438,7 +435,7 @@ class _PlayOrPauseState extends State<PlayPauseControllerButton> {
     return IconButton(
       icon: Icon(
         _isPlaying ? MyIcons.pause : MyIcons.play,
-        size: 36,
+        size: widget.size??36,
       ),
       onPressed: () {
         MusicPlayer.pauseOrStart();
