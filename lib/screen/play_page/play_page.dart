@@ -325,7 +325,7 @@ class _RotateCoverWidgetState extends State<RotateCoverWidget>
   AnimationController _animationController;
   StreamSubscription _playingSub;
 
-  bool _isPlaying;
+  bool _isPlaying = false;
 
   bool _isDispose;
 
@@ -334,7 +334,6 @@ class _RotateCoverWidgetState extends State<RotateCoverWidget>
     super.initState();
     _isDispose=false;
     //动画控制
-    _isPlaying = MusicPlayer.lastState == AudioPlayerState.PLAYING;
     _animationController = AnimationController(
         duration: Duration(seconds: 20),
         vsync: this,
@@ -378,6 +377,7 @@ class _RotateCoverWidgetState extends State<RotateCoverWidget>
 
   @override
   Widget build(BuildContext context) {
+    _isPlaying = MusicPlayer.lastState == AudioPlayerState.PLAYING;
     return Stack(
       children: <Widget>[
         Center(
