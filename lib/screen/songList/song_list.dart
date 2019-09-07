@@ -119,12 +119,12 @@ class SongsListPage extends StatelessWidget {
     final List<MusicTrackBean> musics = state.musics;
     return SliverList(
       delegate: SliverChildBuilderDelegate((context, index) {
-        final song = musics[index];
-        return StoreConnector<AppState, PlayPageState>(
-          converter: (store) => store.state.musicPlayState,
-          builder: (context, playState) {
+        return StoreConnector<AppState, MusicTrackBean>(
+          converter: (store) => store.state.musicPlayState.music,
+          builder: (context, music) {
+            final song = musics[index];
             return SongListItemWidget(
-              isPlaying: song.id == playState.music?.id,
+              isPlaying: song.id == music?.id,
               haveMv: song.haveMv(),
               index: index,
               songName: song.name,
