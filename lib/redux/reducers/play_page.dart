@@ -17,42 +17,34 @@ class PlayPageState {
   // 当前播放模式
   final MusicPlayMode playMode;
 
-  // readyToPlay 是否可以播放
-  final bool isPlaying;
-
   // 播放错误信息
   final String errorMsg;
 
   PlayPageState({
     this.music,
     this.playMode,
-    this.isPlaying,
     this.errorMsg,
   });
 
   PlayPageState copyWith({
     MusicTrackBean music,
     MusicPlayMode playMode,
-    bool isPlaying,
     String errorMsg,
   }) {
-    print("2222222,$music,this.music=${this.music}");
     return PlayPageState(
         music: music ?? this.music,
         playMode: playMode ?? this.playMode,
-        isPlaying: isPlaying ?? this.isPlaying,
         errorMsg: errorMsg ?? this.errorMsg);
   }
 
   PlayPageState.initState()
       : music = MusicPlayList.currentSong,
         playMode = MusicPlayer.playMode,
-        errorMsg = "",
-        isPlaying = false;
+        errorMsg = "";
 
   @override
   String toString() {
-    return "PlayPageState={music:$music,playMode:$playMode,errorMsg:$errorMsg,readyPlay=$isPlaying}";
+    return "PlayPageState={music:$music,playMode:$playMode,errorMsg:$errorMsg,}";
   }
 }
 
@@ -61,33 +53,28 @@ class PlayPageRedux extends Reducer<PlayPageState> {
   PlayPageState redux(PlayPageState state, action) {
     switch (action.runtimeType) {
       case InitPlayPageAction:
+
         ///加载歌曲信息S
-        return state.copyWith(
-            music: MusicPlayList.currentSong, isPlaying: MusicPlayer.isPlaying);
+        return state.copyWith(music: MusicPlayList.currentSong);
       case PlayMusicWithIdAction:
+
         ///播放歌曲
         var id = action.payload;
         if (id != EMPTY_MUSIC_ID) {
           MusicPlayer.playWithId(id);
         }
-        return state.copyWith(
-            music: MusicPlayList.currentSong);
+        return state.copyWith(music: MusicPlayList.currentSong);
       case MusicPlayingAction:
         // 正在播放歌曲
         return state.copyWith(
-            music: MusicPlayList.currentSong, isPlaying: true);
-      case MusicPauseAction:
-        //暂停歌曲
-        return state.copyWith(isPlaying: false);
-      case MusicResumeAction:
-        //恢复歌曲
-        return state.copyWith(isPlaying: true);
+          music: MusicPlayList.currentSong,
+        );
       case RequestPlayMusicFailed:
         //播放失败
-        return state.copyWith(isPlaying: false, errorMsg: action.payload);
+        return state.copyWith(errorMsg: action.payload);
       case ChangePlayModeAction:
         //更改模式
-        return state.copyWith(playMode:  MusicPlayer.playMode);
+        return state.copyWith(playMode: MusicPlayer.playMode);
     }
     return state;
   }

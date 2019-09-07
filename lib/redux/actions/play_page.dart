@@ -25,10 +25,6 @@ class ChangePlayModeAction extends VoidAction {}
 
 class PlayPreAction extends VoidAction {}
 
-class MusicPauseAction extends VoidAction {}
-
-class MusicResumeAction extends VoidAction {}
-
 class MusicStopAction extends VoidAction {}
 
 class SavePlayStateAction extends VoidAction {}

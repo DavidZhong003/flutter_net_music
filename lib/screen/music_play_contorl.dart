@@ -16,10 +16,6 @@ class MusicPlayer {
 
   static bool isPlayerAvailable = false;
 
-  static Duration lastSongDuration;
-
-  static Duration showDuration;
-
   static AudioPlayerState lastState;
 
   static MusicPlayMode get playMode => _SwitchController.mode;
@@ -27,6 +23,8 @@ class MusicPlayer {
   static Stream<Duration> get positionStream => _audioPlayer.onAudioPositionChanged;
 
   static Stream<Duration> get durationStream => _audioPlayer.onDurationChanged;
+
+  static Stream<AudioPlayerState> get playStateStream =>_audioPlayer.onPlayerStateChanged;
 
   static int lastId;
 
@@ -49,7 +47,6 @@ class MusicPlayer {
           StoreContainer.dispatch(MusicStopAction());
           break;
         case AudioPlayerState.PAUSED:
-          StoreContainer.dispatch(MusicPauseAction());
           break;
         case AudioPlayerState.COMPLETED:
           playNext();
@@ -115,10 +112,8 @@ class MusicPlayer {
   static void pauseOrStart() async {
     if (isPlaying) {
       await _audioPlayer.pause();
-      _dispatchAction(MusicPauseAction());
     } else {
       await _audioPlayer.resume();
-      _dispatchAction(MusicResumeAction());
     }
   }
 

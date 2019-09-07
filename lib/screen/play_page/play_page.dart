@@ -1,5 +1,7 @@
+import 'dart:async';
 import 'dart:math';
 
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_net_music/my_font/my_icon.dart';
 import 'package:flutter_net_music/redux/actions/play_page.dart';
@@ -42,7 +44,6 @@ class MusicPlayPage extends StatelessWidget {
                       firstChild: LyricWidget(),
                       secondChild: RotateCoverWidget(
                         coverUrl: music?.album?.picUrl ?? _testPicUrl,
-                        isPlaying: state.isPlaying,
                       ),
                       crossFadeState: CrossFadeState.showSecond,
                       duration: Duration(milliseconds: 300)),
@@ -51,7 +52,6 @@ class MusicPlayPage extends StatelessWidget {
                 DurationProgressBar(),
                 //底部控制器
                 _MusicControllerBar(
-                  isPlaying: state.isPlaying,
                   playMode: state.playMode,
                 ),
               ],
@@ -87,7 +87,10 @@ class MusicPlayPage extends StatelessWidget {
                 constraints: BoxConstraints(maxWidth: 200),
                 child: Text(
                   arName,
-                  style: Theme.of(context).primaryTextTheme.caption,
+                  style: Theme
+                      .of(context)
+                      .primaryTextTheme
+                      .caption,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -131,18 +134,22 @@ class _DurationProgressState extends State<DurationProgressBar> {
 
   Duration duration = Duration.zero;
 
+  StreamSubscription _durationSub;
+
+  StreamSubscription _positionSub;
+
   @override
   void initState() {
     super.initState();
-    MusicPlayer.durationStream.listen((duration){
-      if(_durationFormat(this.duration)!=_durationFormat(duration)){
+    _durationSub=MusicPlayer.durationStream.listen((duration) {
+      if (_durationFormat(this.duration) != _durationFormat(duration)) {
         setState(() {
           this.duration = duration;
         });
       }
     });
-    MusicPlayer.positionStream.listen((position){
-      if(_durationFormat(this.position)!=_durationFormat(position)){
+    _positionSub=MusicPlayer.positionStream.listen((position) {
+      if (_durationFormat(this.position) != _durationFormat(position)) {
         setState(() {
           this.position = position;
         });
@@ -152,12 +159,16 @@ class _DurationProgressState extends State<DurationProgressBar> {
 
   @override
   void dispose() {
+    _durationSub?.cancel();
+    _positionSub?.cancel();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context).primaryTextTheme;
+    final theme = Theme
+        .of(context)
+        .primaryTextTheme;
     return Padding(
       padding: const EdgeInsets.only(left: 16, right: 16, top: 8, bottom: 8),
       child: Row(
@@ -176,10 +187,13 @@ class _DurationProgressState extends State<DurationProgressBar> {
   Widget _buildProgressIndicator(BuildContext context) {
     final theme = Theme.of(context);
     return SliderTheme(
-      data: Theme.of(context).sliderTheme.copyWith(
-            //修改圆形半价,默认为10
-            thumbShape: RoundSliderThumbShape(enabledThumbRadius: 5),
-          ),
+      data: Theme
+          .of(context)
+          .sliderTheme
+          .copyWith(
+        //修改圆形半价,默认为10
+        thumbShape: RoundSliderThumbShape(enabledThumbRadius: 5),
+      ),
       child: Slider(
           value: _positionValue,
           activeColor: theme.primaryIconTheme.color.withOpacity(0.8),
@@ -214,14 +228,12 @@ class _DurationProgressState extends State<DurationProgressBar> {
   }
 }
 
+///底部控制器
 class _MusicControllerBar extends StatelessWidget {
-  final bool isPlaying;
-
   // 当前播放模式
   final MusicPlayMode playMode;
 
-  const _MusicControllerBar(
-      {Key key, @required this.isPlaying, @required this.playMode})
+  const _MusicControllerBar({Key key, @required this.playMode})
       : super(key: key);
 
   Widget buildPlayModel(BuildContext context) {
@@ -266,21 +278,14 @@ class _MusicControllerBar extends StatelessWidget {
           children: <Widget>[
             buildPlayModel(context),
             IconButton(
+
               ///上一首
               icon: Icon(MyIcons.skip_previous),
               onPressed: () {
                 MusicPlayer.playPre();
               },
             ),
-            IconButton(
-              icon: Icon(
-                isPlaying ? MyIcons.pause : MyIcons.play,
-                size: 36,
-              ),
-              onPressed: () {
-                MusicPlayer.pauseOrStart();
-              },
-            ),
+            PlayPauseControllerButton(),
             IconButton(
               icon: Icon(
                 MyIcons.skip_next,
@@ -305,11 +310,7 @@ class _MusicControllerBar extends StatelessWidget {
 class RotateCoverWidget extends StatefulWidget {
   final String coverUrl;
 
-  final bool isPlaying;
-
-  const RotateCoverWidget(
-      {Key key, @required this.coverUrl, @required this.isPlaying})
-      : super(key: key);
+  const RotateCoverWidget({Key key, @required this.coverUrl}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
@@ -322,10 +323,18 @@ class _RotateCoverWidgetState extends State<RotateCoverWidget>
   double rotation = 0;
 
   AnimationController _animationController;
+  StreamSubscription _playingSub;
+
+  bool _isPlaying;
+
+  bool _isDispose;
 
   @override
   void initState() {
     super.initState();
+    _isDispose=false;
+    //动画控制
+    _isPlaying = MusicPlayer.lastState == AudioPlayerState.PLAYING;
     _animationController = AnimationController(
         duration: Duration(seconds: 20),
         vsync: this,
@@ -338,17 +347,31 @@ class _RotateCoverWidgetState extends State<RotateCoverWidget>
       })
       ..addStatusListener((status) {
         ///重新播放
-        if (widget.isPlaying &&
+        if (_isPlaying &&
             status == AnimationStatus.completed &&
             _animationController.value == 1) {
           _animationController.forward(from: 0);
         }
       });
-    _playOrStopAction();
+
+    _playingSub=MusicPlayer.playStateStream.listen((AudioPlayerState state) {
+      if(_isDispose){
+        return;
+      }
+      if (state == AudioPlayerState.PLAYING) {
+        _animationController.forward(from: _animationController.value);
+        _isPlaying = true;
+      } else {
+        _isPlaying = false;
+        _animationController.stop();
+      }
+    });
   }
 
   @override
-  void dispose() {
+  void dispose(){
+    _isDispose = true;
+    _playingSub?.cancel();
     _animationController.dispose();
     super.dispose();
   }
@@ -359,12 +382,15 @@ class _RotateCoverWidgetState extends State<RotateCoverWidget>
       children: <Widget>[
         Center(
           child: GestureDetector(
-            onTap: () {},
-            child: SizedBox(
-              width: 250,
-              child: Transform.rotate(
-                angle: rotation,
-                child: ClipOval(
+            onTap: () {
+              //todo 切换歌词
+            },
+            child: Transform.rotate(
+              angle: rotation,
+              child: ClipOval(
+                child: SizedBox(
+                  width: 250,
+                  height: 250,
                   child: NetImageView(
                     url: widget.coverUrl,
                     fit: BoxFit.fill,
@@ -377,12 +403,46 @@ class _RotateCoverWidgetState extends State<RotateCoverWidget>
       ],
     );
   }
+}
 
-  void _playOrStopAction() {
-    if (!widget.isPlaying) {
-      _animationController.stop();
-    } else {
-      _animationController.forward(from: _animationController.value);
-    }
+//播放暂停按钮
+class PlayPauseControllerButton extends StatefulWidget {
+  @override
+  State<StatefulWidget> createState() {
+    return _PlayOrPauseState();
+  }
+}
+
+class _PlayOrPauseState extends State<PlayPauseControllerButton> {
+  bool _isPlaying = false;
+
+  StreamSubscription _playSub;
+  @override
+  void initState() {
+    super.initState();
+    _isPlaying = MusicPlayer.lastState == AudioPlayerState.PLAYING;
+    _playSub=MusicPlayer.playStateStream.listen((AudioPlayerState state) {
+      setState(() {
+        _isPlaying = state == AudioPlayerState.PLAYING;
+      });
+    });
+  }
+  @override
+  void dispose() {
+    _playSub?.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return IconButton(
+      icon: Icon(
+        _isPlaying ? MyIcons.pause : MyIcons.play,
+        size: 36,
+      ),
+      onPressed: () {
+        MusicPlayer.pauseOrStart();
+      },
+    );
   }
 }
