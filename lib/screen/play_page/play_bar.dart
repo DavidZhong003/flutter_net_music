@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_net_music/my_font/my_icon.dart';
+import 'package:flutter_net_music/redux/reducers/main.dart';
+import 'package:flutter_net_music/redux/reducers/play_page.dart';
 import 'package:flutter_net_music/routes.dart';
 import 'package:flutter_net_music/screen/play_page/play_page.dart';
 import 'package:flutter_net_music/screen/songList/song_list.dart';
-
-var _testImag =
-    "http://p1.music.126.net/8sPbSSzpMK73O3SHzD8LOg==/109951163214606033.jpg";
+import 'package:flutter_redux/flutter_redux.dart';
 
 class MusicPlayBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    Widget content = buildContent(context);
     return DecoratedBox(
       decoration: BoxDecoration(
           border: Border(
@@ -20,7 +21,8 @@ class MusicPlayBar extends StatelessWidget {
         ),
       )),
       child: GestureDetector(
-        onTap: (){
+        behavior: HitTestBehavior.translucent,
+        onTap: () {
           jumpPageByName(context, PathName.ROUTE_MUSIC_PLAY);
         },
         child: Opacity(
@@ -29,51 +31,73 @@ class MusicPlayBar extends StatelessWidget {
             padding: const EdgeInsets.only(
               left: 8,
             ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                //封面头像
-                ClipOvalImageView(
-                  size: 36,
-                  creatorUrl: _testImag,
-                ),
-                SizedBox(
-                  width: 8,
-                ),
-                //歌曲名
-                Expanded(
-                    child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Text(
-                      "歌曲名",
-                      style: theme.textTheme.body1,
-                    ),
-                    SizedBox(height: 2,),
-                    Text(
-                      "这是歌词",
-                      style: theme.textTheme.caption,
-                    ),
-                  ],
-                )),
-                SizedBox(
-                  width: 8,
-                ),
-                //播放按钮
-                PlayPauseControllerButton(
-                  size: 30,
-                ),
-                //列表
-                IconButton(
-                  icon: Icon(MyIcons.play_list),
-                  onPressed: () {},
-                ),
-              ],
-            ),
+            child: content,
           ),
         ),
       ),
     );
+  }
+
+  ///构建主要内容
+  Widget buildContent(BuildContext context) {
+    final theme = Theme.of(context);
+    final color = theme.textTheme.body1.color.withAlpha(0xbb);
+    return StoreConnector<AppState, PlayPageState>(
+        converter: (store) => store.state.musicPlayState,
+        builder: (BuildContext context, PlayPageState state) {
+          if(state.music==null){
+            return Container();
+          }
+          return Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              //封面头像
+              ClipOvalImageView(
+                size: 36,
+                creatorUrl: state.music?.album?.picUrl,
+              ),
+              SizedBox(
+                width: 8,
+              ),
+              //歌曲名
+              Expanded(
+                  child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Text(
+                    state.music.name,
+                    style: theme.textTheme.body1,
+                  ),
+                  SizedBox(
+                    height: 2,
+                  ),
+                  //todo 歌词
+                  Text(
+                    state.music?.getArName(),
+                    style: theme.textTheme.caption,
+                  ),
+                ],
+              )),
+              SizedBox(
+                width: 8,
+              ),
+              //播放按钮
+              PlayPauseControllerButton(
+                color: color,
+                size: 24,
+              ),
+              //列表
+              IconButton(
+                icon: Icon(
+                  MyIcons.play_list,
+                  color: color,
+                  size: 20,
+                ),
+                onPressed: () {},
+              ),
+            ],
+          );
+        });
   }
 }
 

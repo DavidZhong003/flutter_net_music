@@ -324,6 +324,7 @@ class _RotateCoverWidgetState extends State<RotateCoverWidget>
   void initState() {
     super.initState();
     _isDispose = false;
+    _isPlaying = MusicPlayer.lastState == AudioPlayerState.PLAYING;
     //动画控制
     _animationController = AnimationController(
         duration: Duration(seconds: 20),
@@ -348,14 +349,21 @@ class _RotateCoverWidgetState extends State<RotateCoverWidget>
       if (_isDispose) {
         return;
       }
-      if (state == AudioPlayerState.PLAYING) {
-        _animationController.forward(from: _animationController.value);
-        _isPlaying = true;
-      } else {
-        _isPlaying = false;
-        _animationController.stop();
-      }
+      animationControllerByState(state == AudioPlayerState.PLAYING);
     });
+    animationControllerByState(_isPlaying);
+  }
+  /// 控制动画播放或者停止
+  /// [isPlay] 播放标志位
+  ///
+  void animationControllerByState(bool isPlay) {
+    if (isPlay) {
+      _animationController.forward(from: _animationController.value);
+      _isPlaying = true;
+    } else {
+      _isPlaying = false;
+      _animationController.stop();
+    }
   }
 
   @override
@@ -368,7 +376,7 @@ class _RotateCoverWidgetState extends State<RotateCoverWidget>
 
   @override
   Widget build(BuildContext context) {
-    _isPlaying = MusicPlayer.lastState == AudioPlayerState.PLAYING;
+
     return Stack(
       children: <Widget>[
         Center(
@@ -399,8 +407,9 @@ class _RotateCoverWidgetState extends State<RotateCoverWidget>
 //播放暂停按钮
 class PlayPauseControllerButton extends StatefulWidget {
   final double size;
+  final Color color;
 
-  const PlayPauseControllerButton({Key key, this.size}) : super(key: key);
+  const PlayPauseControllerButton({Key key, this.size, this.color}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
@@ -435,6 +444,7 @@ class _PlayOrPauseState extends State<PlayPauseControllerButton> {
     return IconButton(
       icon: Icon(
         _isPlaying ? MyIcons.pause : MyIcons.play,
+        color: widget.color,
         size: widget.size??36,
       ),
       onPressed: () {
