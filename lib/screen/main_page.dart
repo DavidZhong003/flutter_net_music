@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_net_music/redux/reducers/main.dart';
+import 'package:flutter_net_music/screen/play_page/play_bar.dart';
 import 'package:flutter_net_music/style/font.dart';
 import 'package:flutter_net_music/theme.dart';
 import 'package:flutter_net_music/utils/permission.dart';
@@ -50,8 +51,10 @@ class _MainState extends State<MainPage> {
       child: Scaffold(
         drawer: MainDrawer(),
         appBar: buildAppBar(),
-        body: TabBarView(
-          children: _tabPage,
+        body: MusicPlayBarContainer(
+          child: TabBarView(
+            children: _tabPage,
+          ),
         ),
       ),
     );

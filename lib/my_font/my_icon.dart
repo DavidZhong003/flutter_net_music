@@ -9,7 +9,7 @@ class MyIcons {
   static const IconData pause = const _MyIconData(0xe6bc);
   static const IconData skip_previous = const _MyIconData(0xe600);
   static const IconData skip_next = const _MyIconData(0xe633);
-  static const IconData play_list = const _MyIconData(0xe643);
+  static const IconData play_list = const _MyIconData(0xe716);
   static const IconData comment_lines = const _MyIconData(0xe7c4);
   static const IconData share = const _MyIconData(0xe6ca);
   static const IconData download_cloud = const _MyIconData(0xe610);

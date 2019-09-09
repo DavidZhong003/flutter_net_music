@@ -9,22 +9,42 @@ import 'package:flutter_net_music/redux/actions/play_page.dart';
 import 'package:flutter_net_music/redux/reducers/main.dart';
 import 'package:flutter_net_music/utils/random.dart';
 import 'package:flutter_net_music/utils/string.dart';
+///todo 一个门户类
+///对外暴露功能:
+///播放某个歌曲(id)
+///上一曲
+///下一曲
+///绑定歌单
+///添加歌曲
+///获取当前播放歌曲,id
 
 ///播放器
+/// 播放器状态有:
+/// - 未启动
+/// - 启动
+/// - 加载歌曲前
+/// - 加载歌曲成功
+/// - 加载歌曲失败
+/// - 播放中
+/// - 暂停中
+/// - 播放完成
 class MusicPlayer {
-  static AudioPlayer _audioPlayer;
+  static AudioPlayer _audioPlayer = AudioPlayer();
 
+  ///防止多次执行init 标记位
   static bool isPlayerAvailable = false;
 
   static AudioPlayerState lastState;
 
   static MusicPlayMode get playMode => _SwitchController.mode;
 
-  static Stream<Duration> get positionStream => _audioPlayer.onAudioPositionChanged;
+  static Stream<Duration> get positionStream =>
+      _audioPlayer.onAudioPositionChanged;
 
   static Stream<Duration> get durationStream => _audioPlayer.onDurationChanged;
 
-  static Stream<AudioPlayerState> get playStateStream =>_audioPlayer.onPlayerStateChanged;
+  static Stream<AudioPlayerState> get playStateStream =>
+      _audioPlayer.onPlayerStateChanged;
 
   static int lastId;
 
@@ -34,11 +54,11 @@ class MusicPlayer {
     if (isPlayerAvailable) {
       return;
     }
-    _audioPlayer = AudioPlayer();
     AudioPlayer.logEnabled = false;
     _audioPlayer.onPlayerStateChanged.listen((state) {
       lastState = state;
       switch (state) {
+        /// 会出现player加载歌曲失败但显示播放ing todo fix
         case AudioPlayerState.PLAYING:
           //播放成功or 恢复播放
           StoreContainer.dispatch(MusicPlayingAction());
@@ -139,6 +159,12 @@ class MusicPlayer {
 }
 
 ///播放列表
+///存储当前播放列表
+///[_playList] 当前播放列表
+///[listId] 歌单的id
+///[_current] 当前播放歌曲索引
+///[bindMusicList]绑定歌单
+///todo 不对外暴露
 class MusicPlayList {
   // 播放列表
   static List<MusicTrackBean> _playList;
@@ -181,6 +207,9 @@ class MusicPlayList {
 }
 
 ///切换控制器
+///主要内容是
+///[getNext] 获取下一首歌曲的索引
+///[getPre] 获取上一首歌曲的索引
 class _SwitchController {
   static MusicPlayMode mode = MusicPlayMode.repeat;
 
@@ -190,7 +219,7 @@ class _SwitchController {
       case MusicPlayMode.repeat:
         if (cur == MusicPlayList.lastIndex) {
           MusicPlayList._current = 0;
-        }else{
+        } else {
           MusicPlayList._current++;
         }
         break;
@@ -212,7 +241,7 @@ class _SwitchController {
       case MusicPlayMode.repeat:
         if (cur == 0) {
           MusicPlayList._current = MusicPlayList.lastIndex;
-        }else{
+        } else {
           MusicPlayList._current--;
         }
         break;
@@ -233,9 +262,18 @@ class _SwitchController {
 }
 
 /// 播放模式
+/// 主要有:
+/// [MusicPlayMode.repeat_one] 单曲循环
+/// [MusicPlayMode.repeat] 列表循环
+/// [MusicPlayMode.random] 随机播放
+/// [MusicPlayMode.heartbeat]心动模式(只有在我喜欢的音乐列表才可用)
 enum MusicPlayMode { repeat_one, repeat, random, heartbeat }
 
-//已播放列表
+///已播放列表
+///主要方法:
+///[push] 添加已播放的歌曲.
+///[getLast] 获取最后播放的歌曲.
+///[getLastId] 获取最后播放歌曲的Id.
 class _PlayedList {
   static Set<MusicTrackBean> _set = Set();
 

@@ -157,7 +157,7 @@ class SongsListPage extends StatelessWidget {
         onTap: emptyTap,
         child: Padding(
           padding: EdgeInsets.all(8),
-          child: UserHeadImageView(
+          child: ClipOvalImageView(
             creatorUrl: sub["avatarUrl"],
           ),
         ),
@@ -705,7 +705,7 @@ class SongCoverContent extends StatelessWidget {
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: <Widget>[
-                            UserHeadImageView(creatorUrl: creatorUrl),
+                            ClipOvalImageView(creatorUrl: creatorUrl),
                             SizedBox(
                               width: 8,
                             ),
@@ -766,14 +766,14 @@ class SongCoverContent extends StatelessWidget {
 }
 
 ///用户头像
-class UserHeadImageView extends StatelessWidget {
+class ClipOvalImageView extends StatelessWidget {
   final String creatorUrl;
 
   final double size;
 
   final GestureTapCallback onTap;
 
-  const UserHeadImageView(
+  const ClipOvalImageView(
       {Key key, @required this.creatorUrl, this.size = 24, this.onTap})
       : super(key: key);
 
