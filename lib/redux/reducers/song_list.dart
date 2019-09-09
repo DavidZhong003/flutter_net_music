@@ -69,7 +69,7 @@ class SongListReducer extends Reducer<SongListPageState> {
         jumpPageByName(action.payload, PathName.ROUTE_MUSIC_PLAY);
         return state;
       case PlaySongAction:
-        MusicPlayList.bindMusicList(state.musics, state.id);
+        MusicPlayList.bindMusicList(state.musics, state.id,action.payload);
         StoreContainer.dispatch(PlayMusicWithIdAction(action.payload));
         return state;
     }

@@ -179,15 +179,26 @@ class MusicPlayList {
   ///绑定歌单
   ///[list]歌单
   ///[id] 歌单id
-  ///[index]当前播放索引
+  ///[songId]当前播放歌曲id
   static void bindMusicList(List<MusicTrackBean> list, String id,
-      [int index = 0]) {
+      [int songId = -1]) {
     if (listId == id || list.isEmpty) {
       return;
     }
     _playList = list;
     id = listId;
-    _current = index;
+    _current = findIndexById(songId);
+  }
+  
+  static int findIndexById(int id){
+    if(_playList==null||_playList.isEmpty){
+      return -1;
+    }
+    if(id==-1){
+      return 0;
+    }else{
+      return _playList.lastIndexWhere((bean)=>bean.id==id);
+    }
   }
 
   /// 获取当前歌单
