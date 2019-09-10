@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_net_music/redux/actions/home_found.dart';
 import 'package:flutter_net_music/redux/reducers/main.dart';
-import 'dart:math';
-
-import 'package:flutter_net_music/utils/print.dart';
 
 @immutable
 class BannerState {

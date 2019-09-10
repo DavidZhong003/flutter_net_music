@@ -9,6 +9,7 @@ import 'package:flutter_net_music/redux/reducers/home_found.dart';
 import 'package:flutter_net_music/redux/reducers/main.dart';
 import 'package:flutter_net_music/routes.dart';
 import 'package:flutter_net_music/style/font.dart';
+import 'package:flutter_net_music/utils/string.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
@@ -48,7 +49,9 @@ class FoundPageState extends State<StatefulWidget> {
         child: SingleChildScrollView(
           child: buildContent(context),
         ),
-        onRefresh: () async { StoreContainer.dispatch(RandomPersonalizedSongAction());},
+        onRefresh: () async {
+          StoreContainer.dispatch(RandomPersonalizedSongAction());
+        },
         loadMore: () async {});
   }
 
@@ -217,6 +220,7 @@ class PersonalizedSongListWidget extends StatelessWidget {
                   : SongCoverWidget(
                       image: songs["picUrl"],
                       name: songs["name"],
+                      playCount: formattedNumber(songs["playCount"]),
                       onTap: () {
                         // 动态路由
                         jumpSongList(context, songs["id"].toString(),
@@ -304,12 +308,29 @@ class SongCoverWidget extends StatelessWidget {
 
   final GestureTapCallback onTap;
 
+  final String playCount;
+
   const SongCoverWidget(
-      {Key key, @required this.image, @required this.name, this.onTap})
+      {Key key,
+      @required this.image,
+      @required this.name,
+      this.onTap,
+      @required this.playCount})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final gradient = LinearGradient(
+        begin: Alignment.topCenter,
+        end: Alignment.bottomCenter,
+        colors: [
+          Colors.black54,
+          Colors.black26,
+          Colors.transparent,
+          Colors.transparent,
+        ]);
+
+    final theme = Theme.of(context);
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -319,8 +340,31 @@ class SongCoverWidget extends StatelessWidget {
           children: <Widget>[
             ClipRRect(
               borderRadius: BorderRadius.circular(5),
-              child: Image(
-                  fit: BoxFit.cover, image: CachedNetworkImageProvider(image)),
+              child: DecoratedBox(
+                decoration: BoxDecoration(gradient: gradient),
+                child: Stack(
+                  children: <Widget>[
+                    NetImageView(
+                      url: image,
+                      fit: BoxFit.cover,
+                    ),
+                    Positioned(
+                      top: 2,
+                      right: 4,
+                      child: Row(
+                        children: <Widget>[
+                          Icon(Icons.play_arrow,
+                              color: theme.primaryIconTheme.color, size: 14),
+                          Text(
+                            playCount ?? "",
+                            style: theme.primaryTextTheme.caption,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
             Expanded(
               child: Padding(
