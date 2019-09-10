@@ -154,7 +154,7 @@ class PlayListButton extends StatelessWidget {
       builder: (BuildContext context) {
         return StoreConnector<AppState, PlayListState>(
           converter: (s) => s.state.playListState,
-          onInit: (s)=>s.dispatch(OnInitPlayListData()),
+          onInit: (s) => s.dispatch(OnInitPlayListData()),
           builder: (BuildContext context, state) {
             final musics = state.playList;
             return IconTheme(
@@ -185,12 +185,9 @@ class PlayListButton extends StatelessWidget {
                     height: 0.5,
                   ),
                   Expanded(
-                    child: ListView.builder(
-                      itemBuilder: (BuildContext context, int index) {
-                        return buildSongItem(
-                            context, musics[index], state.playSongId);
-                      },
-                      itemCount: musics?.length ?? 0,
+                    child: _MusicListView(
+                      playList: state.playList,
+                      playId: state.playSongId,
                     ),
                   ),
                 ],
@@ -201,24 +198,87 @@ class PlayListButton extends StatelessWidget {
       },
     );
   }
+}
 
-  Widget buildSongItem(BuildContext context, MusicTrackBean music, int playId) {
+class _MusicListView extends StatefulWidget {
+  final List<MusicTrackBean> playList;
+
+  final int playId;
+
+  const _MusicListView({Key key, this.playList, this.playId}) : super(key: key);
+
+  @override
+  State<StatefulWidget> createState() {
+    return _MusicListState();
+  }
+}
+
+///控制列表状态
+class _MusicListState extends State<_MusicListView> {
+  ScrollController _controller;
+
+  static double _itemExtent = 45;
+
+  static int _screenItemCount = 9;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.playList != null && widget.playId != -1) {
+      // find index
+      var index =
+          widget.playList.indexWhere((bean) => bean.id == widget.playId) ?? 0;
+      var offset = _computeOffset(index);
+      // scroll to
+      _controller = ScrollController(
+          initialScrollOffset: offset, keepScrollOffset: false);
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final musics = widget.playList;
+    return ListView.builder(
+      itemBuilder: (BuildContext context, int index) {
+        return buildSongItem(context, index, widget.playId);
+      },
+      itemCount: musics?.length ?? 0,
+      controller: _controller,
+      itemExtent: _itemExtent,
+    );
+  }
+
+  Widget buildSongItem(BuildContext context, int index, int playId) {
+    final music = widget.playList[index];
     final theme = Theme.of(context);
     final bool isPlaying = playId == music.id;
     List<Widget> children = [];
     if (isPlaying) {
-      children.add(Icon(MyIcons.volume_up,color: Colors.red,size: 18,));
+      children.add(Icon(
+        MyIcons.volume_up,
+        color: Colors.red,
+        size: 18,
+      ));
       children.add(SizedBox(
         width: 2,
       ));
     }
-    final textColor = isPlaying?Colors.red:null;
+    final textColor = isPlaying ? Colors.red : null;
     //歌名
     children.add(Expanded(
       child: RichText(
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
         text: TextSpan(
             text: music.name,
-            style: theme.textTheme.body1.copyWith(fontSize: 15,color: textColor),
+            style:
+                theme.textTheme.body1.copyWith(fontSize: 15, color: textColor),
             children: <TextSpan>[
               TextSpan(
                   text: " - ${music.getArName()}",
@@ -248,5 +308,22 @@ class PlayListButton extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  ///计算偏移量
+  double _computeOffset(int index) {
+    int length = widget.playList.length;
+    if (length < _screenItemCount) {
+      return 0;
+    }
+    var i = index - _screenItemCount / 2 + 1;
+    var len = i * _itemExtent;
+    var max = _itemExtent * (length - _screenItemCount);
+    if (len > max) {
+      len = max;
+    } else if (len < 0) {
+      len = 0;
+    }
+    return len;
   }
 }
