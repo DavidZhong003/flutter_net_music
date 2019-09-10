@@ -48,7 +48,7 @@ class FoundPageState extends State<StatefulWidget> {
         child: SingleChildScrollView(
           child: buildContent(context),
         ),
-        onRefresh: () async {},
+        onRefresh: () async { StoreContainer.dispatch(RandomPersonalizedSongAction());},
         loadMore: () async {});
   }
 

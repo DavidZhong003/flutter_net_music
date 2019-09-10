@@ -47,3 +47,5 @@ void requestPersonalizedSongAction(Store<AppState> store) async {
     store.dispatch(LoadPersonalizedSongSuccess(map));
   });
 }
+
+class RandomPersonalizedSongAction extends VoidAction{}

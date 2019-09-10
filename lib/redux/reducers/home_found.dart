@@ -124,6 +124,8 @@ class PersonalizedSongReducer extends Reducer<PersonalizedSongState> {
           isLoading: false,
           showData: _randomDate(state.originData),
         );
+      case RandomPersonalizedSongAction:
+        return state.copyWith(showData: _randomDate(state.originData));
     }
     return state;
   }
