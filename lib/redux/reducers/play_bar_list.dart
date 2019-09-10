@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_net_music/model/song_item_model.dart';
-import 'package:flutter_net_music/redux/actions/play_list.dart';
+import 'package:flutter_net_music/redux/actions/play_bar_list.dart';
 import 'package:flutter_net_music/redux/actions/play_page.dart';
 import 'package:flutter_net_music/screen/music_play_contorl.dart';
 import 'main.dart';

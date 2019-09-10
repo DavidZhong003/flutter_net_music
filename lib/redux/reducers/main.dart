@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_net_music/net/netApi.dart';
 import 'package:flutter_net_music/redux/middleware/main.dart';
-import 'package:flutter_net_music/redux/reducers/play_list.dart';
+import 'package:flutter_net_music/redux/reducers/play_bar_list.dart';
 import 'package:flutter_net_music/redux/reducers/play_page.dart';
 import 'package:flutter_net_music/redux/reducers/song_list.dart';
 import 'package:flutter_net_music/theme.dart';

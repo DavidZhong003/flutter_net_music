@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_net_music/model/song_item_model.dart';
 import 'package:flutter_net_music/net/netApi.dart';
 import 'package:flutter_net_music/redux/actions/main.dart';
-import 'package:flutter_net_music/redux/actions/play_list.dart';
+import 'package:flutter_net_music/redux/actions/play_bar_list.dart';
 import 'package:flutter_net_music/redux/actions/play_page.dart';
 import 'package:flutter_net_music/redux/reducers/main.dart';
 import 'package:flutter_net_music/utils/random.dart';
