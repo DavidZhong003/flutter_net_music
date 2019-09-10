@@ -4,6 +4,8 @@ import 'package:cookie_jar/cookie_jar.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_net_music/host.dart';
 import 'package:flutter_net_music/net/cookie.dart';
+import 'package:flutter_net_music/redux/actions/main.dart';
+import 'package:flutter_net_music/redux/reducers/main.dart';
 
 class HttpMethod {
   static const String GET = 'get';
@@ -13,8 +15,8 @@ class HttpMethod {
   static const String DELETE = 'delete';
 }
 
-typedef ErrorHandler = void Function(DioError error);
-typedef SuccessHandler = void Function(Response response);
+typedef ErrorHandler = ActionType Function(DioError error);
+typedef SuccessHandler = ActionType Function(Response response);
 
 class DioUtils {
   /// global dio object
@@ -44,13 +46,19 @@ class DioUtils {
     try {
       Response response = await dio.request(url,
           data: data, options: new Options(method: method));
-      if (successHandler != null) {
-        successHandler(response);
-      }
       result = response.data;
+      if(result["code"]!=null){
+        if(result["code"]==200){
+          if(successHandler!=null){
+            StoreContainer.dispatch(successHandler(result));
+          }
+        }else if(result["code"]==301){
+          //todo 需要登录
+        }
+      }
     } on DioError catch (e) {
       if (errorHandler != null) {
-        errorHandler(e);
+        StoreContainer.dispatch(errorHandler(e));
       }
     }
 
