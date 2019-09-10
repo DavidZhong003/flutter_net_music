@@ -310,13 +310,13 @@ class SongCoverWidget extends StatelessWidget {
 
   final String playCount;
 
-  const SongCoverWidget(
-      {Key key,
-      @required this.image,
-      @required this.name,
-      this.onTap,
-      @required this.playCount})
-      : super(key: key);
+  const SongCoverWidget({
+    Key key,
+    @required this.image,
+    @required this.name,
+    this.onTap,
+    this.playCount,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -331,6 +331,35 @@ class SongCoverWidget extends StatelessWidget {
         ]);
 
     final theme = Theme.of(context);
+
+    Widget imageView = NetImageView(
+      url: image,
+      fit: BoxFit.cover,
+    );
+    if (playCount != null && playCount.isNotEmpty) {
+      imageView = DecoratedBox(
+        decoration: BoxDecoration(gradient: gradient),
+        child: Stack(
+          children: <Widget>[
+            imageView,
+            Positioned(
+              top: 2,
+              right: 4,
+              child: Row(
+                children: <Widget>[
+                  Icon(Icons.play_arrow,
+                      color: theme.primaryIconTheme.color, size: 14),
+                  Text(
+                    playCount ?? "",
+                    style: theme.primaryTextTheme.caption,
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      );
+    }
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -340,31 +369,7 @@ class SongCoverWidget extends StatelessWidget {
           children: <Widget>[
             ClipRRect(
               borderRadius: BorderRadius.circular(5),
-              child: DecoratedBox(
-                decoration: BoxDecoration(gradient: gradient),
-                child: Stack(
-                  children: <Widget>[
-                    NetImageView(
-                      url: image,
-                      fit: BoxFit.cover,
-                    ),
-                    Positioned(
-                      top: 2,
-                      right: 4,
-                      child: Row(
-                        children: <Widget>[
-                          Icon(Icons.play_arrow,
-                              color: theme.primaryIconTheme.color, size: 14),
-                          Text(
-                            playCount ?? "",
-                            style: theme.primaryTextTheme.caption,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+              child: imageView,
             ),
             Expanded(
               child: Padding(
