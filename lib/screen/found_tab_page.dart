@@ -62,6 +62,7 @@ class FoundPageState extends State<StatefulWidget> {
         buildCenterButton(),
         Divider(),
         PersonalizedSongListWidget(),
+        NewsSongOrAlbumsWidget(),
       ],
     );
   }
@@ -268,6 +269,10 @@ class OutRoundButton extends StatelessWidget {
   //BorderRadius.circular(25)
   final BorderRadiusGeometry borderRadius;
 
+  final double width;
+
+  final double height;
+
   const OutRoundButton({
     Key key,
     this.onTap,
@@ -276,6 +281,8 @@ class OutRoundButton extends StatelessWidget {
     this.style = const TextStyle(fontSize: FontSize.min),
     this.padding = const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
     this.borderRadius,
+    this.width,
+    this.height,
   }) : super(key: key);
 
   @override
@@ -283,6 +290,8 @@ class OutRoundButton extends StatelessWidget {
     return InkWell(
       onTap: onTap,
       child: Container(
+        width: width ?? null,
+        height: height ?? null,
         decoration: BoxDecoration(
             border: Border.all(
               color: borderColor,
@@ -290,9 +299,11 @@ class OutRoundButton extends StatelessWidget {
             borderRadius: borderRadius ?? BorderRadius.circular(25)),
         child: Padding(
           padding: padding,
-          child: Text(
-            text,
-            style: style,
+          child: Center(
+            child: Text(
+              text,
+              style: style,
+            ),
           ),
         ),
       ),
@@ -385,6 +396,106 @@ class SongCoverWidget extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+///最新新歌  最新新碟
+///
+class NewsSongOrAlbumsWidget extends StatefulWidget {
+  @override
+  State<StatefulWidget> createState() {
+    return NewsSongOrAlbumsState();
+  }
+}
+
+class NewsSongOrAlbumsState extends State<NewsSongOrAlbumsWidget> {
+  bool selectAlbums = true;
+
+  static const NEW_ALBUMS = "新碟";
+
+  static const NEW_SONGS = "新歌";
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Center(
+        child: Column(
+          children: <Widget>[
+            _buildTitle(context),
+            SizedBox(
+              height: 8,
+            ),
+            GridView.count(
+              crossAxisCount: 3,
+              shrinkWrap: true,
+              physics: NeverScrollableScrollPhysics(),
+              childAspectRatio: 0.8,
+              children: List.generate(3, (index) {
+                return SongCoverWidget(
+                    image:
+                        "https://p1.music.126.net/9_js5T_lPXdRvcSYicz97Q==/109951164354635643.jpg",
+                    name: "내가 아는 이별노래 (bye)");
+              }),
+            ),
+
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTitle(BuildContext context) {
+    final theme = Theme.of(context);
+    final selectTheme =
+        theme.textTheme.title.copyWith(fontWeight: FontWeight.bold);
+    final normal = theme.textTheme.caption.copyWith(fontSize: 16);
+    return Row(
+      children: <Widget>[
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.baseline,
+          textBaseline: TextBaseline.ideographic,
+          children: <Widget>[
+            GestureDetector(
+              onTap: () {
+                setState(() {
+                  selectAlbums = true;
+                });
+              },
+              child: Text(
+                NEW_ALBUMS,
+                style: selectAlbums ? selectTheme : normal,
+              ),
+            ),
+            Container(
+              color: theme.dividerColor,
+              width: 1,
+              height: 20,
+              margin: EdgeInsets.only(left: 8, right: 8),
+            ),
+            GestureDetector(
+                onTap: () {
+                  setState(() {
+                    selectAlbums = false;
+                  });
+                },
+                child: Text(NEW_SONGS,
+                    style: !selectAlbums ? selectTheme : normal)),
+          ],
+        ),
+        Expanded(child: Container()),
+        OutRoundButton(
+          width: 60,
+          height: 25,
+          text: "更多${selectAlbums ? NEW_ALBUMS : NEW_SONGS}",
+          style: theme.textTheme.caption,
+          onTap: () {
+            //todo 点击事件
+          },
+        ),
+      ],
     );
   }
 }
