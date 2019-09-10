@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_net_music/net/netApi.dart';
 import 'package:flutter_net_music/redux/middleware/main.dart';
+import 'package:flutter_net_music/redux/reducers/play_list.dart';
 import 'package:flutter_net_music/redux/reducers/play_page.dart';
 import 'package:flutter_net_music/redux/reducers/song_list.dart';
 import 'package:flutter_net_music/theme.dart';
@@ -18,11 +19,14 @@ class AppState {
 
   final PlayPageState musicPlayState;
 
+  final PlayListState playListState;
+
   const AppState({
     this.songListPageState,
     this.themeState,
     this.homeFoundState,
     this.musicPlayState,
+    this.playListState,
   });
 }
 
@@ -32,6 +36,7 @@ AppState _initReduxState() {
     homeFoundState: HomeFoundState.initialState(),
     songListPageState: SongListPageState.initialState(),
     musicPlayState: PlayPageState.initState(),
+    playListState: PlayListState.initState(),
   );
 }
 
@@ -40,7 +45,8 @@ AppState reduxReducer(AppState state, action) => AppState(
       homeFoundState: HomeFoundReducer().redux(state.homeFoundState, action),
       songListPageState:
           SongListReducer().redux(state.songListPageState, action),
-    musicPlayState: PlayPageRedux().redux(state.musicPlayState, action),
+      musicPlayState: PlayPageRedux().redux(state.musicPlayState, action),
+      playListState: PlayListRedux().redux(state.playListState, action),
     );
 
 abstract class ViewModel {

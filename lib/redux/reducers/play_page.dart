@@ -53,11 +53,9 @@ class PlayPageRedux extends Reducer<PlayPageState> {
   PlayPageState redux(PlayPageState state, action) {
     switch (action.runtimeType) {
       case InitPlayPageAction:
-
         ///加载歌曲信息S
         return state.copyWith(music: MusicPlayList.currentSong);
       case PlayMusicWithIdAction:
-
         ///播放歌曲
         var id = action.payload;
         if (id != EMPTY_MUSIC_ID) {

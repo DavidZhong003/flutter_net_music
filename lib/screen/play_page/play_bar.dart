@@ -1,10 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_net_music/model/song_item_model.dart';
 import 'package:flutter_net_music/my_font/my_icon.dart';
+import 'package:flutter_net_music/redux/actions/play_list.dart';
+import 'package:flutter_net_music/redux/actions/song_list.dart';
 import 'package:flutter_net_music/redux/reducers/main.dart';
+import 'package:flutter_net_music/redux/reducers/play_list.dart';
 import 'package:flutter_net_music/redux/reducers/play_page.dart';
 import 'package:flutter_net_music/routes.dart';
+import 'package:flutter_net_music/screen/music_play_contorl.dart';
 import 'package:flutter_net_music/screen/play_page/play_page.dart';
 import 'package:flutter_net_music/screen/songList/song_list.dart';
+import 'package:flutter_net_music/utils/string.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 
 class MusicPlayBar extends StatelessWidget {
@@ -45,7 +51,7 @@ class MusicPlayBar extends StatelessWidget {
     return StoreConnector<AppState, PlayPageState>(
         converter: (store) => store.state.musicPlayState,
         builder: (BuildContext context, PlayPageState state) {
-          if(state.music==null){
+          if (state.music == null) {
             return Container();
           }
           return Row(
@@ -87,14 +93,7 @@ class MusicPlayBar extends StatelessWidget {
                 size: 24,
               ),
               //列表
-              IconButton(
-                icon: Icon(
-                  MyIcons.play_list,
-                  color: color,
-                  size: 20,
-                ),
-                onPressed: () {},
-              ),
+              PlayListButton(),
             ],
           );
         });
@@ -117,6 +116,137 @@ class MusicPlayBarContainer extends StatelessWidget {
         ),
         MusicPlayBar(),
       ],
+    );
+  }
+}
+
+class PlayListButton extends StatelessWidget {
+  final Color color;
+
+  final double size;
+
+  const PlayListButton({Key key, this.color, this.size = 20}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final color = theme.textTheme.body1.color.withAlpha(0xbb);
+    return IconButton(
+      icon: Icon(
+        MyIcons.play_list,
+        color: this.color ?? color,
+        size: this.size,
+      ),
+      onPressed: () async {
+        _showModalBottomSheet(context);
+      },
+    );
+  }
+
+  // 弹出底部菜单列表模态对话框
+  Future<int> _showModalBottomSheet(BuildContext context) {
+    final theme = Theme.of(context);
+    final iconColor = theme.textTheme.caption.color.withAlpha(0x6a);
+    return showModalBottomSheet<int>(
+      context: context,
+      shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      builder: (BuildContext context) {
+        return StoreConnector<AppState, PlayListState>(
+          converter: (s) => s.state.playListState,
+          onInit: (s)=>s.dispatch(OnInitPlayListData()),
+          builder: (BuildContext context, state) {
+            final musics = state.playList;
+            return IconTheme(
+              data: theme.iconTheme.copyWith(color: iconColor),
+              child: Column(
+                children: <Widget>[
+                  //标头
+                  Padding(
+                    padding: const EdgeInsets.only(left: 8, right: 8),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: <Widget>[
+                        buildPlayModelIcon(context, state.playMode),
+                        Expanded(
+                            child: Text(
+                          "${playModeName(state.playMode)} (${musics?.length ?? 0})",
+                          style: theme.textTheme.body1.copyWith(fontSize: 18),
+                        )),
+                        IconButton(
+                          iconSize: 18,
+                          icon: Icon(MyIcons.delete_item),
+                          onPressed: () {},
+                        ),
+                      ],
+                    ),
+                  ),
+                  Divider(
+                    height: 0.5,
+                  ),
+                  Expanded(
+                    child: ListView.builder(
+                      itemBuilder: (BuildContext context, int index) {
+                        return buildSongItem(
+                            context, musics[index], state.playSongId);
+                      },
+                      itemCount: musics?.length ?? 0,
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Widget buildSongItem(BuildContext context, MusicTrackBean music, int playId) {
+    final theme = Theme.of(context);
+    final bool isPlaying = playId == music.id;
+    List<Widget> children = [];
+    if (isPlaying) {
+      children.add(Icon(MyIcons.volume_up,color: Colors.red,size: 18,));
+      children.add(SizedBox(
+        width: 2,
+      ));
+    }
+    final textColor = isPlaying?Colors.red:null;
+    //歌名
+    children.add(Expanded(
+      child: RichText(
+        text: TextSpan(
+            text: music.name,
+            style: theme.textTheme.body1.copyWith(fontSize: 15,color: textColor),
+            children: <TextSpan>[
+              TextSpan(
+                  text: " - ${music.getArName()}",
+                  style: theme.textTheme.caption.copyWith(color: textColor))
+            ]),
+      ),
+    ));
+    //删除图标
+    children.add(GestureDetector(
+      onTap: () {},
+      child: Icon(
+        Icons.close,
+        size: 20,
+        color: theme.textTheme.caption.color.withAlpha(0x64),
+      ),
+    ));
+    return InkWell(
+      onTap: () {
+        //播放某个歌曲
+        StoreContainer.dispatch(PlaySongAction(music.id));
+      },
+      child: Padding(
+        padding: const EdgeInsets.only(left: 12, right: 8, top: 12, bottom: 12),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: children,
+        ),
+      ),
     );
   }
 }

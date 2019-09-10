@@ -7,6 +7,7 @@ import 'package:flutter_net_music/my_font/my_icon.dart';
 import 'package:flutter_net_music/redux/actions/play_page.dart';
 import 'package:flutter_net_music/redux/reducers/main.dart';
 import 'package:flutter_net_music/redux/reducers/play_page.dart';
+import 'package:flutter_net_music/screen/play_page/play_bar.dart';
 import 'package:flutter_net_music/screen/songList/song_list.dart';
 import 'package:flutter_net_music/screen/main_tab_page.dart';
 import 'package:flutter_net_music/utils/string.dart';
@@ -220,6 +221,30 @@ class _DurationProgressState extends State<DurationProgressBar> {
   }
 }
 
+Widget buildPlayModelIcon(BuildContext context,MusicPlayMode playMode,) {
+  var icons;
+  switch (playMode) {
+    case MusicPlayMode.heartbeat:
+      icons = Icons.cast;
+      break;
+    case MusicPlayMode.random:
+      icons = MyIcons.random;
+      break;
+    case MusicPlayMode.repeat:
+      icons = MyIcons.repeat;
+      break;
+    case MusicPlayMode.repeat_one:
+      icons = MyIcons.repeat_one;
+      break;
+  }
+  return IconButton(
+      icon: Icon(icons),
+      onPressed: () {
+        var mode = MusicPlayer.changePlayMode();
+        Toast.show(playModeName(mode), context);
+        StoreContainer.dispatch(ChangePlayModeAction());
+      });
+}
 ///底部控制器
 class _MusicControllerBar extends StatelessWidget {
   // 当前播放模式
@@ -227,31 +252,6 @@ class _MusicControllerBar extends StatelessWidget {
 
   const _MusicControllerBar({Key key, @required this.playMode})
       : super(key: key);
-
-  Widget buildPlayModel(BuildContext context) {
-    var icons;
-    switch (playMode) {
-      case MusicPlayMode.heartbeat:
-        icons = Icons.cast;
-        break;
-      case MusicPlayMode.random:
-        icons = MyIcons.random;
-        break;
-      case MusicPlayMode.repeat:
-        icons = MyIcons.repeat;
-        break;
-      case MusicPlayMode.repeat_one:
-        icons = MyIcons.repeat_one;
-        break;
-    }
-    return IconButton(
-        icon: Icon(icons),
-        onPressed: () {
-          var mode = MusicPlayer.changePlayMode();
-          Toast.show(playModeName(mode), context);
-          StoreContainer.dispatch(ChangePlayModeAction());
-        });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -268,7 +268,7 @@ class _MusicControllerBar extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: <Widget>[
-            buildPlayModel(context),
+            buildPlayModelIcon(context,playMode),
             IconButton(
               ///上一首
               icon: Icon(MyIcons.skip_previous),
@@ -286,10 +286,7 @@ class _MusicControllerBar extends StatelessWidget {
                 MusicPlayer.playNext();
               },
             ),
-            IconButton(
-              icon: Icon(MyIcons.play_list),
-              onPressed: emptyTap,
-            ),
+            PlayListButton(color: appTheme.primaryIconTheme.color,),
           ],
         ),
       ),

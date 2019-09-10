@@ -5,10 +5,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_net_music/model/song_item_model.dart';
 import 'package:flutter_net_music/net/netApi.dart';
 import 'package:flutter_net_music/redux/actions/main.dart';
+import 'package:flutter_net_music/redux/actions/play_list.dart';
 import 'package:flutter_net_music/redux/actions/play_page.dart';
 import 'package:flutter_net_music/redux/reducers/main.dart';
 import 'package:flutter_net_music/utils/random.dart';
 import 'package:flutter_net_music/utils/string.dart';
+
 ///todo 一个门户类
 ///对外暴露功能:
 ///播放某个歌曲(id)
@@ -58,6 +60,7 @@ class MusicPlayer {
     _audioPlayer.onPlayerStateChanged.listen((state) {
       lastState = state;
       switch (state) {
+
         /// 会出现player加载歌曲失败但显示播放ing todo fix
         case AudioPlayerState.PLAYING:
           //播放成功or 恢复播放
@@ -111,6 +114,7 @@ class MusicPlayer {
     if (code == 1) {
       //播放成功
       lastId = id;
+      StoreContainer.dispatch(ChangePlaySongIdAction(id));
       _PlayedList.push(MusicPlayList.currentSong);
     } else {
       _dispatchAction(RequestPlayMusicFailed("播放器错误,$code"));
@@ -189,15 +193,15 @@ class MusicPlayList {
     id = listId;
     _current = findIndexById(songId);
   }
-  
-  static int findIndexById(int id){
-    if(_playList==null||_playList.isEmpty){
+
+  static int findIndexById(int id) {
+    if (_playList == null || _playList.isEmpty) {
       return -1;
     }
-    if(id==-1){
+    if (id == -1) {
       return 0;
-    }else{
-      return _playList.lastIndexWhere((bean)=>bean.id==id);
+    } else {
+      return _playList.lastIndexWhere((bean) => bean.id == id);
     }
   }
 
@@ -207,7 +211,7 @@ class MusicPlayList {
   ///获取当前索引
   static int get currentIndex => _current;
 
-  static int get currentSongId => currentSong.id;
+  static int get currentSongId => currentSong?.id??-1;
 
   static MusicTrackBean get currentSong {
     if (_current >= 0 && _current < _playList.length) {
