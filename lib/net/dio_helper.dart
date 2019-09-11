@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:cookie_jar/cookie_jar.dart';
 import 'package:dio/dio.dart';
+import 'package:dio_http_cache/dio_http_cache.dart';
 import 'package:flutter_net_music/host.dart';
 import 'package:flutter_net_music/net/cookie.dart';
 import 'package:flutter_net_music/redux/actions/main.dart';
@@ -16,7 +17,7 @@ class HttpMethod {
 }
 
 typedef ErrorHandler = ActionType Function(DioError error);
-typedef SuccessHandler = ActionType Function(Map<String,dynamic> data);
+typedef SuccessHandler = ActionType Function(Map<String, dynamic> data);
 
 class DioUtils {
   /// global dio object
@@ -28,10 +29,11 @@ class DioUtils {
   static const int RECEIVE_TIMEOUT = 8000;
 
   /// request method
-  static Future<Map<String,dynamic>> request(String url,
+  static Future<Map<String, dynamic>> request(String url,
       {data,
       String method,
       SuccessHandler successHandler,
+      Options cacheOptions,
       ErrorHandler errorHandler}) async {
     data = data ?? {};
     method = method ?? HttpMethod.GET;
@@ -44,15 +46,18 @@ class DioUtils {
     Dio dio = await createInstance();
     var result;
     try {
+      Options options = (method != HttpMethod.GET)
+          ? BaseOptions(method: method)
+          : (cacheOptions == null ? CacheOptions.defaultOption : cacheOptions);
       Response response = await dio.request(url,
-          data: data, options: new Options(method: method));
+          data: data, options: options);
       result = response.data;
-      if(result["code"]!=null){
-        if(result["code"]==200){
-          if(successHandler!=null){
+      if (result["code"] != null) {
+        if (result["code"] == 200) {
+          if (successHandler != null) {
             StoreContainer.dispatch(successHandler(result));
           }
-        }else if(result["code"]==301){
+        } else if (result["code"] == 301) {
           //todo 需要登录
         }
       }
@@ -78,6 +83,9 @@ class DioUtils {
       var directory = await getCookieDirectory();
       dio.interceptors
         ..add(CookieManager(PersistCookieJar(dir: directory.path)))
+        ..add(DioCacheManager(
+                CacheConfig(baseUrl: HOST, defaultMaxAge: Duration(hours: 12)))
+            .interceptor)
         ..add(LogInterceptor());
     }
 
@@ -88,4 +96,14 @@ class DioUtils {
   static clear() {
     dio = null;
   }
+}
+
+class CacheOptions {
+  static final hours_12 = buildCacheOptions(Duration(hours: 12));
+  static final minutes_15 = buildCacheOptions(Duration(minutes: 15));
+  static final day_1 = buildCacheOptions(Duration(days: 1));
+
+  static final defaultOption = hours_12;
+
+  static final day_15 = buildCacheOptions(Duration(days: 15));
 }
