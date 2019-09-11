@@ -505,6 +505,7 @@ class _NewsSongOrAlbumsState extends State<NewsSongOrAlbumsWidget> {
               ),
             ),
             Container(
+              alignment: Alignment.bottomCenter,
               color: theme.dividerColor,
               width: 1,
               height: 20,
