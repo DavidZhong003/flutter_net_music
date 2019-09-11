@@ -10,7 +10,7 @@ String formattedNumber(int number) {
     return number.toString();
   }
   if(number >= _ONE_BILLION){
-    return "${number/_ONE_BILLION}亿";
+    return "${number~/_ONE_BILLION}亿";
   }
   number = number ~/ _TEN_THOUSAND;
   return "$number万";

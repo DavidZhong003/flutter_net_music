@@ -311,7 +311,7 @@ class OutRoundButton extends StatelessWidget {
   }
 }
 
-///歌单列表
+///歌封面Widget
 class SongCoverWidget extends StatelessWidget {
   final String image;
 
@@ -348,7 +348,7 @@ class SongCoverWidget extends StatelessWidget {
       fit: BoxFit.cover,
     );
     if (playCount != null && playCount.isNotEmpty) {
-      imageView = DecoratedBox(
+      imageView = Container(
         decoration: BoxDecoration(gradient: gradient),
         child: Stack(
           children: <Widget>[
@@ -446,15 +446,21 @@ class _NewsSongOrAlbumsState extends State<NewsSongOrAlbumsWidget> {
     final loading = WaveLoading();
     return StoreConnector<AppState, NewSongAlbumsState>(
         builder: (context, state) {
-          if(state.isLoading||state.songData.isEmpty||state.albumsData.isEmpty){
-            return Container(height:140,child: Center(child: loading,));
+          if (state.isLoading ||
+              state.songData.isEmpty ||
+              state.albumsData.isEmpty) {
+            return Container(
+                height: 140,
+                child: Center(
+                  child: loading,
+                ));
           }
           List<Widget> content;
           if (selectAlbums) {
             content = state.albumsData.map((map) {
               return _buildCover(map["picUrl"], map["name"], () {});
             }).toList();
-          } else  {
+          } else {
             content = state.songData
                 .map((map) =>
                     _buildCover(map["album"]["picUrl"], map["name"], () {}))
@@ -468,7 +474,7 @@ class _NewsSongOrAlbumsState extends State<NewsSongOrAlbumsWidget> {
             children: content,
           );
         },
-        onInit: (s){
+        onInit: (s) {
           s.dispatch(NewAlbumsRequestAction());
           s.dispatch(NewSongRequestAction());
         },
@@ -516,10 +522,10 @@ class _NewsSongOrAlbumsState extends State<NewsSongOrAlbumsWidget> {
         ),
         Expanded(child: Container()),
         OutRoundButton(
-          width: 60,
+          width: 65,
           height: 25,
           text: "更多${selectAlbums ? NEW_ALBUMS : NEW_SONGS}",
-          style: theme.textTheme.caption,
+          style: theme.textTheme.caption.copyWith(fontSize: 11),
           onTap: () {
             //todo 点击事件
           },
