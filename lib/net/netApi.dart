@@ -1,3 +1,5 @@
+import 'package:flutter_net_music/redux/actions/home_found.dart';
+
 import 'dio_helper.dart';
 
 class ApiService {
@@ -15,10 +17,23 @@ class ApiService {
   static Future<Map<String, dynamic>> getSongListDetails(String id) {
     return DioUtils.request("/playlist/detail?id=$id");
   }
+
   ///获取歌曲Url
   ///id 用,拼接
   static Future<Map<String, dynamic>> getSongsDetail(String ids) {
     return DioUtils.request("/song/url?id=$ids");
+  }
+
+  ///获取新碟
+  static Future<Map<String, dynamic>> getNewAlbums() {
+    return DioUtils.request("/top/album",
+        successHandler: (map) =>NewAlbumsRequestSuccessAction(map["albums"].sublist(0,3)));
+  }
+
+  ///获取新歌
+  static Future<Map<String, dynamic>> getNewSongs([int type = 0]) {
+    return DioUtils.request("/top/song?type=$type",
+        successHandler: (map) => NewSongRequestSuccessAction(map["data"].sublist(0,3)));
   }
 }
 

@@ -16,7 +16,7 @@ class HttpMethod {
 }
 
 typedef ErrorHandler = ActionType Function(DioError error);
-typedef SuccessHandler = ActionType Function(Response response);
+typedef SuccessHandler = ActionType Function(Map<String,dynamic> data);
 
 class DioUtils {
   /// global dio object
@@ -25,7 +25,7 @@ class DioUtils {
   /// default options
   static const String API_PREFIX = HOST;
   static const int CONNECT_TIMEOUT = 10000;
-  static const int RECEIVE_TIMEOUT = 3000;
+  static const int RECEIVE_TIMEOUT = 8000;
 
   /// request method
   static Future<Map<String,dynamic>> request(String url,

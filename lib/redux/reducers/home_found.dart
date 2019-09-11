@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_net_music/net/netApi.dart';
 import 'package:flutter_net_music/redux/actions/home_found.dart';
 import 'package:flutter_net_music/redux/reducers/main.dart';
 
@@ -39,16 +40,24 @@ class HomeFoundState {
 
   final PersonalizedSongState personalizedSongState;
 
-  HomeFoundState({this.bannerState, this.personalizedSongState});
+  final NewSongAlbumsState newSongAlbumsState;
+
+  HomeFoundState(
+      {this.bannerState, this.personalizedSongState, this.newSongAlbumsState});
 
   HomeFoundState.initialState()
       : bannerState = BannerState.initialState(),
+        newSongAlbumsState = NewSongAlbumsState.initialState(),
         personalizedSongState = PersonalizedSongState.initialState();
 
-  HomeFoundState copyWith(
-      {BannerState bannerState, PersonalizedSongState personalizedSongState}) {
+  HomeFoundState copyWith({
+    BannerState bannerState,
+    PersonalizedSongState personalizedSongState,
+    NewSongAlbumsState newSongAlbumsState,
+  }) {
     return HomeFoundState(
         bannerState: bannerState ?? this.bannerState,
+        newSongAlbumsState: newSongAlbumsState ?? this.newSongAlbumsState,
         personalizedSongState:
             personalizedSongState ?? this.personalizedSongState);
   }
@@ -59,6 +68,8 @@ class HomeFoundReducer extends Reducer<HomeFoundState> {
   HomeFoundState redux(HomeFoundState state, action) {
     return state.copyWith(
       bannerState: BannerReducer().redux(state.bannerState, action),
+      newSongAlbumsState:
+          NewSongAlbumsReducer().redux(state.newSongAlbumsState, action),
       personalizedSongState:
           PersonalizedSongReducer().redux(state.personalizedSongState, action),
     );
@@ -95,8 +106,6 @@ class PersonalizedSongState {
       : isLoading = true,
         showList = [],
         originData = {};
-
-
 }
 
 class PersonalizedSongReducer extends Reducer<PersonalizedSongState> {
@@ -108,7 +117,7 @@ class PersonalizedSongReducer extends Reducer<PersonalizedSongState> {
       case LoadPersonalizedSongSuccess:
         Map<String, dynamic> originData = action.payload;
         List<dynamic> showList = state.showList;
-        if(showList.isEmpty){
+        if (showList.isEmpty) {
           showList = _randomDate(originData);
         }
         return state.copyWith(
@@ -127,6 +136,7 @@ class PersonalizedSongReducer extends Reducer<PersonalizedSongState> {
     return state;
   }
 }
+
 List<dynamic> _randomDate(Map<String, dynamic> originData) {
   if (originData.containsKey("result")) {
     List<dynamic> list = originData["result"];
@@ -136,4 +146,51 @@ List<dynamic> _randomDate(Map<String, dynamic> originData) {
     }
   }
   return [];
+}
+
+///新歌/新碟
+///
+@immutable
+class NewSongAlbumsState {
+  final List<dynamic> songData;
+  final List<dynamic> albumsData;
+  final bool isLoading;
+
+  NewSongAlbumsState({this.songData, this.isLoading,this.albumsData});
+
+  NewSongAlbumsState copyWith({
+    bool isLoading,
+    List<dynamic> songData,
+    List<dynamic> albumsData,
+  }) {
+    return NewSongAlbumsState(
+      isLoading: isLoading ?? this.isLoading,
+      songData: songData ?? this.songData,
+      albumsData: albumsData??this.albumsData,
+    );
+  }
+
+  NewSongAlbumsState.initialState()
+      : isLoading = true,
+        albumsData=[],
+        songData = [];
+}
+
+class NewSongAlbumsReducer extends Reducer<NewSongAlbumsState> {
+  @override
+  NewSongAlbumsState redux(NewSongAlbumsState state, action) {
+    switch (action.runtimeType) {
+      case NewSongRequestAction:
+        ApiService.getNewSongs();
+        return state.copyWith(isLoading: true);
+      case NewAlbumsRequestAction:
+        ApiService.getNewAlbums();
+        return state.copyWith(isLoading: true);
+      case NewSongRequestSuccessAction:
+        return state.copyWith(isLoading: false,songData: action.payload);
+      case NewAlbumsRequestSuccessAction:
+        return state.copyWith(isLoading: false,albumsData: action.payload);
+    }
+    return state;
+  }
 }

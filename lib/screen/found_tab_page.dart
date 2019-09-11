@@ -405,11 +405,11 @@ class SongCoverWidget extends StatelessWidget {
 class NewsSongOrAlbumsWidget extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
-    return NewsSongOrAlbumsState();
+    return _NewsSongOrAlbumsState();
   }
 }
 
-class NewsSongOrAlbumsState extends State<NewsSongOrAlbumsWidget> {
+class _NewsSongOrAlbumsState extends State<NewsSongOrAlbumsWidget> {
   bool selectAlbums = true;
 
   static const NEW_ALBUMS = "新碟";
@@ -427,23 +427,52 @@ class NewsSongOrAlbumsState extends State<NewsSongOrAlbumsWidget> {
             SizedBox(
               height: 8,
             ),
-            GridView.count(
-              crossAxisCount: 3,
-              shrinkWrap: true,
-              physics: NeverScrollableScrollPhysics(),
-              childAspectRatio: 0.8,
-              children: List.generate(3, (index) {
-                return SongCoverWidget(
-                    image:
-                        "https://p1.music.126.net/9_js5T_lPXdRvcSYicz97Q==/109951164354635643.jpg",
-                    name: "내가 아는 이별노래 (bye)");
-              }),
-            ),
-
+            buildPicContent(),
           ],
         ),
       ),
     );
+  }
+
+  Widget buildPicContent() {
+    Widget _buildCover(String image, String name, void Function() onTap) {
+      return SongCoverWidget(
+        image: image,
+        name: name,
+        onTap: onTap,
+      );
+    }
+
+    final loading = WaveLoading();
+    return StoreConnector<AppState, NewSongAlbumsState>(
+        builder: (context, state) {
+          if(state.isLoading||state.songData.isEmpty||state.albumsData.isEmpty){
+            return Container(height:140,child: Center(child: loading,));
+          }
+          List<Widget> content;
+          if (selectAlbums) {
+            content = state.albumsData.map((map) {
+              return _buildCover(map["picUrl"], map["name"], () {});
+            }).toList();
+          } else  {
+            content = state.songData
+                .map((map) =>
+                    _buildCover(map["album"]["picUrl"], map["name"], () {}))
+                .toList();
+          }
+          return GridView.count(
+            crossAxisCount: 3,
+            shrinkWrap: true,
+            physics: NeverScrollableScrollPhysics(),
+            childAspectRatio: 0.8,
+            children: content,
+          );
+        },
+        onInit: (s){
+          s.dispatch(NewAlbumsRequestAction());
+          s.dispatch(NewSongRequestAction());
+        },
+        converter: (s) => s.state.homeFoundState.newSongAlbumsState);
   }
 
   Widget _buildTitle(BuildContext context) {

@@ -47,5 +47,21 @@ void requestPersonalizedSongAction(Store<AppState> store) async {
     store.dispatch(LoadPersonalizedSongSuccess(map));
   });
 }
+class RandomPersonalizedSongAction extends VoidAction {}
 
-class RandomPersonalizedSongAction extends VoidAction{}
+///新歌,新碟
+class NewSongRequestAction extends VoidAction {}
+
+class NewAlbumsRequestAction extends VoidAction {}
+
+class NewSongRequestSuccessAction extends ActionType<List<dynamic>> {
+  final List<dynamic> data;
+
+  NewSongRequestSuccessAction(this.data) : super(payload: data);
+}
+
+class NewAlbumsRequestSuccessAction extends ActionType<List<dynamic>> {
+  final List<dynamic> data;
+
+  NewAlbumsRequestSuccessAction(this.data) : super(payload: data);
+}
