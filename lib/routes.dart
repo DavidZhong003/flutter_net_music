@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_net_music/screen/main_page.dart';
 import 'package:flutter_net_music/screen/play_page/play_page.dart';
-import 'package:flutter_net_music/screen/songList/song_list.dart';
+import 'package:flutter_net_music/screen/song_list/song_list.dart';
 
 class PathName {
   static const ROUTE_MAIN = Navigator.defaultRouteName;
