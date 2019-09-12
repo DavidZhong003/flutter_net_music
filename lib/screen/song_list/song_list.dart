@@ -529,6 +529,12 @@ class HeadBlurBackground extends StatelessWidget {
 
   final Color filterColor;
 
+  final StackFit stackFit;
+
+  final BoxFit imageFit;
+
+  final bool isFullScreen;
+
   const HeadBlurBackground({
     Key key,
     @required this.imageUrl,
@@ -536,24 +542,34 @@ class HeadBlurBackground extends StatelessWidget {
     this.sigmaX = 30,
     this.sigmaY = 30,
     this.filterColor,
+    this.stackFit = StackFit.passthrough,
+    this.imageFit = BoxFit.fill,
+    this.isFullScreen = true,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    Widget filter = BackdropFilter(
+      filter: ImageFilter.blur(sigmaX: sigmaX, sigmaY: sigmaY),
+      child: Container(color: filterColor ?? Colors.black.withOpacity(0.3)),
+    );
+    //如果不要全屏效果,进行剪裁操作
+    if(!isFullScreen){
+      filter = ClipRect(
+        child: filter,
+      );
+    }
     return Stack(
-      fit: StackFit.passthrough,
+      fit: stackFit,
       children: <Widget>[
         Opacity(
           opacity: opacity,
           child: NetImageView(
-            fit: BoxFit.fill,
+            fit: imageFit,
             url: imageUrl,
           ),
         ),
-        BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: sigmaX, sigmaY: sigmaY),
-          child: Container(color: filterColor ?? Colors.black.withOpacity(0.3)),
-        )
+        filter,
       ],
     );
   }

@@ -115,6 +115,7 @@ class MusicPlayPage extends StatelessWidget {
     return HeadBlurBackground(
       opacity: 0.9,
       imageUrl: picUrl,
+      stackFit: StackFit.expand,
     );
   }
 }

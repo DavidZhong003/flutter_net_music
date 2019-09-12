@@ -8,6 +8,7 @@ import 'package:flutter_net_music/redux/onInit/home_found.dart';
 import 'package:flutter_net_music/redux/reducers/home_found.dart';
 import 'package:flutter_net_music/redux/reducers/main.dart';
 import 'package:flutter_net_music/routes.dart';
+import 'package:flutter_net_music/screen/song_square/page.dart';
 import 'package:flutter_net_music/style/font.dart';
 import 'package:flutter_net_music/utils/string.dart';
 import 'package:flutter_redux/flutter_redux.dart';
@@ -74,7 +75,9 @@ class FoundPageState extends State<StatefulWidget> {
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: <Widget>[
           ItemTab.large(Icons.calendar_today, "每日推荐", emptyTap),
-          ItemTab.large(Icons.queue_music, "歌单", emptyTap),
+          ItemTab.large(Icons.queue_music, "歌单", (){
+            jumpPage(context, SongSquarePage());
+          }),
           ItemTab.large(
             FontAwesomeIcons.gitter,
             "排行榜",
@@ -190,7 +193,7 @@ class PersonalizedSongListWidget extends StatelessWidget {
     return Container(
       padding: EdgeInsets.only(left: 16, right: 16, top: 8),
       child: Column(
-        children: <Widget>[buildTitle(), buildSongContent()],
+        children: <Widget>[buildTitle(context), buildSongContent()],
       ),
     );
   }
@@ -233,7 +236,7 @@ class PersonalizedSongListWidget extends StatelessWidget {
     );
   }
 
-  Widget buildTitle() {
+  Widget buildTitle(BuildContext context) {
     return Row(
       children: <Widget>[
         Expanded(
@@ -245,7 +248,9 @@ class PersonalizedSongListWidget extends StatelessWidget {
         ),
         new OutRoundButton(
           text: "歌单广场",
-          onTap: emptyTap,
+          onTap: (){
+            jumpPage(context, SongSquarePage());
+          },
         ),
       ],
     );
