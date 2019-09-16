@@ -1,8 +1,12 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_net_music/redux/reducers/main.dart';
+import 'package:flutter_net_music/redux/reducers/song_square.dart';
 import 'package:flutter_net_music/screen/play_page/play_bar.dart';
 import 'package:flutter_net_music/screen/song_list/song_list.dart';
+import 'package:flutter_net_music/screen/song_square/recommend.dart';
+import 'package:flutter_redux/flutter_redux.dart';
 
 import '../main_tab_page.dart';
 
@@ -16,17 +20,21 @@ class SongSquarePage extends StatelessWidget {
       child: Scaffold(
         appBar: _buildAppBar(),
         body: MusicPlayBarContainer(
-          child: Container(
-            child: TabBarView(
-              children: _tabs
-                  .map((s) => Container(
-                        child: Text(s),
-                      ))
-                  .toList(),
-            ),
-          ),
+          child: _buildTabBarView(),
         ),
       ),
+    );
+  }
+
+  TabBarView _buildTabBarView() {
+    List<Widget> children = [];
+    children.add(RecommendTab());
+    children.add(RecommendTab());
+    children.add(RecommendTab());
+    children.add(RecommendTab());
+    children.add(RecommendTab());
+    return TabBarView(
+      children: children,
     );
   }
 
@@ -54,13 +62,17 @@ class SongSquarePage extends StatelessWidget {
   }
 
   Widget _buildBackground() {
-    final image =
-        "https://p1.music.126.net/CKY9WSM1-1SHMc8wRJyccQ==/109951164353129687.jpg";
-    return HeadBlurBackground(
-      stackFit: StackFit.expand,
-      opacity: 0.65,
-      imageUrl:image,
-      isFullScreen: false,
-    );
+    return StoreConnector<AppState, String>(
+        builder: (BuildContext context,String url){
+          if(url==null||url.isEmpty){
+            return Container(color: Theme.of(context).primaryColor,);
+          }
+          return HeadBlurBackground(
+            stackFit: StackFit.expand,
+            opacity: 0.65,
+            imageUrl: url,
+            isFullScreen: false,
+          );
+        }, converter: (s) => s.state.songSquareState.backImage);
   }
 }

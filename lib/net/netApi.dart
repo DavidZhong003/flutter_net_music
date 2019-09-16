@@ -9,8 +9,12 @@ class ApiService {
   }
 
   ///推荐歌单
-  static Future<Map<String, dynamic>> getPersonalized() {
-    return DioUtils.request("/personalized?limit=20");
+  static Future<Map<String, dynamic>> getPersonalized(
+  {int limit = 20,
+      SuccessHandler successHandler,
+      ErrorHandler errorHandler}) {
+    return DioUtils.request("/personalized?limit=$limit",
+        successHandler: successHandler, errorHandler: errorHandler);
   }
 
   ///歌单详情
@@ -40,16 +44,21 @@ class ApiService {
         successHandler: (map) =>
             NewSongRequestSuccessAction(map["data"].sublist(0, 3)));
   }
+
   ///歌单
-  static Future<Map<String, dynamic>> getSongList([String cat,int limit]) {
-    String url="/top/playlist?cat=${cat??"全部"}&limit=$limit";
-    return DioUtils.request(url,);
+  static Future<Map<String, dynamic>> getSongList([String cat, int limit]) {
+    String url = "/top/playlist?cat=${cat ?? "全部"}&limit=$limit";
+    return DioUtils.request(
+      url,
+    );
   }
 
   ///精品歌单
-  static Future<Map<String,dynamic>> getHighQualitySongList([int limit]){
-    String url="/top/playlist/highquality?limit=$limit";
-    return DioUtils.request(url,);
+  static Future<Map<String, dynamic>> getHighQualitySongList([int limit]) {
+    String url = "/top/playlist/highquality?limit=$limit";
+    return DioUtils.request(
+      url,
+    );
   }
 }
 

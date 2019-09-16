@@ -326,12 +326,18 @@ class SongCoverWidget extends StatelessWidget {
 
   final String playCount;
 
+  final EdgeInsetsGeometry padding;
+
+  final EdgeInsetsGeometry textPadding;
+
   const SongCoverWidget({
     Key key,
     @required this.image,
-    @required this.name,
+    this.name,
     this.onTap,
     this.playCount,
+    this.padding = const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+    this.textPadding = const EdgeInsets.only(top: 2),
   }) : super(key: key);
 
   @override
@@ -376,31 +382,37 @@ class SongCoverWidget extends StatelessWidget {
         ],
       );
     }
+    Widget text;
+    if(name!=null){
+      text=Expanded(
+        child: Padding(
+          padding: textPadding,
+          child: Text(
+            name,
+            style: Theme.of(context).textTheme.caption,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+      );
+    }
+    Widget content;
+    content = ClipRRect(
+      borderRadius: BorderRadius.circular(5),
+      child: imageView,
+    );
+    if(text!=null){
+      content = Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          content,
+          text,
+        ],
+      );
+    }
     return GestureDetector(
       onTap: onTap,
-      child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 4, vertical: 4),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            ClipRRect(
-              borderRadius: BorderRadius.circular(5),
-              child: imageView,
-            ),
-            Expanded(
-              child: Padding(
-                padding: EdgeInsets.only(top: 2),
-                child: Text(
-                  name,
-                  style: Theme.of(context).textTheme.caption,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
+      child: content,
     );
   }
 }
