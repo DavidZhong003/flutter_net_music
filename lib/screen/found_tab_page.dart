@@ -75,7 +75,7 @@ class FoundPageState extends State<StatefulWidget> {
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: <Widget>[
           ItemTab.large(Icons.calendar_today, "每日推荐", emptyTap),
-          ItemTab.large(Icons.queue_music, "歌单", (){
+          ItemTab.large(Icons.queue_music, "歌单", () {
             jumpPage(context, SongSquarePage());
           }),
           ItemTab.large(
@@ -248,7 +248,7 @@ class PersonalizedSongListWidget extends StatelessWidget {
         ),
         new OutRoundButton(
           text: "歌单广场",
-          onTap: (){
+          onTap: () {
             jumpPage(context, SongSquarePage());
           },
         ),
@@ -353,27 +353,27 @@ class SongCoverWidget extends StatelessWidget {
       fit: BoxFit.cover,
     );
     if (playCount != null && playCount.isNotEmpty) {
-      imageView = Container(
-        decoration: BoxDecoration(gradient: gradient),
-        child: Stack(
-          children: <Widget>[
-            imageView,
-            Positioned(
-              top: 2,
-              right: 4,
-              child: Row(
-                children: <Widget>[
-                  Icon(Icons.play_arrow,
-                      color: theme.primaryIconTheme.color, size: 14),
-                  Text(
-                    playCount ?? "",
-                    style: theme.primaryTextTheme.caption,
-                  ),
-                ],
-              ),
+      imageView = Stack(
+        children: <Widget>[
+          DecoratedBox(
+              decoration: BoxDecoration(gradient: gradient),
+              position: DecorationPosition.foreground,
+              child: imageView),
+          Positioned(
+            top: 2,
+            right: 4,
+            child: Row(
+              children: <Widget>[
+                Icon(Icons.play_arrow,
+                    color: theme.primaryIconTheme.color, size: 14),
+                Text(
+                  playCount ?? "",
+                  style: theme.primaryTextTheme.caption,
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       );
     }
     return GestureDetector(

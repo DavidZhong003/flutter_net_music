@@ -671,30 +671,31 @@ class SongCoverContent extends StatelessWidget {
             ///图片
             ClipRRect(
               borderRadius: BorderRadius.all(Radius.circular(5)),
-              child: DecoratedBox(
-                decoration: BoxDecoration(gradient: gradient),
-                child: Stack(
-                  children: <Widget>[
-                    NetImageView(
+              child: Stack(
+                children: <Widget>[
+                  DecoratedBox(
+                    decoration: BoxDecoration(gradient: gradient),
+                    position: DecorationPosition.foreground,
+                    child: NetImageView(
                       url: coverUrl,
                       fit: BoxFit.cover,
                     ),
-                    Positioned(
-                      top: 4,
-                      right: 8,
-                      child: Row(
-                        children: <Widget>[
-                          Icon(Icons.play_arrow,
-                              color: theme.primaryIconTheme.color, size: 14),
-                          Text(
-                            playCount ?? "",
-                            style: theme.primaryTextTheme.caption,
-                          ),
-                        ],
-                      ),
+                  ),
+                  Positioned(
+                    top: 4,
+                    right: 8,
+                    child: Row(
+                      children: <Widget>[
+                        Icon(Icons.play_arrow,
+                            color: theme.primaryIconTheme.color, size: 14),
+                        Text(
+                          playCount ?? "",
+                          style: theme.primaryTextTheme.caption,
+                        ),
+                      ],
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
 
