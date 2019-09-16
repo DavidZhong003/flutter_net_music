@@ -340,8 +340,8 @@ class SongCoverWidget extends StatelessWidget {
         begin: Alignment.topCenter,
         end: Alignment.bottomCenter,
         colors: [
-          Colors.black54,
           Colors.black26,
+          Colors.black12,
           Colors.transparent,
           Colors.transparent,
         ]);
