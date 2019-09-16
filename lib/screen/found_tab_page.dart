@@ -453,10 +453,13 @@ class _NewsSongOrAlbumsState extends State<NewsSongOrAlbumsWidget> {
 
   Widget buildPicContent() {
     Widget _buildCover(String image, String name, void Function() onTap) {
-      return SongCoverWidget(
-        image: image,
-        name: name,
-        onTap: onTap,
+      return Padding(
+        padding: const EdgeInsets.all(4.0),
+        child: SongCoverWidget(
+          image: image,
+          name: name,
+          onTap: onTap,
+        ),
       );
     }
 

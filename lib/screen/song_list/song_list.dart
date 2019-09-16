@@ -554,7 +554,7 @@ class HeadBlurBackground extends StatelessWidget {
       child: Container(color: filterColor ?? Colors.black.withOpacity(0.3)),
     );
     //如果不要全屏效果,进行剪裁操作
-    if(!isFullScreen){
+    if (!isFullScreen) {
       filter = ClipRect(
         child: filter,
       );
@@ -729,12 +729,17 @@ class SongCoverContent extends StatelessWidget {
                             SizedBox(
                               width: 8,
                             ),
-                            Text(
-                              creatorName ?? "",
-                              style: theme.primaryTextTheme.caption,
+                            ConstrainedBox(
+                              child: Text(
+                                creatorName ?? "",
+                                style: theme.primaryTextTheme.caption,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              constraints: BoxConstraints(maxWidth: 140),
                             ),
                             SizedBox(
-                              width: 8,
+                              width: 4,
                             ),
                             Icon(
                               Icons.keyboard_arrow_right,
