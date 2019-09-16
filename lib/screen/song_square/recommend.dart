@@ -5,9 +5,9 @@ import 'package:flutter_net_music/net/net_widget.dart';
 import 'package:flutter_net_music/redux/actions/song_square.dart';
 import 'package:flutter_net_music/redux/reducers/main.dart';
 import 'package:flutter_net_music/redux/reducers/song_square.dart';
+import 'package:flutter_net_music/routes.dart';
 import 'package:flutter_net_music/screen/found_tab_page.dart';
 import 'package:flutter_net_music/screen/main_tab_page.dart';
-import 'package:flutter_net_music/utils/string.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
 
@@ -30,8 +30,14 @@ class RecommendTab extends StatelessWidget {
                 _Banner(
                   banner: state.banner,
                 ),
-                SongCoverGridView(
-                  list: state.list,
+                Padding(
+                  padding: const EdgeInsets.only(left: 16,right: 16),
+                  child: SongCoverGridView(
+                    list: state.list,
+                    onTap: (index) {
+                      jumpSongList(context, state.list[index].id.toString());
+                    },
+                  ),
                 ),
               ],
             ),
@@ -52,16 +58,20 @@ class _Banner extends StatefulWidget {
   }
 }
 
-class _BannerState extends State<_Banner>{
-
+class _BannerState extends State<_Banner> {
   int currentIndex;
+
+  SwiperController _controller;
 
   @override
   void initState() {
     super.initState();
-    currentIndex =0;
-    StoreContainer.dispatch(ChangeBackImageAction(widget.banner[currentIndex].coverImageUrl));
+    currentIndex = 0;
+    _controller = SwiperController();
+    StoreContainer.dispatch(
+        ChangeBackImageAction(widget.banner[currentIndex].coverImageUrl));
   }
+
   @override
   Widget build(BuildContext context) {
     final List<PlayListsModel> banner = widget.banner;
@@ -70,29 +80,39 @@ class _BannerState extends State<_Banner>{
       height: 250,
       child: Swiper(
         itemCount: banner.length,
+        controller: _controller,
         itemBuilder: (context, index) {
           var bean = banner[index];
-          return Opacity(
-            opacity: currentIndex==index?1:0.6,
-            child: Card(
-              clipBehavior: Clip.hardEdge,
-              color: Colors.white,
-              child: Column(
-                children: <Widget>[
-                  _buildCover(context, bean),
-                  _buildTitle(bean, context),
-                ],
+          return GestureDetector(
+            onTap: () {
+              if (currentIndex == index) {
+                jumpSongList(context, bean.id.toString());
+              }else{
+                _controller.move(index);
+              }
+            },
+            child: Opacity(
+              opacity: currentIndex == index ? 1 : 0.6,
+              child: Card(
+                clipBehavior: Clip.hardEdge,
+                color: Colors.white,
+                child: Column(
+                  children: <Widget>[
+                    _buildCover(context, bean),
+                    _buildTitle(bean, context),
+                  ],
+                ),
               ),
             ),
           );
         },
-        controller: SwiperController(),
         loop: true,
         onIndexChanged: (int) {
           setState(() {
             currentIndex = int;
           });
-          StoreContainer.dispatch(ChangeBackImageAction(banner[int].coverImageUrl));
+          StoreContainer.dispatch(
+              ChangeBackImageAction(banner[int].coverImageUrl));
         },
         viewportFraction: 0.46,
         scale: 0.8,
@@ -131,8 +151,10 @@ class _BannerState extends State<_Banner>{
         child: Container(
           width: 30,
           height: 30,
-          color:Colors.white.withOpacity(0.9),
-          child: Center(child: Icon(Icons.play_arrow),),
+          color: Colors.white.withOpacity(0.9),
+          child: Center(
+            child: Icon(Icons.play_arrow),
+          ),
         ),
       ),
     );
@@ -151,16 +173,15 @@ class _BannerState extends State<_Banner>{
   Widget _buildTitle(PlayListsModel bean, BuildContext context) {
     return Expanded(
         child: Center(
-          child: Padding(
-            padding: const EdgeInsets.only(left: 4, right: 4),
-            child: Text(
-              bean.name,
-              style: Theme.of(context).textTheme.body2,
-            ),
-          ),
-        ));
+      child: Padding(
+        padding: const EdgeInsets.only(left: 4, right: 4),
+        child: Text(
+          bean.name,
+          style: Theme.of(context).textTheme.body2,
+        ),
+      ),
+    ));
   }
-
 }
 
 ///封面gridView
