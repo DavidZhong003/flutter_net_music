@@ -16,3 +16,6 @@ class RecommendSuccessAction extends ActionType<List<PlayListsModel>> {
 
   RecommendSuccessAction(this.data) : super(payload: data);
 }
+
+///请求下一页
+class RecommendRequestNextPageAction extends VoidAction{}

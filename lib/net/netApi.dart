@@ -10,7 +10,7 @@ class ApiService {
 
   ///推荐歌单
   static Future<Map<String, dynamic>> getPersonalized(
-  {int limit = 20,
+      {int limit = 20,
       SuccessHandler successHandler,
       ErrorHandler errorHandler}) {
     return DioUtils.request("/personalized?limit=$limit",
@@ -46,10 +46,13 @@ class ApiService {
   }
 
   ///歌单
-  static Future<Map<String, dynamic>> getSongList([String cat, int limit]) {
-    String url = "/top/playlist?cat=${cat ?? "全部"}&limit=$limit";
+  static Future<Map<String, dynamic>> getSongList(
+      {String cat, int limit = 30, int page = 0,SuccessHandler successHandler}) {
+    String url =
+        "/top/playlist?cat=${cat ?? "全部"}&limit=$limit&offset=${(page - 1) * limit}";
     return DioUtils.request(
       url,
+      successHandler: successHandler
     );
   }
 

@@ -1,49 +1,153 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_net_music/model/play_list_model.dart';
+import 'package:flutter_net_music/net/netApi.dart';
 import 'package:flutter_net_music/net/net_widget.dart';
 import 'package:flutter_net_music/redux/actions/song_square.dart';
 import 'package:flutter_net_music/redux/reducers/main.dart';
-import 'package:flutter_net_music/redux/reducers/song_square.dart';
 import 'package:flutter_net_music/routes.dart';
 import 'package:flutter_net_music/screen/found_tab_page.dart';
 import 'package:flutter_net_music/screen/main_tab_page.dart';
-import 'package:flutter_redux/flutter_redux.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
 
-class RecommendTab extends StatelessWidget {
+class RecommendTab extends StatefulWidget {
+  @override
+  State<StatefulWidget> createState() {
+    return _RecommendTabState();
+  }
+}
+
+class _RecommendTabState extends State<RecommendTab> {
+  List<PlayListsModel> banner;
+  Set<PlayListsModel> list;
+
+  bool get _isLoading => banner == null || list == null;
+
+  int page = 1;
+
+  bool noMore = false;
+
+  bool _isNetRequest = false;
+
+  static const int MAX_LENGTH = 150;
+
+  @override
+  void initState() {
+    //网络请求
+    super.initState();
+    _getPageData();
+  }
+
+  void _getPageData() {
+    if (_isNetRequest || noMore) {
+      return;
+    }
+    _isNetRequest = true;
+    final start = DateTime.now();
+    ApiService.getSongList(page: page).then((map) {
+      _processResult(map);
+      _notifyLoadSuccess(start);
+    }).whenComplete(() {
+      _isNetRequest = false;
+    });
+  }
+
+  void _notifyLoadSuccess(DateTime start) {
+    final end = DateTime.now();
+    final duration = end.millisecond - start.millisecond;
+    if (page != 0 && duration < 1000) {
+      ///防止太快
+      Future.delayed(Duration(milliseconds: (1000 - duration)))
+          .whenComplete(() {
+        //加载成功后page+1
+        setState(() {
+          page++;
+        });
+      });
+    } else {
+      //加载成功后page+1
+      setState(() {
+        page++;
+      });
+    }
+  }
+
+  void _processResult(Map<String, dynamic> map) {
+    noMore = !map["more"];
+    List<dynamic> playLists = map["playlists"];
+    List<PlayListsModel> result =
+        playLists.map((bean) => PlayListsModel.fromMap(bean)).toList();
+    if (banner == null || banner.isEmpty) {
+      banner = result.take(3).toList();
+    }
+    if (list == null) {
+      list = result.sublist(3, result.length).toSet();
+    } else {
+      list.addAll(result);
+    }
+    if (list.length > MAX_LENGTH) {
+      noMore = true;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return StoreConnector<AppState, RecommendState>(
-        onInit: (s) => s.dispatch(RecommendRequestAction()),
-        builder: (BuildContext context, RecommendState state) {
-          if (state.loading) {
-            return Container(
-              child: Center(
-                child: WaveLoading(),
-              ),
-            );
-          }
-          return SingleChildScrollView(
-            child: Column(
-              children: <Widget>[
-                _Banner(
-                  banner: state.banner,
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(left: 16,right: 16),
-                  child: SongCoverGridView(
-                    list: state.list,
-                    onTap: (index) {
-                      jumpSongList(context, state.list[index].id.toString());
-                    },
-                  ),
-                ),
-              ],
+    if (_isLoading) {
+      return Container(
+        child: Center(
+          child: WaveLoading(),
+        ),
+      );
+    }
+    final data = list.toList();
+    return NotificationListener<ScrollNotification>(
+      onNotification: (ScrollNotification notification) {
+        if (notification.metrics.pixels >=
+            (notification.metrics.maxScrollExtent - 50)) {
+          //加载更多
+          _getPageData();
+          return true;
+        }
+        return false;
+      },
+      child: CustomScrollView(
+        slivers: <Widget>[
+          SliverToBoxAdapter(
+            child: _Banner(
+              banner: banner,
             ),
-          );
-        },
-        converter: (s) => s.state.songSquareState.recommendState);
+          ),
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.only(left: 16, right: 16),
+              child: SongCoverGridView(
+                list: data,
+              ),
+            ),
+          ),
+          buildMore(context),
+        ],
+      ),
+    );
+  }
+
+  SliverToBoxAdapter buildMore(BuildContext context) {
+    Widget content;
+    if (noMore) {
+      content = Container();
+    } else {
+      content = WaveLoading(
+        size: 24,
+      );
+    }
+    return SliverToBoxAdapter(
+      child: Container(
+        height: 50,
+        child: Center(
+          child: content,
+        ),
+      ),
+    );
   }
 }
 
@@ -73,6 +177,12 @@ class _BannerState extends State<_Banner> {
   }
 
   @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final List<PlayListsModel> banner = widget.banner;
     return Container(
@@ -87,7 +197,7 @@ class _BannerState extends State<_Banner> {
             onTap: () {
               if (currentIndex == index) {
                 jumpSongList(context, bean.id.toString());
-              }else{
+              } else {
                 _controller.move(index);
               }
             },
@@ -211,7 +321,8 @@ class SongCoverGridView extends StatelessWidget {
     ),
     this.physics = const NeverScrollableScrollPhysics(),
     this.canLoadMore,
-  }) : super(key: key);
+  })  : assert(list != null),
+        super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -220,6 +331,7 @@ class SongCoverGridView extends StatelessWidget {
         gridDelegate: delegate,
         physics: physics,
         itemCount: list.length ?? 0,
+        cacheExtent: 200,
         shrinkWrap: true,
         itemBuilder: (context, index) {
           PlayListsModel bean = list[index];
@@ -228,7 +340,12 @@ class SongCoverGridView extends StatelessWidget {
             name: bean.name,
             playCount: bean.playCountString,
             onTap: () {
-              if (onTap != null) onTap(bean.id);
+              if (onTap != null) {
+                onTap(bean.id);
+              } else {
+                //默认跳转歌单页
+                jumpSongList(context, bean.id.toString());
+              }
             },
           );
         });
