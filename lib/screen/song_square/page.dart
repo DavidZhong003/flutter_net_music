@@ -46,6 +46,7 @@ class SongSquarePage extends StatelessWidget {
             elevation: 0,
             backgroundColor: Colors.transparent,
             bottom: TabBar(
+              isScrollable: _tabs.length>5,
               tabs: _tabs
                   .map((s) => Tab(
                         text: s,

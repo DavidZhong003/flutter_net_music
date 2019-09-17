@@ -208,9 +208,9 @@ class PersonalizedSongListWidget extends StatelessWidget {
             padding: EdgeInsets.only(top: 8),
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 3,
-              mainAxisSpacing: 3,
-              crossAxisSpacing: 6,
-              childAspectRatio: 10 / 12.8,
+              mainAxisSpacing: 8,
+              crossAxisSpacing: 16,
+              childAspectRatio: 10 / 13.8,
             ),
             physics: NeverScrollableScrollPhysics(),
             itemCount: list.length ?? 6,
