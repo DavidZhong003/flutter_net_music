@@ -18,7 +18,6 @@ class RecommendTab extends StatefulWidget {
 }
 
 class _RecommendTabState extends State<RecommendTab> {
-
   List<PlayListsModel> banner;
 
   Set<PlayListsModel> list;
@@ -284,7 +283,10 @@ class _BannerState extends State<_Banner> {
         padding: const EdgeInsets.only(left: 4, right: 4),
         child: Text(
           bean.name,
-          style: Theme.of(context).textTheme.body2,
+          style: Theme.of(context)
+              .textTheme
+              .body2
+              .copyWith(color: ThemeData.light().textTheme.body2.color),
         ),
       ),
     ));
