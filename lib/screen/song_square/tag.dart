@@ -58,7 +58,6 @@ class _TagSongListState extends State<TagSongListWidget> {
       padding: EdgeInsets.all(16),
       child: SongCoverGridView(
         list: list,
-        canLoadMore: true,
       ),
     );
   }

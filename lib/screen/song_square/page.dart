@@ -2,13 +2,10 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_net_music/redux/reducers/main.dart';
-import 'package:flutter_net_music/redux/reducers/song_square.dart';
 import 'package:flutter_net_music/screen/play_page/play_bar.dart';
 import 'package:flutter_net_music/screen/song_list/song_list.dart';
 import 'package:flutter_net_music/screen/song_square/recommend.dart';
 import 'package:flutter_redux/flutter_redux.dart';
-
-import '../main_tab_page.dart';
 
 class SongSquarePage extends StatelessWidget {
   static const List<String> _tabs = ["推荐", "官方", "精品", "华语", "流行"];

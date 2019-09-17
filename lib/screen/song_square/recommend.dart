@@ -18,7 +18,9 @@ class RecommendTab extends StatefulWidget {
 }
 
 class _RecommendTabState extends State<RecommendTab> {
+
   List<PlayListsModel> banner;
+
   Set<PlayListsModel> list;
 
   bool get _isLoading => banner == null || list == null;
@@ -117,13 +119,8 @@ class _RecommendTabState extends State<RecommendTab> {
               banner: banner,
             ),
           ),
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.only(left: 16, right: 16),
-              child: SongCoverGridView(
-                list: data,
-              ),
-            ),
+          SongCoverGridView(
+            list: data,
           ),
           buildMore(context),
         ],
@@ -304,50 +301,46 @@ class SongCoverGridView extends StatelessWidget {
 
   final SliverGridDelegate delegate;
 
-  final ScrollPhysics physics;
-
-  final bool canLoadMore;
-
   const SongCoverGridView({
     Key key,
     @required this.list,
     this.onTap,
-    this.padding = const EdgeInsets.only(top: 8),
+    this.padding = const EdgeInsets.all(16),
     this.delegate = const SliverGridDelegateWithFixedCrossAxisCount(
       crossAxisCount: 3,
-      mainAxisSpacing: 3,
-      crossAxisSpacing: 6,
-      childAspectRatio: 10 / 12.8,
+      mainAxisSpacing: 8,
+      crossAxisSpacing: 16,
+      childAspectRatio: 10 / 13.8,
     ),
-    this.physics = const NeverScrollableScrollPhysics(),
-    this.canLoadMore,
   })  : assert(list != null),
         super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return GridView.builder(
-        padding: padding,
+    return SliverPadding(
+      padding: padding,
+      sliver: SliverGrid(
+        delegate: SliverChildBuilderDelegate(
+          (BuildContext context, int index) {
+            PlayListsModel bean = list[index];
+            return SongCoverWidget(
+              image: bean.coverImageUrl,
+              name: bean.name,
+              playCount: bean.playCountString,
+              onTap: () {
+                if (onTap != null) {
+                  onTap(bean.id);
+                } else {
+                  //默认跳转歌单页
+                  jumpSongList(context, bean.id.toString());
+                }
+              },
+            );
+          },
+          childCount: list.length ?? 0,
+        ),
         gridDelegate: delegate,
-        physics: physics,
-        itemCount: list.length ?? 0,
-        cacheExtent: 200,
-        shrinkWrap: true,
-        itemBuilder: (context, index) {
-          PlayListsModel bean = list[index];
-          return SongCoverWidget(
-            image: bean.coverImageUrl,
-            name: bean.name,
-            playCount: bean.playCountString,
-            onTap: () {
-              if (onTap != null) {
-                onTap(bean.id);
-              } else {
-                //默认跳转歌单页
-                jumpSongList(context, bean.id.toString());
-              }
-            },
-          );
-        });
+      ),
+    );
   }
 }
