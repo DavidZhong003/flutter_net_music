@@ -121,30 +121,30 @@ class _RecommendTabState extends State<RecommendTab> {
           SongCoverGridView(
             list: data,
           ),
-          buildMore(context),
+          buildMore(context,noMore),
         ],
       ),
     );
   }
-
-  SliverToBoxAdapter buildMore(BuildContext context) {
-    Widget content;
-    if (noMore) {
-      content = Container();
-    } else {
-      content = WaveLoading(
-        size: 24,
-      );
-    }
-    return SliverToBoxAdapter(
-      child: Container(
-        height: 50,
-        child: Center(
-          child: content,
-        ),
-      ),
+}
+///加载更多
+SliverToBoxAdapter buildMore(BuildContext context,bool noMore) {
+  Widget content;
+  if (noMore) {
+    content = Container();
+  } else {
+    content = WaveLoading(
+      size: 24,
     );
   }
+  return SliverToBoxAdapter(
+    child: Container(
+      height: 50,
+      child: Center(
+        child: content,
+      ),
+    ),
+  );
 }
 
 class _Banner extends StatefulWidget {

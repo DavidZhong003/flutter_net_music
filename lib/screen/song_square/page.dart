@@ -5,6 +5,7 @@ import 'package:flutter_net_music/redux/reducers/main.dart';
 import 'package:flutter_net_music/screen/play_page/play_bar.dart';
 import 'package:flutter_net_music/screen/song_list/song_list.dart';
 import 'package:flutter_net_music/screen/song_square/recommend.dart';
+import 'package:flutter_net_music/screen/song_square/tag.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 
 class SongSquarePage extends StatelessWidget {
@@ -24,12 +25,16 @@ class SongSquarePage extends StatelessWidget {
   }
 
   TabBarView _buildTabBarView() {
-    List<Widget> children = [];
-    children.add(RecommendTab());
-    children.add(RecommendTab());
-    children.add(RecommendTab());
-    children.add(RecommendTab());
-    children.add(RecommendTab());
+    List<Widget> children = _tabs.map((tag) {
+      if (tag == "推荐") {
+        return RecommendTab();
+      } else if (tag == "精品") {
+        return RecommendTab();
+      }
+      return TagSongListWidget(
+        tag: tag,
+      );
+    }).toList();
     return TabBarView(
       children: children,
     );
@@ -46,7 +51,7 @@ class SongSquarePage extends StatelessWidget {
             elevation: 0,
             backgroundColor: Colors.transparent,
             bottom: TabBar(
-              isScrollable: _tabs.length>5,
+              isScrollable: _tabs.length > 5,
               tabs: _tabs
                   .map((s) => Tab(
                         text: s,
@@ -61,9 +66,11 @@ class SongSquarePage extends StatelessWidget {
 
   Widget _buildBackground() {
     return StoreConnector<AppState, String>(
-        builder: (BuildContext context,String url){
-          if(url==null||url.isEmpty){
-            return Container(color: Theme.of(context).primaryColor,);
+        builder: (BuildContext context, String url) {
+          if (url == null || url.isEmpty) {
+            return Container(
+              color: Theme.of(context).primaryColor,
+            );
           }
           return HeadBlurBackground(
             stackFit: StackFit.expand,
@@ -71,6 +78,7 @@ class SongSquarePage extends StatelessWidget {
             imageUrl: url,
             isFullScreen: false,
           );
-        }, converter: (s) => s.state.songSquareState.backImage);
+        },
+        converter: (s) => s.state.songSquareState.backImage);
   }
 }
