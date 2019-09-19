@@ -9,13 +9,80 @@ class MainDrawer extends Drawer {
       : super(
             child: Column(
           children: <Widget>[
-            Expanded(child: Container()),
+            Expanded(
+                child: CustomScrollView(
+              slivers: <Widget>[
+                SliverToBoxAdapter(
+                  child: _PersonHead(),
+                ),
+              ],
+            )),
             Divider(
               height: 0.5,
             ),
             _DrawerBottom(),
           ],
         ));
+}
+
+class _PersonHead extends StatelessWidget {
+  static const hintText = "登录网易云音乐";
+  static const text2 = "手机电脑多端同步,尽享海量高品质音乐";
+
+  @override
+  Widget build(BuildContext context) {
+    return _buildNeedLogin(context);
+  }
+
+  Widget _buildNeedLogin(BuildContext context) {
+    var themeData = Theme.of(context);
+    return Container(
+      height: 180,
+      padding: EdgeInsets.only(top: 20),
+      color: themeData.scaffoldBackgroundColor
+          .withBlue(0xf3)
+          .withGreen(0xf3)
+          .withRed(0xf3),
+      child: Center(
+          child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          Text(
+            hintText,
+            style: themeData.textTheme.caption,
+          ),
+          SizedBox(
+            height: 8,
+          ),
+          Text(
+            text2,
+            style: themeData.textTheme.caption,
+          ),
+          SizedBox(
+            height: 16,
+          ),
+          ButtonTheme(
+            height: 28,
+            minWidth: 120,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: OutlineButton(
+              highlightedBorderColor: Colors.transparent,
+              focusColor: Colors.white,
+              onPressed: () {
+                //todo 跳转登录页
+              },
+              child: Text(
+                "立即登录",
+                style: themeData.textTheme.caption,
+              ),
+            ),
+          )
+        ],
+      )),
+    );
+  }
 }
 
 class _DrawerBottom extends StatelessWidget {
