@@ -17,6 +17,16 @@ class MyIcons {
   static const IconData mv = const _MyIconData(0xe601);
   static const IconData delete_item = const _MyIconData(0xe603);
   static const IconData volume_up = const _MyIconData(0xe6c0);
+
+  static const IconData exit = const _MyIconData(0xe604);
+  static const IconData time = const _MyIconData(0xe632);
+  static const IconData mall = const _MyIconData(0xe602);
+  static const IconData ticket = const _MyIconData(0xe6cb);
+  static const IconData order_form = const _MyIconData(0xe6cb);
+  static const IconData moon = const _MyIconData(0xe741);
+  static const IconData sun = const _MyIconData(0xe606);
+  static const IconData bell = const _MyIconData(0xe86a);
+  static const IconData setting = const _MyIconData(0xe607);
 }
 
 class _MyIconData extends IconData {

@@ -27,16 +27,28 @@ ThemeData _buildTheme(Color primaryColor, {Color buttonColor}) {
 }
 
 @immutable
-// ignore: must_be_immutable
 class ThemeState {
-  ThemeData _theme;
 
-  ThemeData get theme => _theme ?? quietThemes.first;
+  final ThemeData theme;
 
-  ThemeState(this._theme);
+  final ThemeData lastTheme;
 
-  ThemeState.initState() {
-    _theme = quietThemes.first;
+  ThemeState({this.theme, this.lastTheme});
+
+  ThemeState.initState()
+      : theme = quietThemes.first,
+        lastTheme = quietThemes.first;
+
+  bool isNightMode() => theme == ThemeData.dark();
+
+  ThemeState copyWith({
+    ThemeData theme,
+    ThemeData lastTheme,
+  }) {
+    return ThemeState(
+      theme: theme ?? this.theme,
+      lastTheme: lastTheme??this.lastTheme,
+    );
   }
 }
 
@@ -46,12 +58,25 @@ class ChangeThemeAction extends ActionType<int> {
   ChangeThemeAction(this.index) : super(payload: index);
 }
 
+class ChangeNightTheme extends ActionType<bool> {
+  final bool isNight;
+
+  ChangeNightTheme(this.isNight) : super(payload: isNight);
+}
+
 class ThemeReducer extends Reducer<ThemeState> {
   @override
   ThemeState redux(ThemeState state, action) {
     switch (action.runtimeType) {
       case ChangeThemeAction:
-        return ThemeState(quietThemes[action.payload < 0 ? 0 : action.payload]);
+        final now = quietThemes[action.payload < 0 ? 0 : action.payload];
+        return state.copyWith(theme: now, lastTheme: state.theme);
+      case ChangeNightTheme:
+        bool isNight = action.payload;
+        final last = state.theme;
+        return state.copyWith(
+            theme: isNight ? quietThemes.last : state.lastTheme,
+            lastTheme: last);
     }
     return state;
   }
