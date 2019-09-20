@@ -1,9 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_net_music/style/font.dart';
-import 'package:flutter_net_music/utils/print.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'dart:math';
 
 class MainTabPage extends StatelessWidget {
   @override
@@ -369,19 +367,24 @@ class NetImageView extends StatelessWidget {
       imageUrl: url,
       imageBuilder: imageBuilder,
       fit: fit,
-      placeholder: (context, url) =>
-          placeholder ??
-          AspectRatio(
-            aspectRatio: holderAspectRatio,
-            child: Center(child: Icon(FontAwesomeIcons.music)),
-          ),
+      placeholderFadeInDuration: Duration(milliseconds: 600),
+      placeholder: (context, url) => placeholder ?? _buildDefaultPlaceholder(context),
       errorWidget: (context, url, error) => Center(
-        child: errorWidget ??
-            AspectRatio(
-              aspectRatio: holderAspectRatio,
-              child: Center(child: Icon(Icons.error_outline)),
-            ),
+        child: errorWidget ?? _buildDefaultError(context),
       ),
+
+    );
+  }
+
+  Widget _buildDefaultPlaceholder(BuildContext context){
+
+    return Center(child: Icon(FontAwesomeIcons.music));
+  }
+
+  Widget _buildDefaultError(BuildContext context){
+    return AspectRatio(
+      child: Center(child: Icon(Icons.error_outline)),
+      aspectRatio: holderAspectRatio,
     );
   }
 }

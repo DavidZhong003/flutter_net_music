@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/material_footer.dart';
 import 'package:flutter_easyrefresh/material_header.dart';
@@ -47,8 +46,8 @@ class FoundPageState extends State<StatefulWidget> {
         ),
         firstRefresh: false,
         refreshFooter: MaterialFooter(key: _footerKey),
-        child: SingleChildScrollView(
-          child: buildContent(context),
+        child: CustomScrollView(
+          slivers:buildContent(context),
         ),
         onRefresh: () async {
           StoreContainer.dispatch(RandomPersonalizedSongAction());
@@ -56,16 +55,15 @@ class FoundPageState extends State<StatefulWidget> {
         loadMore: () async {});
   }
 
-  Widget buildContent(BuildContext context) {
-    return Column(
-      children: <Widget>[
-        BannerWidget(),
-        buildCenterButton(),
-        Divider(),
-        PersonalizedSongListWidget(),
-        NewsSongOrAlbumsWidget(),
-      ],
-    );
+  List<Widget> buildContent(BuildContext context) {
+    List<Widget> content = [
+      BannerWidget(),
+      buildCenterButton(),
+      Divider(),
+      PersonalizedSongListWidget(),
+      NewsSongOrAlbumsWidget(),
+    ];
+    return content.map((w)=>SliverToBoxAdapter(child: w,)).toList();
   }
 
   Widget buildCenterButton() {
@@ -383,8 +381,8 @@ class SongCoverWidget extends StatelessWidget {
       );
     }
     Widget text;
-    if(name!=null){
-      text=Expanded(
+    if (name != null) {
+      text = Expanded(
         child: Padding(
           padding: textPadding,
           child: Text(
@@ -401,7 +399,7 @@ class SongCoverWidget extends StatelessWidget {
       borderRadius: BorderRadius.circular(5),
       child: imageView,
     );
-    if(text!=null){
+    if (text != null) {
       content = Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
