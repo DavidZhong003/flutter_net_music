@@ -39,10 +39,7 @@ class _PersonHead extends StatelessWidget {
     return Container(
       height: 180,
       padding: EdgeInsets.only(top: 20),
-      color: themeData.scaffoldBackgroundColor
-          .withBlue(0xf3)
-          .withGreen(0xf3)
-          .withRed(0xf3),
+      color: themeData.brightness==Brightness.light?Colors.grey[100]:Colors.black12,
       child: Center(
           child: Column(
         mainAxisSize: MainAxisSize.min,
