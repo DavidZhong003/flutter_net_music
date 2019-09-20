@@ -3,6 +3,8 @@ import 'package:flutter_net_music/my_font/my_icon.dart';
 import 'package:flutter_net_music/redux/reducers/main.dart';
 import 'package:flutter_net_music/theme.dart';
 import 'package:flutter_redux/flutter_redux.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:toast/toast.dart';
 
 class MainDrawer extends Drawer {
   MainDrawer()
@@ -15,6 +17,29 @@ class MainDrawer extends Drawer {
                 SliverToBoxAdapter(
                   child: _PersonHead(),
                 ),
+                SliverToBoxAdapter(
+                  child: _CenterButtonGroup(),
+                ),
+                sliverDivider(),
+                _ContentList(
+                  map: {
+                    "演出": MyIcons.ticket,
+                    "商城": MyIcons.mall,
+                    "附近的人": Icons.location_on,
+                    "游戏推荐": Icons.games,
+                    "口袋铃声": MyIcons.bell,
+                  },
+                ),
+                sliverDivider(),
+                _ContentList(map: {
+                  "我的订单": MyIcons.order_form,
+                  "定时停止播放": MyIcons.time,
+                  "扫一扫": FontAwesomeIcons.qrcode,
+                  "音乐闹钟": Icons.timer,
+                  "在线听歌免流量": Icons.card_travel,
+                  "优惠券": Icons.assignment,
+                  "青少年模式": Icons.beenhere,
+                }),
               ],
             )),
             Divider(
@@ -23,11 +48,57 @@ class MainDrawer extends Drawer {
             _DrawerBottom(),
           ],
         ));
+
+  ///创建分割线
+  static SliverToBoxAdapter sliverDivider() => SliverToBoxAdapter(
+        child: Padding(
+          padding:
+              const EdgeInsets.symmetric(vertical: 8,horizontal: 16),
+          child: Divider(
+            height: 0.5,
+          ),
+        ),
+      );
 }
 
+class _ContentList extends StatelessWidget {
+  final Map<String, IconData> map;
+
+  const _ContentList({Key key, @required this.map}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final keys = map.keys;
+    return SliverList(
+      delegate: SliverChildBuilderDelegate((context, index) {
+        final text = keys.elementAt(index);
+        return InkWell(
+          onTap: () {
+            haveNotCompleteTap(context);
+          },
+          child: Row(
+            children: <Widget>[
+              Padding(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 4,horizontal: 16),
+                child: _LeftIconText(
+                  iconData: map[text],
+                  text: text,
+                  textPaddingLeft: 12,
+                ),
+              ),
+            ],
+          ),
+        );
+      }, childCount: keys.length),
+    );
+  }
+}
+
+///头部
 class _PersonHead extends StatelessWidget {
-  static const hintText = "登录网易云音乐";
-  static const text2 = "手机电脑多端同步,尽享海量高品质音乐";
+  static const LOGIN_IN_NET_MUSIC = "登录网易云音乐";
+  static const ENJOY_MUSIC = "手机电脑多端同步,尽享海量高品质音乐";
 
   @override
   Widget build(BuildContext context) {
@@ -39,20 +110,22 @@ class _PersonHead extends StatelessWidget {
     return Container(
       height: 180,
       padding: EdgeInsets.only(top: 20),
-      color: themeData.brightness==Brightness.light?Colors.grey[100]:Colors.black12,
+      color: themeData.brightness == Brightness.light
+          ? Colors.grey[100]
+          : Colors.black12,
       child: Center(
           child: Column(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           Text(
-            hintText,
+            LOGIN_IN_NET_MUSIC,
             style: themeData.textTheme.caption,
           ),
           SizedBox(
             height: 8,
           ),
           Text(
-            text2,
+            ENJOY_MUSIC,
             style: themeData.textTheme.caption,
           ),
           SizedBox(
@@ -82,6 +155,93 @@ class _PersonHead extends StatelessWidget {
   }
 }
 
+///中间按钮组
+class _CenterButtonGroup extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(8),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: <Widget>[
+          IconTopButton(
+            icon: Icons.mail_outline,
+            text: "我的消息",
+          ),
+          IconTopButton(
+            icon: Icons.person_outline,
+            text: "我的好友",
+          ),
+          IconTopButton(
+            icon: Icons.mic,
+            text: "听歌识曲",
+          ),
+          IconTopButton(
+            icon: Icons.color_lens,
+            text: "个性装扮",
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+haveNotCompleteTap(BuildContext context) {
+  Toast.show("功能未完成", context);
+}
+
+///按钮
+class IconTopButton extends StatelessWidget {
+  final IconData icon;
+
+  final String text;
+
+  final void Function() onTap;
+
+  final EdgeInsetsGeometry padding;
+
+  final TextStyle textStyle;
+
+  const IconTopButton(
+      {Key key,
+      @required this.icon,
+      @required this.text,
+      this.onTap,
+      this.padding = const EdgeInsets.all(8.0),
+      this.textStyle})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap ??
+          () {
+            haveNotCompleteTap(context);
+          },
+      child: Padding(
+        padding: padding,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Icon(
+              icon,
+            ),
+            SizedBox(
+              height: 8,
+            ),
+            Text(
+              text,
+              style: textStyle ?? Theme.of(context).textTheme.caption,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+///底部控制
 class _DrawerBottom extends StatelessWidget {
   static const padding = const EdgeInsets.all(8.0);
 
