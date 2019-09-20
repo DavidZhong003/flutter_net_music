@@ -344,6 +344,8 @@ class NetImageView extends StatelessWidget {
 
   final Widget errorWidget;
 
+  final double holderAspectRatio;
+
   final Widget Function(BuildContext context, ImageProvider imageProvider)
       imageBuilder;
 
@@ -355,7 +357,8 @@ class NetImageView extends StatelessWidget {
       this.fit = BoxFit.fill,
       this.placeholder,
       this.errorWidget,
-      this.imageBuilder})
+      this.imageBuilder,
+      this.holderAspectRatio = 1})
       : super(key: key);
 
   @override
@@ -368,18 +371,17 @@ class NetImageView extends StatelessWidget {
       fit: fit,
       placeholder: (context, url) =>
           placeholder ??
-          Container(
-            width: width,
-            height: height,
-            child: Icon(FontAwesomeIcons.music),
+          AspectRatio(
+            aspectRatio: holderAspectRatio,
+            child: Center(child: Icon(FontAwesomeIcons.music)),
           ),
-      errorWidget: (context, url, error) =>
-          errorWidget ??
-          Container(
-            width: width,
-            height: height,
-            child: Icon(Icons.error_outline),
-          ),
+      errorWidget: (context, url, error) => Center(
+        child: errorWidget ??
+            AspectRatio(
+              aspectRatio: holderAspectRatio,
+              child: Center(child: Icon(Icons.error_outline)),
+            ),
+      ),
     );
   }
 }
