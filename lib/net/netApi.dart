@@ -1,4 +1,5 @@
 import 'package:flutter_net_music/redux/actions/home_found.dart';
+import 'package:flutter_net_music/redux/actions/login.dart';
 
 import 'dio_helper.dart';
 
@@ -47,13 +48,13 @@ class ApiService {
 
   ///歌单
   static Future<Map<String, dynamic>> getSongList(
-      {String cat, int limit = 30, int page = 0,SuccessHandler successHandler}) {
+      {String cat,
+      int limit = 30,
+      int page = 0,
+      SuccessHandler successHandler}) {
     String url =
         "/top/playlist?cat=${cat ?? "全部"}&limit=$limit&offset=${(page - 1) * limit}";
-    return DioUtils.request(
-      url,
-      successHandler: successHandler
-    );
+    return DioUtils.request(url, successHandler: successHandler);
   }
 
   ///精品歌单
@@ -61,6 +62,14 @@ class ApiService {
     String url = "/top/playlist/highquality?limit=$limit";
     return DioUtils.request(
       url,
+    );
+  }
+
+  ///登录
+  static Future<Map<String, dynamic>> login(String phone, String pwd) {
+    return DioUtils.request(
+      "/login/cellphone?phone=$phone&password=$pwd",
+      successHandler: (map) => LoginSuccessAction(map),
     );
   }
 }

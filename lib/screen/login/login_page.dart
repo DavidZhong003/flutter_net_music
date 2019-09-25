@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_net_music/net/netApi.dart';
+import 'package:flutter_net_music/net/net_widget.dart';
+import 'package:flutter_net_music/routes.dart';
 import 'package:toast/toast.dart';
 
 class LoginPage extends StatelessWidget {
@@ -151,9 +154,10 @@ class _LoginPhoneState extends State<_LoginPhoneWidget> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () {
+        focusNode.unfocus();
         if (!_isInputPhone) {
           setState(() {
-            if(_isOnSwitchKey){
+            if (_isOnSwitchKey) {
               return;
             }
             //返回手机号页面
@@ -247,7 +251,7 @@ class _LoginPhoneState extends State<_LoginPhoneWidget> {
   }
 
   void _onButtonPressed(BuildContext context) {
-    if(_isOnSwitchKey){
+    if (_isOnSwitchKey) {
       return;
     }
     if (!_isInputPhone) {
@@ -266,9 +270,10 @@ class _LoginPhoneState extends State<_LoginPhoneWidget> {
         _switchKeyboardType();
       });
     } else {
-      Toast.show("手机号码错误", context);
+      Toast.show("手机号码错误", context, gravity: 1);
     }
   }
+
   /// 先隐藏键盘在弹出键盘,切换输入方式
   void _switchKeyboardType() {
     _isOnSwitchKey = true;
@@ -280,8 +285,38 @@ class _LoginPhoneState extends State<_LoginPhoneWidget> {
       _isOnSwitchKey = false;
     });
   }
-  ///网络登录
-  void _onNetLogin(BuildContext context) async{
 
+  ///网络登录
+  void _onNetLogin(BuildContext context) async {
+    _onLoading(context);
+     Map<String,dynamic> result= await ApiService.login(_phone.trim(), _passWorld.trim());
+    Navigator.pop(context);
+    if(result.containsKey("code")&&result["code"]==200){
+       ///成功,回到首页
+       Navigator.of(context).popUntil(ModalRoute.withName(PathName.ROUTE_MAIN));
+     }else{
+       ///登录错误
+       Toast.show(result["msg"], context);
+     }
+
+  }
+
+  void _onLoading(BuildContext context) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext ctx) {
+        return Scaffold(
+          backgroundColor: Colors.transparent,
+          body: Center(
+            child: SizedBox(
+              width: 120,
+              height: 120,
+              child: Card(child: WaveLoading()),
+            ),
+          ),
+        );
+      },
+    );
   }
 }
