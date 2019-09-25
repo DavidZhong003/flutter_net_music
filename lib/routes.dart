@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_net_music/screen/login/login_page.dart';
 import 'package:flutter_net_music/screen/main_page.dart';
 import 'package:flutter_net_music/screen/play_page/play_page.dart';
 import 'package:flutter_net_music/screen/song_list/song_list.dart';
@@ -15,6 +16,7 @@ class PathName {
 final Map<String, WidgetBuilder> routes = {
   PathName.ROUTE_MAIN: (context) => MainPage(),
   PathName.ROUTE_MUSIC_PLAY: (context) => MusicPlayPage(),
+  PathName.ROUTE_LOGIN:(context) => LoginPage(),
 };
 
 ///跳转歌单列表页

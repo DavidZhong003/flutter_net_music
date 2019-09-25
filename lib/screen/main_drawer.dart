@@ -6,6 +6,8 @@ import 'package:flutter_redux/flutter_redux.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:toast/toast.dart';
 
+import '../routes.dart';
+
 class MainDrawer extends Drawer {
   MainDrawer()
       : super(
@@ -141,7 +143,7 @@ class _PersonHead extends StatelessWidget {
               highlightedBorderColor: Colors.transparent,
               focusColor: Colors.white,
               onPressed: () {
-                //todo 跳转登录页
+                Navigator.of(context).pushNamed(PathName.ROUTE_LOGIN);
               },
               child: Text(
                 "立即登录",
