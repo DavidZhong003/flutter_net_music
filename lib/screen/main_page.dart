@@ -5,7 +5,6 @@ import 'package:flutter_net_music/style/font.dart';
 import 'package:flutter_net_music/theme.dart';
 import 'package:flutter_net_music/utils/permission.dart';
 import 'package:flutter_redux/flutter_redux.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'main_tab_page.dart';
 import 'found_tab_page.dart';
@@ -44,7 +43,6 @@ class _MainState extends State<MainPage> {
 
   @override
   Widget build(BuildContext context) {
-    ScreenUtil.instance = ScreenUtil(width: 720, height: 1280)..init(context);
     return DefaultTabController(
       length: tabs.length,
       initialIndex: 1,
