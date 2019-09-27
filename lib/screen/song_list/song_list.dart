@@ -50,57 +50,61 @@ class SongsListPage extends StatelessWidget {
                   pinned: true,
                   elevation: 0,
                   expandedHeight: 336,
+                  iconTheme: ThemeData.dark().iconTheme,
                   backgroundColor: Colors.transparent,
-                  flexibleSpace: SongFlexibleSpaceBar(
-                    collapsedTitle: playlist["name"],
-                    expandedTitle: "歌单",
-                    subTitle: copywriter,
-                    content: SongCoverContent(
-                      shareCount: playlist["shareCount"].toString(),
-                      coverUrl: playlist["coverImgUrl"],
-                      title: playlist["name"],
-                      creatorName: creator["nickname"],
-                      creatorUrl: creator["avatarUrl"],
-                      playCount: formattedNumber(playlist["playCount"]),
-                      description: playlist["description"],
-                      onCoverTap: emptyTap,
-                      onCreatorTap: emptyTap,
-                      commentCount: playlist["commentCount"].toString(),
+                  flexibleSpace: Theme(
+                    data: ThemeData.dark(),
+                    child: SongFlexibleSpaceBar(
+                      collapsedTitle: playlist["name"],
+                      expandedTitle: "歌单",
+                      subTitle: copywriter,
+                      content: SongCoverContent(
+                        shareCount: playlist["shareCount"].toString(),
+                        coverUrl: playlist["coverImgUrl"],
+                        title: playlist["name"],
+                        creatorName: creator["nickname"],
+                        creatorUrl: creator["avatarUrl"],
+                        playCount: formattedNumber(playlist["playCount"]),
+                        description: playlist["description"],
+                        onCoverTap: emptyTap,
+                        onCreatorTap: emptyTap,
+                        commentCount: playlist["commentCount"].toString(),
+                      ),
+                      background: HeadBlurBackground(
+                        imageUrl: playlist["coverImgUrl"],
+                      ),
+                      actions: <Widget>[
+                        IconButton(icon: Icon(Icons.search), onPressed: emptyTap),
+                        PopupMenuButton(itemBuilder: (BuildContext context) {
+                          return [
+                            PopupMenuItem(
+                              child: ListIconTitle(
+                                Icons.storage,
+                                "选择歌曲排序",
+                                emptyTap,
+                                showDivider: false,
+                              ),
+                            ),
+                            PopupMenuItem(
+                              child: ListIconTitle(
+                                FontAwesomeIcons.trashAlt,
+                                "选择歌曲排序",
+                                emptyTap,
+                                showDivider: false,
+                              ),
+                            ),
+                            PopupMenuItem(
+                              child: ListIconTitle(
+                                Icons.warning,
+                                "举报",
+                                emptyTap,
+                                showDivider: false,
+                              ),
+                            ),
+                          ];
+                        })
+                      ],
                     ),
-                    background: HeadBlurBackground(
-                      imageUrl: playlist["coverImgUrl"],
-                    ),
-                    actions: <Widget>[
-                      IconButton(icon: Icon(Icons.search), onPressed: emptyTap),
-                      PopupMenuButton(itemBuilder: (BuildContext context) {
-                        return [
-                          PopupMenuItem(
-                            child: ListIconTitle(
-                              Icons.storage,
-                              "选择歌曲排序",
-                              emptyTap,
-                              showDivider: false,
-                            ),
-                          ),
-                          PopupMenuItem(
-                            child: ListIconTitle(
-                              FontAwesomeIcons.trashAlt,
-                              "选择歌曲排序",
-                              emptyTap,
-                              showDivider: false,
-                            ),
-                          ),
-                          PopupMenuItem(
-                            child: ListIconTitle(
-                              Icons.warning,
-                              "举报",
-                              emptyTap,
-                              showDivider: false,
-                            ),
-                          ),
-                        ];
-                      })
-                    ],
                   ),
                   bottom: SuspendedMusicHeader(playlist["trackCount"]),
                 ),

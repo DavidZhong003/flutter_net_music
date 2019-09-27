@@ -47,7 +47,7 @@ class FoundPageState extends State<StatefulWidget> {
         firstRefresh: false,
         refreshFooter: MaterialFooter(key: _footerKey),
         child: CustomScrollView(
-          slivers:buildContent(context),
+          slivers: buildContent(context),
         ),
         onRefresh: () async {
           StoreContainer.dispatch(RandomPersonalizedSongAction());
@@ -63,7 +63,11 @@ class FoundPageState extends State<StatefulWidget> {
       PersonalizedSongListWidget(),
       NewsSongOrAlbumsWidget(),
     ];
-    return content.map((w)=>SliverToBoxAdapter(child: w,)).toList();
+    return content
+        .map((w) => SliverToBoxAdapter(
+              child: w,
+            ))
+        .toList();
   }
 
   Widget buildCenterButton() {
@@ -369,10 +373,13 @@ class SongCoverWidget extends StatelessWidget {
             child: Row(
               children: <Widget>[
                 Icon(Icons.play_arrow,
-                    color: theme.primaryIconTheme.color, size: 14),
+                    color: Colors.white,
+                    size: 14),
                 Text(
                   playCount ?? "",
-                  style: theme.primaryTextTheme.caption,
+                  style: theme
+                      .primaryTextTheme
+                      .caption.copyWith(color: Colors.white70),
                 ),
               ],
             ),
