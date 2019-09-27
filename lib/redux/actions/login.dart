@@ -6,3 +6,5 @@ class LoginSuccessAction extends ActionType<Map<String,dynamic>> {
 
   LoginSuccessAction(this.data) : super(payload: data);
 }
+/// 从sp 获取用户信息
+class InitUserAction extends VoidAction {}

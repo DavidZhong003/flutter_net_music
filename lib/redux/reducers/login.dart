@@ -1,4 +1,5 @@
 import 'package:flutter_net_music/redux/actions/login.dart';
+import 'package:flutter_net_music/utils/shared_preferences_helper.dart';
 
 import 'main.dart';
 import 'package:flutter/material.dart';
@@ -33,6 +34,16 @@ class UserInfoState {
         avatarUrl = _EMPTY;
 
   bool get isLogin => userId != -1;
+
+  UserInfoState fromLoginMap(Map<String, dynamic> map){
+    if(map.isEmpty){
+      return UserInfoState.initialState();
+    }
+    return this.copyWith(
+        userId: map["account"]["id"],
+        avatarUrl: map["profile"]["avatarUrl"],
+        name: map["profile"]["nickname"]);
+  }
 }
 
 class UserReducer extends Reducer<UserInfoState> {
@@ -41,10 +52,10 @@ class UserReducer extends Reducer<UserInfoState> {
     switch (action.runtimeType) {
       case LoginSuccessAction:
         Map<String, dynamic> map = action.payload;
-        return state.copyWith(
-            userId: map["account"]["id"],
-            avatarUrl: map["profile"]["avatarUrl"],
-            name: map["profile"]["nickname"]);
+        SpHelper.saveUserInfo(map);
+        return state.fromLoginMap(map);
+      case InitUserAction:
+        return state.fromLoginMap(SpHelper.getUserInfo());
     }
     return state;
   }

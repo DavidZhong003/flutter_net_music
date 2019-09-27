@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_net_music/my_font/my_icon.dart';
+import 'package:flutter_net_music/redux/reducers/login.dart';
 import 'package:flutter_net_music/redux/reducers/main.dart';
 import 'package:flutter_net_music/theme.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:toast/toast.dart';
-
+import 'song_list/song_list.dart' show ClipOvalImageView, HeadBlurBackground;
 import '../routes.dart';
 
 class MainDrawer extends Drawer {
@@ -54,8 +55,7 @@ class MainDrawer extends Drawer {
   ///创建分割线
   static SliverToBoxAdapter sliverDivider() => SliverToBoxAdapter(
         child: Padding(
-          padding:
-              const EdgeInsets.symmetric(vertical: 8,horizontal: 16),
+          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
           child: Divider(
             height: 0.5,
           ),
@@ -82,7 +82,7 @@ class _ContentList extends StatelessWidget {
             children: <Widget>[
               Padding(
                 padding:
-                    const EdgeInsets.symmetric(vertical: 4,horizontal: 16),
+                    const EdgeInsets.symmetric(vertical: 4, horizontal: 16),
                 child: _LeftIconText(
                   iconData: map[text],
                   text: text,
@@ -104,7 +104,49 @@ class _PersonHead extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return _buildNeedLogin(context);
+    return StoreConnector<AppState, UserInfoState>(
+        builder: (BuildContext context, UserInfoState state) {
+          if (!state.isLogin) {
+            return _buildNeedLogin(context);
+          }
+          return Container(
+            height: 180,
+            child: Stack(
+              children: <Widget>[
+                HeadBlurBackground(
+                  stackFit: StackFit.expand,
+                  opacity: 0.1,
+                  imageUrl: state.avatarUrl,
+                  isFullScreen: false,
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 60, left: 16),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      ClipOvalImageView(
+                        creatorUrl: state.avatarUrl,
+                        size: 72,
+                      ),
+                      SizedBox(
+                        height: 16,
+                      ),
+                      Text(
+                        state.nickname,
+                        style: Theme.of(context)
+                            .textTheme
+                            .caption
+                            .copyWith(fontSize: 18,color: Colors.black54),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+        converter: (s) => s.state.userInfoState);
   }
 
   Widget _buildNeedLogin(BuildContext context) {

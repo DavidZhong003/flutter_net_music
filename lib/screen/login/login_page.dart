@@ -63,7 +63,10 @@ class LoginPage extends StatelessWidget {
         minWidth: 250,
         height: 40,
         title: "立即体验",
-        onPressed: () {},
+        onPressed: () {
+          Navigator.of(context)
+              .popUntil(ModalRoute.withName(PathName.ROUTE_MAIN));
+        },
       ),
     );
   }
@@ -289,16 +292,19 @@ class _LoginPhoneState extends State<_LoginPhoneWidget> {
   ///网络登录
   void _onNetLogin(BuildContext context) async {
     _onLoading(context);
-     Map<String,dynamic> result= await ApiService.login(_phone.trim(), _passWorld.trim());
+    Map<String, dynamic> result =
+        await ApiService.login(_phone.trim(), _passWorld.trim());
     Navigator.pop(context);
-    if(result.containsKey("code")&&result["code"]==200){
-       ///成功,回到首页
-       Navigator.of(context).popUntil(ModalRoute.withName(PathName.ROUTE_MAIN));
-     }else{
-       ///登录错误
-       Toast.show(result["msg"], context);
-     }
-
+    if (result != null &&
+        result.isNotEmpty &&
+        result.containsKey("code") &&
+        result["code"] == 200) {
+      ///成功,回到首页
+      Navigator.of(context).popUntil(ModalRoute.withName(PathName.ROUTE_MAIN));
+    } else {
+      ///登录错误
+      Toast.show(result["msg"], context);
+    }
   }
 
   void _onLoading(BuildContext context) {
