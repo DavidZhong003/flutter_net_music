@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_net_music/my_font/my_icon.dart';
+import 'package:flutter_net_music/redux/actions/login.dart';
 import 'package:flutter_net_music/redux/reducers/login.dart';
 import 'package:flutter_net_music/redux/reducers/main.dart';
 import 'package:flutter_net_music/theme.dart';
@@ -122,7 +123,6 @@ class _PersonHead extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.only(top: 60, left: 16),
                   child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       ClipOvalImageView(
@@ -137,7 +137,7 @@ class _PersonHead extends StatelessWidget {
                         style: Theme.of(context)
                             .textTheme
                             .caption
-                            .copyWith(fontSize: 18,color: Colors.black54),
+                            .copyWith(fontSize: 18),
                       ),
                     ],
                   ),
@@ -146,6 +146,7 @@ class _PersonHead extends StatelessWidget {
             ),
           );
         },
+        onInit: (s)=>s.dispatch(InitUserAction()),
         converter: (s) => s.state.userInfoState);
   }
 
