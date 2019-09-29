@@ -24,22 +24,19 @@ class MainTabPage extends StatelessWidget {
   }
 
   Widget buildList(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.only(left: 16, bottom: 15, right: 16),
-      child: Column(
-        children: <Widget>[
-          ListIconTitle(FontAwesomeIcons.music, "本地音乐", emptyTap),
-          ListIconTitle(FontAwesomeIcons.play, "最近播放", emptyTap),
-          ListIconTitle(FontAwesomeIcons.download, "下载管理", emptyTap),
-          ListIconTitle(FontAwesomeIcons.podcast, "我的电台", emptyTap),
-          ListIconTitle(
-            FontAwesomeIcons.star,
-            "我的收藏",
-            emptyTap,
-            showDivider: false,
-          ),
-        ],
-      ),
+    return Column(
+      children: <Widget>[
+        ListIconTitle(FontAwesomeIcons.music, "本地音乐", emptyTap),
+        ListIconTitle(FontAwesomeIcons.play, "最近播放", emptyTap),
+        ListIconTitle(FontAwesomeIcons.download, "下载管理", emptyTap),
+        ListIconTitle(FontAwesomeIcons.podcast, "我的电台", emptyTap),
+        ListIconTitle(
+          FontAwesomeIcons.star,
+          "我的收藏",
+          emptyTap,
+          showDivider: false,
+        ),
+      ],
     );
   }
 
@@ -87,33 +84,49 @@ class ListIconTitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return buildContainer(context);
-  }
-
-  Widget buildContainer(BuildContext context) {
-    Decoration decoration = ShapeDecoration(
-        shape: Border(
-            bottom:
-                BorderSide(width: 0.5, color: Theme.of(context).dividerColor)));
-    return Container(
-      decoration: showDivider ? decoration : null,
-      child: buildListTile(context),
+    Widget textContent;
+    textContent = Text(
+      text,
+      style: TextStyle(fontSize: FontSize.small),
     );
-  }
+    if (showDivider) {
+      Decoration decoration = ShapeDecoration(
+          shape: Border(
+              bottom: BorderSide(
+                  width: 0.5, color: Theme.of(context).dividerColor)));
+      textContent = Container(
+        decoration: decoration,
+        height: 50,
+        child: Align(
+          alignment: Alignment.centerLeft,
+          child: textContent,
+        ),
+      );
+    }
 
-  ListTile buildListTile(BuildContext context) {
-    return ListTile(
-      contentPadding: EdgeInsets.only(left: 16, top: 0),
-      leading: Icon(
-        icon,
-        size: 20.0,
-        color: Theme.of(context).buttonColor,
-      ),
-      title: Text(
-        text,
-        style: TextStyle(fontSize: FontSize.small),
-      ),
+    return InkWell(
       onTap: onTap,
+      child: ConstrainedBox(
+        constraints: BoxConstraints(minHeight: 50),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Expanded(
+                flex: 2,
+                child: Center(
+                  child: Icon(
+                    icon,
+                    size: 20.0,
+                    color: Theme.of(context).buttonColor,
+                  ),
+                )),
+            Expanded(
+              flex: 9,
+              child: textContent,
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
@@ -132,53 +145,71 @@ class ItemTab extends StatelessWidget {
   final EdgeInsetsGeometry padding;
 
   final EdgeInsetsGeometry margin;
-  final double fontSize;
+
+  final TextStyle textStyle;
+
+  final bool withInkWell;
 
   const ItemTab(this.icon, this.text, this.onTap,
-      {this.size = 35,
+      {this.size = 40,
       this.elevation = 2,
       this.padding = const EdgeInsets.only(top: 8),
-      this.fontSize = FontSize.miner,
-      this.margin = const EdgeInsets.symmetric(vertical: 8, horizontal: 16)});
+      this.margin = const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+      this.textStyle,
+      this.withInkWell = false});
 
-  const ItemTab.large(this.icon, this.text, this.onTap)
-      : this.size = 45,
+  const ItemTab.large(
+    this.icon,
+    this.text,
+    this.onTap,
+  )   : this.size = 45,
         this.elevation = 1,
         this.padding = const EdgeInsets.only(top: 12),
         this.margin = null,
-        fontSize = FontSize.smaller;
+        withInkWell = false,
+        textStyle = null;
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-        onTap: onTap,
-        child: Container(
-          padding: margin,
-          child: Column(
-            children: <Widget>[
-              Material(
-                shape: CircleBorder(),
-                elevation: elevation,
-                child: ClipOval(
-                  child: Container(
-                    width: size,
-                    height: size,
-                    color: Theme.of(context).primaryColor,
-                    child: Icon(
-                      icon,
-                      color: Theme.of(context).primaryIconTheme.color,
-                    ),
-                  ),
+    Widget result = Container(
+      padding: margin,
+      child: Column(
+        children: <Widget>[
+          Material(
+            shape: CircleBorder(),
+            elevation: elevation,
+            child: ClipOval(
+              child: Container(
+                width: size,
+                height: size,
+                color: Theme.of(context).primaryColor,
+                child: Icon(
+                  icon,
+                  color: Theme.of(context).primaryIconTheme.color,
                 ),
               ),
-              Padding(padding: padding),
-              Text(
-                text,
-                style: TextStyle(fontSize: fontSize),
-              ),
-            ],
+            ),
           ),
-        ));
+          Padding(padding: padding),
+          Text(
+            text,
+            style: textStyle ?? Theme.of(context).textTheme.caption,
+          ),
+        ],
+      ),
+    );
+    if (withInkWell) {
+      result = InkWell(
+        onTap: onTap,
+        child: result,
+      );
+    } else {
+      result = GestureDetector(
+        onTap: onTap,
+        child: result,
+      );
+    }
+    return result;
   }
 }
 
@@ -368,20 +399,19 @@ class NetImageView extends StatelessWidget {
       imageBuilder: imageBuilder,
       fit: fit,
       placeholderFadeInDuration: Duration(milliseconds: 600),
-      placeholder: (context, url) => placeholder ?? _buildDefaultPlaceholder(context),
+      placeholder: (context, url) =>
+          placeholder ?? _buildDefaultPlaceholder(context),
       errorWidget: (context, url, error) => Center(
         child: errorWidget ?? _buildDefaultError(context),
       ),
-
     );
   }
 
-  Widget _buildDefaultPlaceholder(BuildContext context){
-
+  Widget _buildDefaultPlaceholder(BuildContext context) {
     return Center(child: Icon(FontAwesomeIcons.music));
   }
 
-  Widget _buildDefaultError(BuildContext context){
+  Widget _buildDefaultError(BuildContext context) {
     return AspectRatio(
       child: Center(child: Icon(Icons.error_outline)),
       aspectRatio: holderAspectRatio,
