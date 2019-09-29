@@ -8,3 +8,5 @@ class LoginSuccessAction extends ActionType<Map<String,dynamic>> {
 }
 /// 从sp 获取用户信息
 class InitUserAction extends VoidAction {}
+
+class LogoutAction extends VoidAction{}

@@ -56,6 +56,9 @@ class UserReducer extends Reducer<UserInfoState> {
         return state.fromLoginMap(map);
       case InitUserAction:
         return state.fromLoginMap(SpHelper.getUserInfo());
+      case LogoutAction :
+        SpHelper.cleanUserInfo();
+        return UserInfoState.initialState();
     }
     return state;
   }

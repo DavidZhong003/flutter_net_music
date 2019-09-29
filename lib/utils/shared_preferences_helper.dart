@@ -20,4 +20,8 @@ class SpHelper{
     }
     return jsonDecode(json);
   }
+
+  static void cleanUserInfo() {
+    SpUtil.putString(_USER, "");
+  }
 }

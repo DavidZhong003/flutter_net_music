@@ -72,6 +72,12 @@ class ApiService {
       successHandler: (map) => LoginSuccessAction(map),
     );
   }
+
+  ///退出登录
+  static Future<Map<String, dynamic>> logout() {
+    return DioUtils.request("/logout",
+        successHandler: (map) => LogoutAction());
+  }
 }
 
 /// 错误信息

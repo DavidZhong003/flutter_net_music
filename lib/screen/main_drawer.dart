@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_net_music/my_font/my_icon.dart';
+import 'package:flutter_net_music/net/netApi.dart';
 import 'package:flutter_net_music/redux/actions/login.dart';
 import 'package:flutter_net_music/redux/reducers/login.dart';
 import 'package:flutter_net_music/redux/reducers/main.dart';
@@ -328,7 +329,9 @@ class _DrawerBottom extends StatelessWidget {
                 text: "退出",
               ),
             ),
-            onTap: () {},
+            onTap: () {
+              ApiService.logout();
+            },
           ),
         ),
       ],
