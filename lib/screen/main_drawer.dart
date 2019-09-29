@@ -125,9 +125,14 @@ class _PersonHead extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      ClipOvalImageView(
-                        creatorUrl: state.avatarUrl,
-                        size: 72,
+                      ///fix 初始时候头像在中间显示
+                      Row(
+                        children: <Widget>[
+                          ClipOvalImageView(
+                            creatorUrl: state.avatarUrl,
+                            size: 72,
+                          ),
+                        ],
                       ),
                       SizedBox(
                         height: 16,
