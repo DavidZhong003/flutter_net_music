@@ -87,10 +87,11 @@ class UserSongListWidget extends StatelessWidget {
     var create = state.createSongList;
     var subList = state.subSongList;
     Widget createWidget = ExpansionSongList(
-      songTitle: "创建的歌单 (${create.length})",
+      songTitle: "创建的歌单",
+      listCount: create?.length??0,
       initExpand: true,
-      onAddTap: (){},
-      onMoreTap: (){},
+      onAddTap: () {},
+      onMoreTap: () {},
       child: (create.isNotEmpty)
           ? _buildListView(context, create)
           : _buildEmptyConvertWidget(),
@@ -98,13 +99,14 @@ class UserSongListWidget extends StatelessWidget {
     Widget subWidget = Container();
     if (subList != null && subList.isNotEmpty) {
       subWidget = ExpansionSongList(
-        songTitle: "收藏的歌单 (${subList.length})",
+        listCount: subList.length,
+        songTitle: "收藏的歌单",
         child: _buildListView(context, subList),
-        onMoreTap: (){},
+        onMoreTap: () {},
       );
     }
     return Column(
-      children: <Widget>[createWidget,subWidget],
+      children: <Widget>[createWidget, subWidget],
     );
   }
 
@@ -295,13 +297,16 @@ class ExpansionSongList extends StatefulWidget {
 
   final Widget child;
 
+  final int listCount;
+
   const ExpansionSongList(
       {Key key,
       this.initExpand = false,
       @required this.songTitle,
       this.onAddTap,
       this.onMoreTap,
-      @required this.child})
+      @required this.child,
+      @required this.listCount})
       : super(key: key);
 
   @override
@@ -332,37 +337,54 @@ class _ExpansionSongListState extends State<ExpansionSongList> {
 
   Widget buildTitle(BuildContext context) {
     List<Widget> children = [];
-
-    children.add(Expanded(
-        child: Row(
-      children: <Widget>[
-        Icon(isExpand ? Icons.keyboard_arrow_down : Icons.keyboard_arrow_right),
-        Text(
-          widget.songTitle,
-          style: TextStyle(
-              fontSize: FontSize.medium,
-              fontWeight: isExpand ? FontWeight.bold : FontWeight.normal),
-        ),
-      ],
-    )));
+    final textTheme = Theme.of(context).textTheme;
+    final iconColor = textTheme.caption.color;
+    TextStyle(
+        fontSize: FontSize.medium,
+        fontWeight: isExpand ? FontWeight.bold : FontWeight.normal);
+    children.add(
+      Expanded(
+          child: Row(
+        children: <Widget>[
+          Icon(
+            isExpand ? Icons.keyboard_arrow_down : Icons.keyboard_arrow_right,
+            color: textTheme.title.color,
+          ),
+          Text(
+            widget.songTitle,
+            style: textTheme.title.copyWith(
+                fontWeight: isExpand ? FontWeight.bold : FontWeight.normal),
+          ),
+          SizedBox(
+            width: 4,
+          ),
+          Text("(${widget.listCount})",
+              style: textTheme.caption.copyWith(fontSize: 14))
+        ],
+      )),
+    );
 
     /// add
     if (widget.onAddTap != null) {
-      children.add(GestureDetector(
-        onTap: widget.onAddTap,
-        child: Padding(
-          padding: EdgeInsets.only(right: 8, top: 4, bottom: 4),
-          child: Icon(Icons.add),
+      children.add(
+        GestureDetector(
+          onTap: widget.onAddTap,
+          child: Padding(
+            padding: EdgeInsets.only(right: 8, top: 4, bottom: 4),
+            child: Icon(Icons.add,color: iconColor,),
+          ),
         ),
-      ));
+      );
     }
 
     ///more
     if (widget.onMoreTap != null) {
-      children.add(GestureDetector(
-        onTap: emptyTap,
-        child: Icon(Icons.more_vert),
-      ));
+      children.add(
+        GestureDetector(
+          onTap: emptyTap,
+          child: Icon(Icons.more_vert,color: iconColor,),
+        ),
+      );
     }
     return InkWell(
       onTap: () {
@@ -463,7 +485,7 @@ class SongListItem extends StatelessWidget {
           ),
           IconButton(
             iconSize: 20,
-            icon: Icon(Icons.more_vert),
+            icon: Icon(Icons.more_vert,color: Theme.of(context).textTheme.caption.color,),
             onPressed: () {},
           )
         ],
