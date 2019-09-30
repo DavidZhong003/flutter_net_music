@@ -6,7 +6,7 @@ import 'package:flutter_net_music/theme.dart';
 import 'package:flutter_net_music/utils/permission.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 
-import 'main_tab_page.dart';
+import 'mine_tab_page.dart';
 import 'found_tab_page.dart';
 import 'main_drawer.dart';
 import 'dart:math';

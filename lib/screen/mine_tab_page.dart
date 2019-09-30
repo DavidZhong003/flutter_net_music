@@ -1,26 +1,27 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_net_music/model/play_list_model.dart';
+import 'package:flutter_net_music/redux/actions/mine_tab.dart';
+import 'package:flutter_net_music/redux/reducers/main.dart';
+import 'package:flutter_net_music/redux/reducers/mine_tab.dart';
 import 'package:flutter_net_music/style/font.dart';
+import 'package:flutter_redux/flutter_redux.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class MainTabPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return ListView(
-      children: <Widget>[
-        buildAir(),
-        Divider(height: 2),
-        buildList(context),
-        Container(
-          height: 5,
-          color: Theme.of(context).dividerColor,
-        ),
-        ExpansionSongList(
-          initExpand: true,
-        ),
-        ExpansionSongList()
-      ],
+    var content = SingleChildScrollView(
+      child: Column(
+        children: <Widget>[
+          buildAir(),
+          Divider(height: 2),
+          buildList(context),
+          UserSongListWidget(),
+        ],
+      ),
     );
+    return content;
   }
 
   Widget buildList(BuildContext context) {
@@ -35,6 +36,10 @@ class MainTabPage extends StatelessWidget {
           "我的收藏",
           emptyTap,
           showDivider: false,
+        ),
+        Container(
+          height: 5,
+          color: Theme.of(context).dividerColor,
         ),
       ],
     );
@@ -62,6 +67,65 @@ class MainTabPage extends StatelessWidget {
             .toList(),
       ),
     );
+  }
+}
+
+///用户歌单 Widget
+class UserSongListWidget extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return StoreConnector<AppState, UserSongListState>(
+      converter: (s) => s.state.userInfoState.songListState,
+      onInit: (s) => s.dispatch(InitUserSongListAction()),
+      builder: (context, state) {
+        return _buildContent(context, state);
+      },
+    );
+  }
+
+  Widget _buildContent(BuildContext context, UserSongListState state) {
+    var create = state.createSongList;
+    var subList = state.subSongList;
+    Widget createWidget = ExpansionSongList(
+      songTitle: "创建的歌单 (${create.length})",
+      initExpand: true,
+      onAddTap: (){},
+      onMoreTap: (){},
+      child: (create.isNotEmpty)
+          ? _buildListView(context, create)
+          : _buildEmptyConvertWidget(),
+    );
+    Widget subWidget = Container();
+    if (subList != null && subList.isNotEmpty) {
+      subWidget = ExpansionSongList(
+        songTitle: "收藏的歌单 (${subList.length})",
+        child: _buildListView(context, subList),
+        onMoreTap: (){},
+      );
+    }
+    return Column(
+      children: <Widget>[createWidget,subWidget],
+    );
+  }
+
+  Widget _buildListView(BuildContext context, List<PlayListsModel> create) {
+    var items = (context, index) {
+      var songs = create[index];
+      return SongListItem(
+          url: songs.coverImageUrl, title: songs.name, count: songs.playCount);
+    };
+
+    return ListView.builder(
+      itemBuilder: items,
+      itemCount: create.length,
+      shrinkWrap: true,
+      itemExtent: 80,
+      physics: NeverScrollableScrollPhysics(),
+    );
+  }
+
+  Widget _buildEmptyConvertWidget() {
+    return SongListItem(url: null, title: "我喜欢的音乐", count: 0);
   }
 }
 
@@ -223,7 +287,22 @@ final GestureTapCallback emptyTap = () {};
 class ExpansionSongList extends StatefulWidget {
   final bool initExpand;
 
-  const ExpansionSongList({Key key, this.initExpand = false}) : super(key: key);
+  final String songTitle;
+
+  final GestureTapCallback onAddTap;
+
+  final GestureTapCallback onMoreTap;
+
+  final Widget child;
+
+  const ExpansionSongList(
+      {Key key,
+      this.initExpand = false,
+      @required this.songTitle,
+      this.onAddTap,
+      this.onMoreTap,
+      @required this.child})
+      : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _ExpansionSongListState();
@@ -245,57 +324,56 @@ class _ExpansionSongListState extends State<ExpansionSongList> {
         buildTitle(context),
         Visibility(
           visible: isExpand,
-          child: ListView(
-            shrinkWrap: true,
-            children: <Widget>[
-              SongListItem(),
-              SongListItem(),
-            ],
-          ),
+          child: widget.child,
         )
       ],
     );
   }
 
-  Container buildTitle(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.all(8),
-      child: GestureDetector(
-        behavior: HitTestBehavior.translucent,
-        onTap: () {
-          setState(() {
-            isExpand = !isExpand;
-          });
-        },
+  Widget buildTitle(BuildContext context) {
+    List<Widget> children = [];
+
+    children.add(Expanded(
         child: Row(
-          children: <Widget>[
-            Expanded(
-                child: Row(
-              children: <Widget>[
-                Icon(isExpand
-                    ? Icons.keyboard_arrow_down
-                    : Icons.keyboard_arrow_right),
-                Text(
-                  "创建的歌单",
-                  style: TextStyle(
-                      fontSize: FontSize.medium,
-                      fontWeight:
-                          isExpand ? FontWeight.bold : FontWeight.normal),
-                ),
-              ],
-            )),
-            GestureDetector(
-              onTap: emptyTap,
-              child: Padding(
-                padding: EdgeInsets.only(right: 8, top: 4, bottom: 4),
-                child: Icon(Icons.add),
-              ),
-            ),
-            GestureDetector(
-              onTap: emptyTap,
-              child: Icon(Icons.more_vert),
-            ),
-          ],
+      children: <Widget>[
+        Icon(isExpand ? Icons.keyboard_arrow_down : Icons.keyboard_arrow_right),
+        Text(
+          widget.songTitle,
+          style: TextStyle(
+              fontSize: FontSize.medium,
+              fontWeight: isExpand ? FontWeight.bold : FontWeight.normal),
+        ),
+      ],
+    )));
+
+    /// add
+    if (widget.onAddTap != null) {
+      children.add(GestureDetector(
+        onTap: widget.onAddTap,
+        child: Padding(
+          padding: EdgeInsets.only(right: 8, top: 4, bottom: 4),
+          child: Icon(Icons.add),
+        ),
+      ));
+    }
+
+    ///more
+    if (widget.onMoreTap != null) {
+      children.add(GestureDetector(
+        onTap: emptyTap,
+        child: Icon(Icons.more_vert),
+      ));
+    }
+    return InkWell(
+      onTap: () {
+        setState(() {
+          isExpand = !isExpand;
+        });
+      },
+      child: Container(
+        padding: EdgeInsets.all(8),
+        child: Row(
+          children: children,
         ),
       ),
     );
@@ -306,30 +384,62 @@ class _ExpansionSongListState extends State<ExpansionSongList> {
 /// 歌单条目
 ///
 class SongListItem extends StatelessWidget {
-  static String url = "http://pix2.tvzhe.com/thumb/drama/74/7/240x180.jpg";
+  final String url;
+
+  final String title;
+
+  final int count;
+
+  final GestureTapCallback onTap;
+
+  final EdgeInsetsGeometry padding;
+
+  final GestureTapCallback onMoreTap;
+
+  const SongListItem({
+    Key key,
+    @required this.url,
+    @required this.title,
+    @required this.count,
+    this.onTap,
+    this.padding = const EdgeInsets.only(left: 16, top: 8, bottom: 8),
+    this.onMoreTap,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      behavior: HitTestBehavior.translucent,
-      onTap: emptyTap,
+    return InkWell(
+      onTap: onTap,
       child: buildContent(context),
     );
   }
 
   Widget buildContent(BuildContext context) {
+    Widget image = Container(
+      width: 60,
+      height: 60,
+      color: Theme.of(context).primaryColor,
+    );
+
+    if (url != null && url.isNotEmpty) {
+      image = NetImageView(
+        url: url,
+        width: 60,
+        height: 60,
+        errorWidget: image,
+      );
+    }
+
+    image = ClipRRect(
+      borderRadius: BorderRadius.circular(5),
+      child: image,
+    );
+
     return Padding(
-      padding: EdgeInsets.only(left: 16, top: 8, bottom: 8),
+      padding: padding,
       child: Row(
         children: <Widget>[
-          ClipRRect(
-            borderRadius: BorderRadius.circular(5),
-            child: NetImageView(
-              url: url,
-              width: 60,
-              height: 60,
-            ),
-          ),
+          image,
           Expanded(
             child: Padding(
                 padding: EdgeInsets.all(8),
@@ -337,14 +447,16 @@ class SongListItem extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     Text(
-                      "我喜欢的音乐",
+                      title,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                       style: TextStyle(
                           fontSize: FontSize.large,
                           fontWeight: FontWeight.bold),
                     ),
                     Padding(
                       padding: EdgeInsets.only(top: 8),
-                      child: Text("11首"),
+                      child: Text("$count首"),
                     )
                   ],
                 )),
@@ -408,7 +520,15 @@ class NetImageView extends StatelessWidget {
   }
 
   Widget _buildDefaultPlaceholder(BuildContext context) {
-    return Center(child: Icon(FontAwesomeIcons.music));
+    Widget holder = Center(child: Icon(FontAwesomeIcons.music));
+    if (width != null && height != null) {
+      holder = SizedBox(
+        width: width,
+        height: height,
+        child: holder,
+      );
+    }
+    return holder;
   }
 
   Widget _buildDefaultError(BuildContext context) {

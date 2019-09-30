@@ -7,7 +7,7 @@ import 'package:flutter_net_music/redux/actions/song_square.dart';
 import 'package:flutter_net_music/redux/reducers/main.dart';
 import 'package:flutter_net_music/routes.dart';
 import 'package:flutter_net_music/screen/found_tab_page.dart';
-import 'package:flutter_net_music/screen/main_tab_page.dart';
+import 'package:flutter_net_music/screen/mine_tab_page.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
 
 class RecommendTab extends StatefulWidget {

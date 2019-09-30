@@ -8,7 +8,7 @@ import 'package:flutter_net_music/redux/actions/play_page.dart';
 import 'package:flutter_net_music/redux/reducers/main.dart';
 import 'package:flutter_net_music/redux/reducers/play_page.dart';
 import 'package:flutter_net_music/screen/play_page/play_bar.dart';
-import 'package:flutter_net_music/screen/main_tab_page.dart';
+import 'package:flutter_net_music/screen/mine_tab_page.dart';
 import 'package:flutter_net_music/screen/song_list/song_list.dart';
 import 'package:flutter_net_music/utils/string.dart';
 import 'package:flutter_redux/flutter_redux.dart';

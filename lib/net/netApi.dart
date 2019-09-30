@@ -75,8 +75,14 @@ class ApiService {
 
   ///退出登录
   static Future<Map<String, dynamic>> logout() {
-    return DioUtils.request("/logout",
-        successHandler: (map) => LogoutAction());
+    return DioUtils.request("/logout", successHandler: (map) => LogoutAction());
+  }
+
+  ///获取用户歌单
+  static Future<Map<String, dynamic>> getUserPlayList(int uid,
+      {SuccessHandler successHandler, ErrorHandler errorHandler}) {
+    return DioUtils.request("/user/playlist?uid=$uid",
+        successHandler: successHandler, errorHandler: errorHandler);
   }
 }
 

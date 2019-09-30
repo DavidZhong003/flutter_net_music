@@ -1,5 +1,3 @@
-import 'package:flutter_net_music/model/play_list_model.dart';
-import 'package:flutter_net_music/net/netApi.dart';
 import 'package:flutter_net_music/redux/actions/song_square.dart';
 
 import 'main.dart';

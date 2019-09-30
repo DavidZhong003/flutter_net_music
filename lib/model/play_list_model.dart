@@ -1,5 +1,5 @@
 import 'package:flutter_net_music/utils/string.dart';
-
+import 'dart:convert';
 ///歌单条目模型
 ///
 ///
@@ -21,6 +21,14 @@ class PlayListsModel {
   @override
   String toString() {
     return 'PlayListsModel{id: $id, name: $name, coverImageUrl: $coverImageUrl, playCount: $playCount}';
+  }
+
+  String toJsonString(){
+    return '{id: $id, name: $name, coverImageUrl: $coverImageUrl, playCount: $playCount}';
+  }
+
+  static PlayListsModel fromJsonString(String json){
+    return fromMap(jsonDecode(json));
   }
 
   @override
