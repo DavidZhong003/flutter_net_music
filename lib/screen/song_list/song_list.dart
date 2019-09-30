@@ -776,10 +776,13 @@ class SongCoverContent extends StatelessWidget {
                           ),
                         ),
                       ),
-                      Icon(
-                        Icons.keyboard_arrow_right,
-                        size: 18,
-                        color: theme.primaryIconTheme.color,
+                      Visibility(
+                        visible: description!=null&&description.isNotEmpty,
+                        child: Icon(
+                          Icons.keyboard_arrow_right,
+                          size: 18,
+                          color: theme.primaryIconTheme.color,
+                        ),
                       ),
                     ],
                   )

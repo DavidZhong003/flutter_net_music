@@ -8,6 +8,8 @@ import 'package:flutter_net_music/style/font.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
+import '../routes.dart';
+
 class MainTabPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -114,7 +116,9 @@ class UserSongListWidget extends StatelessWidget {
     var items = (context, index) {
       var songs = create[index];
       return SongListItem(
-          url: songs.coverImageUrl, title: songs.name, count: songs.trackCount);
+          url: songs.coverImageUrl, title: songs.name, count: songs.trackCount,onTap: (){
+        jumpSongList(context,songs.id.toString());
+      },);
     };
 
     return ListView.builder(
