@@ -114,7 +114,7 @@ class UserSongListWidget extends StatelessWidget {
     var items = (context, index) {
       var songs = create[index];
       return SongListItem(
-          url: songs.coverImageUrl, title: songs.name, count: songs.playCount);
+          url: songs.coverImageUrl, title: songs.name, count: songs.trackCount);
     };
 
     return ListView.builder(
@@ -437,6 +437,7 @@ class SongListItem extends StatelessWidget {
   }
 
   Widget buildContent(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
     Widget image = Container(
       width: 60,
       height: 60,
@@ -460,6 +461,7 @@ class SongListItem extends StatelessWidget {
     return Padding(
       padding: padding,
       child: Row(
+        mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           image,
           Expanded(
@@ -467,18 +469,17 @@ class SongListItem extends StatelessWidget {
                 padding: EdgeInsets.all(8),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     Text(
                       title,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                          fontSize: FontSize.large,
-                          fontWeight: FontWeight.bold),
+                      style: textTheme.subhead.copyWith(fontSize: 18),
                     ),
                     Padding(
                       padding: EdgeInsets.only(top: 8),
-                      child: Text("$count首"),
+                      child: Text("$count首",style: textTheme.caption,),
                     )
                   ],
                 )),

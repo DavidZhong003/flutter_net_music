@@ -1,15 +1,22 @@
 import 'package:flutter_net_music/utils/string.dart';
 import 'dart:convert';
+
 ///歌单条目模型
 ///
 ///
 class PlayListsModel {
   int id;
+
   String name;
+
   String coverImageUrl;
+
   int playCount;
 
-  PlayListsModel(this.id, {this.name, this.coverImageUrl, this.playCount});
+  int trackCount;
+
+  PlayListsModel(this.id,
+      {this.name, this.coverImageUrl, this.playCount, this.trackCount});
 
   @override
   bool operator ==(Object other) =>
@@ -20,14 +27,14 @@ class PlayListsModel {
 
   @override
   String toString() {
-    return 'PlayListsModel{id: $id, name: $name, coverImageUrl: $coverImageUrl, playCount: $playCount}';
+    return 'PlayListsModel{id: $id, name: $name, coverImageUrl: $coverImageUrl, playCount: $playCount,trackCount:$trackCount}';
   }
 
-  String toJsonString(){
-    return '{id: $id, name: $name, coverImageUrl: $coverImageUrl, playCount: $playCount}';
+  String toJsonString() {
+    return '{id: $id, name: $name, coverImageUrl: $coverImageUrl, playCount: $playCount,trackCount:$trackCount}';
   }
 
-  static PlayListsModel fromJsonString(String json){
+  static PlayListsModel fromJsonString(String json) {
     return fromMap(jsonDecode(json));
   }
 
@@ -41,6 +48,7 @@ class PlayListsModel {
     return PlayListsModel(map["id"],
         name: map["name"],
         coverImageUrl: map["coverImgUrl"],
+        trackCount: map["trackCount"],
         playCount: map["playCount"]);
   }
 
@@ -51,8 +59,9 @@ class PlayListsModel {
     return PlayListsModel(map["id"],
         name: map["name"],
         coverImageUrl: map["picUrl"],
+        trackCount: map["trackCount"],
         playCount: map["playCount"]);
   }
 
-  String get playCountString =>formattedNumber(this.playCount??0);
+  String get playCountString => formattedNumber(this.playCount ?? 0);
 }
