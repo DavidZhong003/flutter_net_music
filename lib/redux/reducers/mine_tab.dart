@@ -66,10 +66,11 @@ class UserSongListReducer extends Reducer<UserSongListState> {
         List<PlayListsModel> create = [];
         List<PlayListsModel> sub = [];
         List<dynamic> list = map["playlist"];
+        final selfId = StoreContainer.global.state.userInfoState.userId;
         list?.forEach((playList) {
           int userId = playList["userId"];
           PlayListsModel model = PlayListsModel.fromMap(playList);
-          if (userId == action.payload) {
+          if (userId == selfId) {
             create.add(model);
           } else {
             sub.add(model);
