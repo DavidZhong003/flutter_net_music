@@ -1,6 +1,5 @@
 
 class FontSize{
-  _FontSize(){}
   static const huger = 30.0;
   static const huge = 26.0;
   static const large = 20.0;

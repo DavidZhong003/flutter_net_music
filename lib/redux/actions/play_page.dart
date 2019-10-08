@@ -1,6 +1,3 @@
-
-import 'package:flutter_net_music/screen/music_play_contorl.dart';
-
 import 'main.dart';
 
 ///请求播放歌曲

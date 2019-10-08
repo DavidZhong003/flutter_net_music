@@ -1,6 +1,4 @@
 import 'package:flutter_net_music/screen/music_play_contorl.dart';
-import 'package:intl/intl.dart';
-
 ///格式化数字
 ///
 /// <10000 直接返回

@@ -7,8 +7,6 @@ import 'package:flutter_net_music/routes.dart';
 import 'package:flutter_net_music/utils/shared_preferences_helper.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 
-import 'net/cookie.dart';
-
 void main() {
   SpHelper.init();
   runApp(MyApp());
