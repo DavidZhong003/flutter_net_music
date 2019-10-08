@@ -18,6 +18,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'mine_tab_page.dart';
 
 class FoundTabPage extends StatefulWidget {
+  const FoundTabPage({Key key}) : super(key: key);
   @override
   State<StatefulWidget> createState() => FoundPageState();
 }
@@ -389,15 +390,13 @@ class SongCoverWidget extends StatelessWidget {
     }
     Widget text;
     if (name != null) {
-      text = Expanded(
-        child: Padding(
-          padding: textPadding,
-          child: Text(
-            name,
-            style: Theme.of(context).textTheme.caption,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-          ),
+      text = Padding(
+        padding: textPadding,
+        child: Text(
+          name,
+          style: Theme.of(context).textTheme.caption,
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
         ),
       );
     }
@@ -409,6 +408,7 @@ class SongCoverWidget extends StatelessWidget {
     if (text != null) {
       content = Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: <Widget>[
           content,
           text,

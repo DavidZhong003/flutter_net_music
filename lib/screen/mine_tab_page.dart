@@ -11,6 +11,9 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../routes.dart';
 
 class MainTabPage extends StatelessWidget {
+
+  const MainTabPage({Key key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     var content = SingleChildScrollView(
@@ -47,7 +50,7 @@ class MainTabPage extends StatelessWidget {
     );
   }
 
-  final Map<String, IconData> _airMap = {
+  static const  Map<String, IconData> _airMap = {
     "私人FM": Icons.radio,
     "古典专区": FontAwesomeIcons.guitar,
     "驾驶模式": Icons.directions_car,
@@ -555,7 +558,7 @@ class NetImageView extends StatelessWidget {
         child: holder,
       );
     }
-    return holder;
+    return Container(alignment:Alignment.center,child: holder);
   }
 
   Widget _buildDefaultError(BuildContext context) {
