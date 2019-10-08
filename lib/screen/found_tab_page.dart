@@ -23,7 +23,7 @@ class FoundTabPage extends StatefulWidget {
   State<StatefulWidget> createState() => FoundPageState();
 }
 
-class FoundPageState extends State<StatefulWidget> {
+class FoundPageState extends State<StatefulWidget> with AutomaticKeepAliveClientMixin {
   GlobalKey<EasyRefreshState> _easyRefreshKey =
       new GlobalKey<EasyRefreshState>();
   GlobalKey<RefreshHeaderState> _headerKey =
@@ -40,6 +40,7 @@ class FoundPageState extends State<StatefulWidget> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return EasyRefresh(
         key: _easyRefreshKey,
         refreshHeader: MaterialHeader(
@@ -92,6 +93,9 @@ class FoundPageState extends State<StatefulWidget> {
       ),
     );
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }
 
 /// 轮播图

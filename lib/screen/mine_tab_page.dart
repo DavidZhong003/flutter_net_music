@@ -10,12 +10,22 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../routes.dart';
 
-class MainTabPage extends StatelessWidget {
+class MainTabPage extends StatefulWidget {
 
-  const MainTabPage({Key key}) : super(key: key);
+  @override
+  State<StatefulWidget> createState() {
+    return _MainTabState();
+  }
+}
+
+class _MainTabState extends State<MainTabPage> with AutomaticKeepAliveClientMixin{
+  @override
+  bool get wantKeepAlive => true;
+
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     var content = SingleChildScrollView(
       child: Column(
         children: <Widget>[
@@ -116,7 +126,7 @@ class UserSongListWidget extends StatelessWidget {
   }
 
   Widget _buildListView(BuildContext context, List<PlayListsModel> create) {
-    var items = (context, index) {
+    final items = (context, index) {
       var songs = create[index];
       return SongListItem(
           url: songs.coverImageUrl, title: songs.name, count: songs.trackCount,onTap: (){
