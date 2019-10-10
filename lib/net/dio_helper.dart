@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:cookie_jar/cookie_jar.dart';
 import 'package:dio/dio.dart';
+import 'package:dio_cookie_manager/dio_cookie_manager.dart';
 import 'package:dio_http_cache/dio_http_cache.dart';
 import 'package:flutter_net_music/host.dart';
 import 'package:flutter_net_music/net/cookie.dart';

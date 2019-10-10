@@ -21,7 +21,7 @@ dependencies:
     sdk: flutter
   cupertino_icons: ^0.1.2
   shared_preferences: 0.4.3
-  dio: ^2.1.0
+  dio: ^3.0.2
   # 加密 https://pub.flutter-io.cn/packages/crypto
   crypto: ^2.1.3
   #toast
@@ -58,7 +58,9 @@ dependencies:
   # 视频播放器
   video_player: ^0.10.2
   # 缓存
-  dio_http_cache: ^0.1.3
+  dio_http_cache: ^0.2.0
+  #cookie
+  dio_cookie_manager: ^1.0.0
 
 dev_dependencies:
   flutter_test:
