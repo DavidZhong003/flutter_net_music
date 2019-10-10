@@ -294,7 +294,7 @@ class IconTopButton extends StatelessWidget {
 
 ///底部控制
 class _DrawerBottom extends StatelessWidget {
-  static const padding = const EdgeInsets.all(8.0);
+  static const padding = const EdgeInsets.only(top: 8,bottom: 8);
 
   @override
   Widget build(BuildContext context) {
