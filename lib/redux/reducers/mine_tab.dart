@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart' show immutable;
+import 'package:flutter/material.dart';
 import 'package:flutter_net_music/model/play_list_model.dart';
 import 'package:flutter_net_music/net/netApi.dart';
 import 'package:flutter_net_music/redux/actions/login.dart';
@@ -66,16 +67,18 @@ class UserSongListReducer extends Reducer<UserSongListState> {
         List<PlayListsModel> create = [];
         List<PlayListsModel> sub = [];
         List<dynamic> list = map["playlist"];
-        final selfId = SpHelper.getUserInfo()["account"]["id"];
-        list?.forEach((playList) {
-          int userId = playList["userId"];
-          PlayListsModel model = PlayListsModel.fromMap(playList);
-          if (userId == selfId) {
-            create.add(model);
-          } else {
-            sub.add(model);
-          }
-        });
+        if(SpHelper.getUserInfo().isNotEmpty){
+          final selfId = SpHelper.getUserInfo()["account"]["id"];
+          list?.forEach((playList) {
+            int userId = playList["userId"];
+            PlayListsModel model = PlayListsModel.fromMap(playList);
+            if (userId == selfId) {
+              create.add(model);
+            } else {
+              sub.add(model);
+            }
+          });
+        }
         return state.copyWith(createSongList: create,subSongList: sub);
       case LogoutAction:
         SpHelper.cleanUserSongList();
