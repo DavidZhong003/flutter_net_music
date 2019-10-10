@@ -78,7 +78,9 @@ class FoundPageState extends State<StatefulWidget> with AutomaticKeepAliveClient
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: <Widget>[
-          ItemTab.large(Icons.calendar_today, "每日推荐", emptyTap),
+          ItemTab.large(Icons.calendar_today, "每日推荐", (){
+            Navigator.of(context).pushNamed(PathName.ROUTE_RECOMMEND_SONGS);
+          }),
           ItemTab.large(Icons.queue_music, "歌单", () {
             jumpPage(context, SongSquarePage());
           }),

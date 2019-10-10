@@ -1,5 +1,6 @@
 import 'package:flutter_net_music/redux/actions/home_found.dart';
 import 'package:flutter_net_music/redux/actions/login.dart';
+import 'package:flutter_net_music/redux/actions/recommend_songs.dart';
 
 import 'dio_helper.dart';
 
@@ -14,7 +15,8 @@ class ApiService {
       {int limit = 20,
       SuccessHandler successHandler,
       ErrorHandler errorHandler}) {
-    return DioUtils.request("/personalized?limit=$limit",
+    final string = "/personalized?limit=$limit";
+    return DioUtils.request(string,
         successHandler: successHandler, errorHandler: errorHandler);
   }
 
@@ -34,7 +36,7 @@ class ApiService {
 
   ///获取新碟
   static Future<Map<String, dynamic>> getNewAlbums() {
-    return DioUtils.request("/top/album",
+    return DioUtils.request("/top/album?limit=5",
         successHandler: (map) =>
             NewAlbumsRequestSuccessAction(map["albums"].sublist(0, 3)));
   }
@@ -83,6 +85,13 @@ class ApiService {
       {SuccessHandler successHandler, ErrorHandler errorHandler}) {
     return DioUtils.request("/user/playlist?uid=$uid",
         successHandler: successHandler, errorHandler: errorHandler);
+  }
+
+  ///每日推荐
+  static Future<Map<String, dynamic>> getRecommendSongs() {
+    return DioUtils.request("/recommend/songs",
+        successHandler: (map) =>
+            RequestRecommendSongsSuccess(map["recommend"]));
   }
 }
 

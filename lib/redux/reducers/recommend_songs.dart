@@ -1,0 +1,42 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_net_music/model/song_item_model.dart';
+import 'package:flutter_net_music/net/netApi.dart';
+import 'package:flutter_net_music/redux/actions/recommend_songs.dart';
+
+import 'main.dart';
+import 'package:flutter/material.dart' show immutable;
+
+@immutable
+class RecommendSongsState {
+  final bool isLoading;
+
+  final List<MusicTrackBean> musics;
+
+  RecommendSongsState({this.isLoading, this.musics});
+
+  RecommendSongsState copyWith({bool isLoading, List<MusicTrackBean> musics}) {
+    return RecommendSongsState(
+        isLoading: isLoading ?? this.isLoading, musics: musics ?? this.musics);
+  }
+
+  RecommendSongsState.initialState()
+      : isLoading = true,
+        musics = [];
+}
+
+class RecommendSongsReducer extends Reducer<RecommendSongsState> {
+  @override
+  RecommendSongsState redux(RecommendSongsState state, action) {
+    switch (action.runtimeType) {
+      case RequestRecommendSongs:
+        ApiService.getRecommendSongs();
+        return state.copyWith(isLoading: true);
+      case RequestRecommendSongsSuccess:
+        List<dynamic> list = action.payload;
+        return state.copyWith(
+            isLoading: false,
+            musics: list.map((l) => MusicTrackBean.fromRecommendSongsMap(l)).toList());
+    }
+    return state;
+  }
+}

@@ -42,6 +42,18 @@ class MusicTrackBean {
         artist: (map["ar"] as List).cast<Map>().map(Artist.fromMap).toList());
   }
 
+  static MusicTrackBean fromRecommendSongsMap(Map map) {
+    if (map == null) {
+      return null;
+    }
+    return MusicTrackBean(
+        id: map["id"],
+        name: map["name"],
+        album: Album.fromMap(map["album"]),
+        mvId: map['mv'] ?? 0,
+        artist: (map["artists"] as List).cast<Map>().map(Artist.fromMap).toList());
+  }
+
   Map toMap() {
     return {
       "id": id,

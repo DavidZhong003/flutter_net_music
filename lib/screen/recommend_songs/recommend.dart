@@ -1,0 +1,112 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_net_music/net/net_widget.dart';
+import 'package:flutter_net_music/redux/actions/recommend_songs.dart';
+import 'package:flutter_net_music/redux/reducers/main.dart';
+import 'package:flutter_net_music/redux/reducers/recommend_songs.dart';
+import 'package:flutter_net_music/screen/song_list/song_list.dart';
+import 'package:flutter_redux/flutter_redux.dart';
+
+class RecommendSongsPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: NestedScrollView(
+        headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+          return [_RecommendHead()];
+        },
+        body: _buildContent(context),
+      ),
+    );
+  }
+
+  Widget _buildContent(BuildContext context) {
+    return StoreConnector<AppState, RecommendSongsState>(
+        builder: (context, state) {
+          if(state.isLoading){
+            return WaveLoading();
+          }
+
+          return Container();
+        },
+        onInit: (s)=>s.dispatch(RequestRecommendSongs()),
+        converter: (s) => s.state.recommendSongsState);
+  }
+}
+
+///头部
+class _RecommendHead extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final textTheme = ThemeData.dark().textTheme;
+    return SliverAppBar(
+      pinned: true,
+      elevation: 0,
+      expandedHeight: 220,
+      iconTheme: ThemeData.dark().iconTheme,
+      flexibleSpace: SongFlexibleSpaceBar(
+        collapsedTitle: "每日推荐",
+        titleTextStyle: textTheme.title,
+        actions: <Widget>[
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Icon(Icons.help_outline),
+          ),
+        ],
+        content: _buildContent(context),
+      ),
+      bottom: SuspendedMusicHeader(
+        tail: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            Icon(Icons.list),
+            Text("多选"),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildContent(BuildContext context) {
+    final textTheme = ThemeData.dark().textTheme;
+    final now = DateTime.now();
+    final day = now.day < 10 ? "0${now.day}" : now.day.toString();
+    return Stack(
+      children: <Widget>[
+        Padding(
+          padding: const EdgeInsets.only(left: 16, top: 20, right: 16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Text.rich(TextSpan(
+                children: [
+                  TextSpan(
+                      text: day,
+                      style: textTheme.display4.copyWith(fontSize: 40)),
+                  TextSpan(
+                      text: "/${now.month}",
+                      style: textTheme.display4.copyWith(fontSize: 20)),
+                ],
+              )),
+              _buildRow(context),
+            ],
+          ),
+        )
+      ],
+    );
+  }
+
+  Row _buildRow(BuildContext context) {
+    List<Widget> children = [];
+    children.add(
+      Transform(
+        transform: Matrix4.identity()..scale(0.75),
+        child: Chip(
+          label: Text("历史日推"),
+        ),
+      ),
+    );
+    return Row(
+      children: children,
+    );
+  }
+}

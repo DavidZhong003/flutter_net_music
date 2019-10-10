@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' as prefix0;
 import 'package:flutter_net_music/model/song_item_model.dart';
 import 'package:flutter_net_music/my_font/my_icon.dart';
 import 'package:flutter_net_music/net/net_widget.dart';
@@ -74,7 +75,8 @@ class SongsListPage extends StatelessWidget {
                         imageUrl: playlist["coverImgUrl"],
                       ),
                       actions: <Widget>[
-                        IconButton(icon: Icon(Icons.search), onPressed: emptyTap),
+                        IconButton(
+                            icon: Icon(Icons.search), onPressed: emptyTap),
                         PopupMenuButton(itemBuilder: (BuildContext context) {
                           return [
                             PopupMenuItem(
@@ -106,7 +108,9 @@ class SongsListPage extends StatelessWidget {
                       ],
                     ),
                   ),
-                  bottom: SuspendedMusicHeader(playlist["trackCount"]),
+                  bottom: SuspendedMusicHeader(
+                    count: playlist["trackCount"],
+                  ),
                 ),
                 _buildSongList(context, state),
                 SliverToBoxAdapter(
@@ -342,14 +346,17 @@ class SongFlexibleSpaceBar extends StatefulWidget {
 
   final List<Widget> actions;
 
+  final TextStyle titleTextStyle;
+
   const SongFlexibleSpaceBar({
     Key key,
     this.background,
-    this.expandedTitle,
-    this.collapsedTitle,
-    this.content,
+    this.expandedTitle = "",
+    @required this.collapsedTitle,
+    @required this.content,
     this.actions,
     this.subTitle,
+    this.titleTextStyle,
   }) : super(key: key);
 
   @override
@@ -403,7 +410,8 @@ class _SongFlexibleSpaceBarState extends State<SongFlexibleSpaceBar> {
           ? widget.collapsedTitle
           : widget.expandedTitle,
       maxLines: 1,
-      style: Theme.of(context).primaryTextTheme.title.copyWith(fontSize: 16),
+      style: widget.titleTextStyle ??
+          Theme.of(context).primaryTextTheme.title.copyWith(fontSize: 16),
       overflow: TextOverflow.ellipsis,
     );
     if (widget.subTitle != null) {
@@ -466,7 +474,7 @@ class _SongFlexibleSpaceBarState extends State<SongFlexibleSpaceBar> {
 ///[tail] 尾部收藏按钮
 class SuspendedMusicHeader extends StatelessWidget
     implements PreferredSizeWidget {
-  SuspendedMusicHeader(this.count, {this.tail});
+  SuspendedMusicHeader({this.count, this.tail});
 
   final int count;
 
@@ -474,6 +482,35 @@ class SuspendedMusicHeader extends StatelessWidget
 
   @override
   Widget build(BuildContext context) {
+    List<Widget> children = [];
+    children
+      ..add(
+        Icon(
+          Icons.play_circle_outline,
+          color: Theme.of(context).iconTheme.color,
+        ),
+      )
+      ..add(
+        Padding(padding: EdgeInsets.only(left: 16)),
+      )
+      ..add(
+        Text(
+          "播放全部",
+          style: Theme.of(context).textTheme.body1.copyWith(fontSize: 18),
+        ),
+      );
+    if (count != null && count > 0) {
+      children.add(Text(
+        "(共$count首)",
+        style: Theme.of(context).textTheme.caption.copyWith(fontSize: 16),
+      ));
+    }
+    children.add(
+      Spacer(),
+    );
+    if (tail != null) {
+      children.add(tail);
+    }
     return ClipRRect(
       borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
       child: Material(
@@ -486,30 +523,12 @@ class SuspendedMusicHeader extends StatelessWidget
           },
           child: SizedBox.fromSize(
             size: preferredSize,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Padding(padding: EdgeInsets.only(left: 16)),
-                Icon(
-                  Icons.play_circle_outline,
-                  color: Theme.of(context).iconTheme.color,
-                ),
-                Padding(padding: EdgeInsets.only(left: 16)),
-                Text(
-                  "播放全部",
-                  style:
-                      Theme.of(context).textTheme.body1.copyWith(fontSize: 18),
-                ),
-                Text(
-                  "(共$count首)",
-                  style: Theme.of(context)
-                      .textTheme
-                      .caption
-                      .copyWith(fontSize: 16),
-                ),
-                Spacer(),
-                tail,
-              ]..removeWhere((v) => v == null),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: children,
+              ),
             ),
           ),
         ),
@@ -777,7 +796,7 @@ class SongCoverContent extends StatelessWidget {
                         ),
                       ),
                       Visibility(
-                        visible: description!=null&&description.isNotEmpty,
+                        visible: description != null && description.isNotEmpty,
                         child: Icon(
                           Icons.keyboard_arrow_right,
                           size: 18,

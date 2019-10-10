@@ -4,6 +4,7 @@ import 'package:flutter_net_music/redux/middleware/main.dart';
 import 'package:flutter_net_music/redux/reducers/login.dart';
 import 'package:flutter_net_music/redux/reducers/play_bar_list.dart';
 import 'package:flutter_net_music/redux/reducers/play_page.dart';
+import 'package:flutter_net_music/redux/reducers/recommend_songs.dart';
 import 'package:flutter_net_music/redux/reducers/song_list.dart';
 import 'package:flutter_net_music/redux/reducers/song_square.dart';
 import 'package:flutter_net_music/theme.dart';
@@ -27,6 +28,8 @@ class AppState {
 
   final UserInfoState userInfoState;
 
+  final RecommendSongsState recommendSongsState;
+
   const AppState({
     this.songListPageState,
     this.themeState,
@@ -35,6 +38,7 @@ class AppState {
     this.playListState,
     this.songSquareState,
     this.userInfoState,
+    this.recommendSongsState,
   });
 }
 
@@ -47,6 +51,7 @@ AppState _initReduxState() {
     playListState: PlayListState.initState(),
     songSquareState: SongSquareState.initialState(),
     userInfoState: UserInfoState.initialState(),
+    recommendSongsState: RecommendSongsState.initialState(),
   );
 }
 
@@ -59,6 +64,8 @@ AppState reduxReducer(AppState state, action) => AppState(
       playListState: PlayListRedux().redux(state.playListState, action),
       songSquareState: SongSquareReducer().redux(state.songSquareState, action),
       userInfoState: UserReducer().redux(state.userInfoState, action),
+      recommendSongsState:
+          RecommendSongsReducer().redux(state.recommendSongsState, action),
     );
 
 abstract class ViewModel {
