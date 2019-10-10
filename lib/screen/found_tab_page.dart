@@ -366,6 +366,8 @@ class SongCoverWidget extends StatelessWidget {
 
   final EdgeInsetsGeometry textPadding;
 
+  final bool textExpend;
+
   const SongCoverWidget({
     Key key,
     @required this.image,
@@ -373,7 +375,7 @@ class SongCoverWidget extends StatelessWidget {
     this.onTap,
     this.playCount,
     this.padding = const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
-    this.textPadding = const EdgeInsets.only(top: 2),
+    this.textPadding = const EdgeInsets.only(top: 2), this.textExpend = false,
   }) : super(key: key);
 
   @override
@@ -436,6 +438,9 @@ class SongCoverWidget extends StatelessWidget {
       child: imageView,
     );
     if (text != null) {
+      if(textExpend==true){
+        text = Expanded(child: text);
+      }
       content = Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -494,6 +499,7 @@ class _NewsSongOrAlbumsState extends State<NewsSongOrAlbumsWidget> {
           image: image,
           name: name,
           onTap: onTap,
+          textExpend: true,
         ),
       );
     }
