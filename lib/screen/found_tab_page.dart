@@ -1,3 +1,5 @@
+import 'dart:ui' as prefix0;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/material_footer.dart';
 import 'package:flutter_easyrefresh/material_header.dart';
@@ -19,11 +21,13 @@ import 'mine_tab_page.dart';
 
 class FoundTabPage extends StatefulWidget {
   const FoundTabPage({Key key}) : super(key: key);
+
   @override
   State<StatefulWidget> createState() => FoundPageState();
 }
 
-class FoundPageState extends State<StatefulWidget> with AutomaticKeepAliveClientMixin {
+class FoundPageState extends State<StatefulWidget>
+    with AutomaticKeepAliveClientMixin {
   GlobalKey<EasyRefreshState> _easyRefreshKey =
       new GlobalKey<EasyRefreshState>();
   GlobalKey<RefreshHeaderState> _headerKey =
@@ -73,14 +77,37 @@ class FoundPageState extends State<StatefulWidget> with AutomaticKeepAliveClient
   }
 
   Widget buildCenterButton() {
+    final d= DateTime.now().day;
+    final day = d<10?"0$d":d.toString();
     return Container(
       padding: EdgeInsets.only(left: 8, right: 8, top: 16, bottom: 16),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: <Widget>[
-          ItemTab.large(Icons.calendar_today, "每日推荐", (){
-            Navigator.of(context).pushNamed(PathName.ROUTE_RECOMMEND_SONGS);
-          }),
+          Stack(
+            children: <Widget>[
+              ItemTab.large(Icons.calendar_today, "每日推荐", () {
+                Navigator.of(context).pushNamed(PathName.ROUTE_RECOMMEND_SONGS);
+              }),
+              SizedBox(
+                width: 45,
+                height: 45,
+                child: Center(
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 6,left: 3),
+                    child: Text(
+                      day,
+                      style: TextStyle(
+                        fontSize: 10,
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold
+                      ),
+                    ),
+                  ),
+                ),
+              )
+            ],
+          ),
           ItemTab.large(Icons.queue_music, "歌单", () {
             jumpPage(context, SongSquarePage());
           }),
@@ -379,14 +406,11 @@ class SongCoverWidget extends StatelessWidget {
             right: 4,
             child: Row(
               children: <Widget>[
-                Icon(Icons.play_arrow,
-                    color: Colors.white,
-                    size: 14),
+                Icon(Icons.play_arrow, color: Colors.white, size: 14),
                 Text(
                   playCount ?? "",
-                  style: theme
-                      .primaryTextTheme
-                      .caption.copyWith(color: Colors.white70),
+                  style: theme.primaryTextTheme.caption
+                      .copyWith(color: Colors.white70),
                 ),
               ],
             ),
