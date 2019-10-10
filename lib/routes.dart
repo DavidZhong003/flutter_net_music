@@ -14,6 +14,8 @@ class PathName {
 
   static String ROUTE_RECOMMEND_SONGS="/recommend/songs";
 }
+//navigation key
+final GlobalKey<NavigatorState> navigatorKey = new GlobalKey<NavigatorState>();
 
 ///app routers
 final Map<String, WidgetBuilder> routes = {

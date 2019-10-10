@@ -7,6 +7,7 @@ import 'package:flutter_net_music/host.dart';
 import 'package:flutter_net_music/net/cookie.dart';
 import 'package:flutter_net_music/redux/actions/main.dart';
 import 'package:flutter_net_music/redux/reducers/main.dart';
+import 'package:flutter_net_music/routes.dart';
 
 class HttpMethod {
   static const String GET = 'get';
@@ -58,7 +59,7 @@ class DioUtils {
             StoreContainer.dispatch(successHandler(result));
           }
         } else if (result["code"] == 301) {
-          //todo 需要登录
+          navigatorKey.currentState.pushNamed(PathName.ROUTE_LOGIN);
         }
       }
     } on DioError catch (e) {

@@ -36,6 +36,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       theme: theme,
       routes: routes,
+      navigatorKey: navigatorKey,
     );
   }
 }
