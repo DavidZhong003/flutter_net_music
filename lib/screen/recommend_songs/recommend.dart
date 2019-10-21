@@ -4,9 +4,8 @@ import 'package:flutter_net_music/redux/actions/recommend_songs.dart';
 import 'package:flutter_net_music/redux/actions/song_list.dart';
 import 'package:flutter_net_music/redux/reducers/main.dart';
 import 'package:flutter_net_music/redux/reducers/recommend_songs.dart';
-import 'package:flutter_net_music/routes.dart';
-import 'package:flutter_net_music/screen/mine_tab_page.dart';
 import 'package:flutter_net_music/screen/music_play_contorl.dart';
+import 'package:flutter_net_music/screen/play_page/play_bar.dart';
 import 'package:flutter_net_music/screen/song_list/song_list.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 
@@ -18,7 +17,7 @@ class RecommendSongsPage extends StatelessWidget {
         headerSliverBuilder: (context, b) {
           return [_RecommendHead()];
         },
-        body:_buildContent(context),
+        body: MusicPlayBarContainer(child: _buildContent(context)),
       ),
     );
   }
@@ -39,7 +38,7 @@ class RecommendSongsPage extends StatelessWidget {
                 final song = musics[index];
                 return SongListItemWidget.formMusicTrackBean(
                   song,
-                  isPlaying: false,
+                  isPlaying: MusicPlayList.currentSongId==song.id,
                   albumPicUrl: song.album.picUrl,
                   leadingPaddingRight: 8,
                   onItemTap: () {
@@ -89,7 +88,7 @@ class _RecommendHead extends StatelessWidget {
             Text("多选"),
           ],
         ),
-        onPlayAllTap: (){
+        onPlayAllTap: () {
           StoreContainer.dispatch(PlayAllRecommendSong(context));
         },
       ),

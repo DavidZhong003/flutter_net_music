@@ -44,7 +44,7 @@ class RecommendSongsReducer extends Reducer<RecommendSongsState> {
       case PlayAllRecommendSong:
         //加载歌单,播放歌曲,跳转页面
         if (state.musics.isNotEmpty) {
-          MusicPlayList.bindMusicList(state.musics, "每日推荐");
+          MusicPlayList.bindMusicList(state.musics, RECOMMEND_EVERY_DAY_ID);
           StoreContainer.dispatch(PlayMusicWithIdAction(state.musics[0].id));
           // 跳转播放页面
           jumpPageByName(action.payload, PathName.ROUTE_MUSIC_PLAY);
@@ -54,3 +54,4 @@ class RecommendSongsReducer extends Reducer<RecommendSongsState> {
     return state;
   }
 }
+const RECOMMEND_EVERY_DAY_ID = "每日推荐";
