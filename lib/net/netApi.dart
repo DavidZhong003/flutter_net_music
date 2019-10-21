@@ -91,7 +91,7 @@ class ApiService {
   static Future<Map<String, dynamic>> getRecommendSongs() {
     return DioUtils.request("/recommend/songs",
         successHandler: (map) =>
-            RequestRecommendSongsSuccess(map["recommend"]));
+            RequestRecommendSongsSuccess(map["recommend"]),cacheOptions: CacheOptions.minutes_15);
   }
 }
 

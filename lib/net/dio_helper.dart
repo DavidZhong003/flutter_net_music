@@ -59,11 +59,12 @@ class DioUtils {
           if (successHandler != null) {
             StoreContainer.dispatch(successHandler(result));
           }
-        } else if (result["code"] == 301) {
+        } else if (response.statusCode == 301) {
           navigatorKey.currentState.pushNamed(PathName.ROUTE_LOGIN);
         }
       }
     } on DioError catch (e) {
+      print("doive:e$e,result = $result");
       if (errorHandler != null) {
         StoreContainer.dispatch(errorHandler(e));
       }

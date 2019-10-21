@@ -249,7 +249,7 @@ class ItemTab extends StatelessWidget {
         this.elevation = 1,
         this.padding = const EdgeInsets.only(top: 12),
         this.margin = null,
-        withInkWell = false,
+        withInkWell = true,
         textStyle = null;
 
   @override

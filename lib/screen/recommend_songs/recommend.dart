@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_net_music/net/net_widget.dart';
 import 'package:flutter_net_music/redux/actions/recommend_songs.dart';
+import 'package:flutter_net_music/redux/actions/song_list.dart';
 import 'package:flutter_net_music/redux/reducers/main.dart';
 import 'package:flutter_net_music/redux/reducers/recommend_songs.dart';
+import 'package:flutter_net_music/screen/mine_tab_page.dart';
 import 'package:flutter_net_music/screen/song_list/song_list.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 
@@ -11,10 +13,10 @@ class RecommendSongsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: NestedScrollView(
-        headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+        headerSliverBuilder: (context, b) {
           return [_RecommendHead()];
         },
-        body: _buildContent(context),
+        body:_buildContent(context),
       ),
     );
   }
@@ -22,13 +24,35 @@ class RecommendSongsPage extends StatelessWidget {
   Widget _buildContent(BuildContext context) {
     return StoreConnector<AppState, RecommendSongsState>(
         builder: (context, state) {
-          if(state.isLoading){
+          if (state.isLoading) {
             return WaveLoading();
           }
-
-          return Container();
+          var musics = state.musics;
+          //具体音乐条目
+          return MediaQuery.removePadding(
+            removeTop: true,
+            context: context,
+            child: ListView.builder(
+              itemBuilder: (context, index) {
+                final song = musics[index];
+                return SongListItemWidget.formMusicTrackBean(
+                  song,
+                  isPlaying: false,
+                  albumPicUrl: song.album.picUrl,
+                  onItemTap: () {
+                    //播放某个歌曲
+                    StoreContainer.dispatch(PlaySongAction(song.id));
+                  },
+                );
+              },
+              itemCount: musics.length,
+              shrinkWrap: true,
+              itemExtent: 60,
+              physics: const NeverScrollableScrollPhysics(),
+            ),
+          );
         },
-        onInit: (s)=>s.dispatch(RequestRecommendSongs()),
+        onInit: (s) => s.dispatch(RequestRecommendSongs()),
         converter: (s) => s.state.recommendSongsState);
   }
 }

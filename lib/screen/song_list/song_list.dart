@@ -1,8 +1,8 @@
+import 'dart:ffi';
 import 'dart:ui';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/material.dart' as prefix0;
 import 'package:flutter_net_music/model/song_item_model.dart';
 import 'package:flutter_net_music/my_font/my_icon.dart';
 import 'package:flutter_net_music/net/net_widget.dart';
@@ -133,19 +133,14 @@ class SongsListPage extends StatelessWidget {
           converter: (store) => store.state.musicPlayState.music,
           builder: (context, music) {
             final song = musics[index];
-            return SongListItemWidget(
+            return SongListItemWidget.formMusicTrackBean(
+              song,
               isPlaying: song.id == music?.id,
-              haveMv: song.haveMv(),
               index: index,
-              songName: song.name,
-              arName: song.getArName(),
-              albumName: song.album.name,
               onItemTap: () {
                 //播放某个歌曲
                 StoreContainer.dispatch(PlaySongAction(song.id));
               },
-              onMvTap: emptyTap,
-              onMoreTap: emptyTap,
             );
           },
         );
@@ -201,19 +196,39 @@ class SongListItemWidget extends StatelessWidget {
   final GestureTapCallback onMoreTap;
   final GestureTapCallback onItemTap;
   final GestureTapCallback onMvTap;
+  final String albumPicUrl;
 
-  const SongListItemWidget(
-      {Key key,
-      this.isPlaying = false,
-      this.haveMv,
-      this.index,
-      this.songName,
-      this.arName,
-      this.albumName,
-      this.onMoreTap,
-      this.onItemTap,
-      this.onMvTap})
-      : super(key: key);
+  const SongListItemWidget({
+    Key key,
+    this.isPlaying = false,
+    @required this.haveMv,
+    this.index,
+    @required this.songName,
+    @required this.arName,
+    @required this.albumName,
+    this.onMoreTap,
+    this.onItemTap,
+    this.onMvTap,
+    this.albumPicUrl,
+  }) : super(key: key);
+
+  SongListItemWidget.formMusicTrackBean(MusicTrackBean bean,
+      {bool isPlaying = false,
+      int index,
+      String albumPicUrl ,
+      GestureTapCallback onItemTap,
+      GestureTapCallback onMoreTap,
+      GestureTapCallback onMvTap})
+      : haveMv = bean.haveMv(),
+        songName = bean.name,
+        arName = bean.getArName(),
+        albumName = bean.album.name,
+        onMoreTap = onItemTap ,
+        isPlaying = isPlaying,
+        albumPicUrl = albumPicUrl,
+        index = index,
+        onMvTap = onMvTap ,
+        onItemTap = onItemTap ;
 
   @override
   Widget build(BuildContext context) {
@@ -287,6 +302,32 @@ class SongListItemWidget extends StatelessWidget {
   Widget _buildLeading(BuildContext context) {
     final theme = Theme.of(context);
     Widget leading;
+    if (albumPicUrl == null) {
+      leading = _buildIndexLeading(context);
+    } else {
+      leading = isPlaying
+          ? SizedBox(
+              width: 24,
+              child: Icon(Icons.volume_up, color: theme.primaryColor),
+            )
+          : ClipRRect(
+              borderRadius: BorderRadius.circular(5),
+              child: NetImageView(
+                url: albumPicUrl,
+              ),
+            );
+    }
+    return SizedBox(
+      width: 48,
+      child: Center(
+        child: leading,
+      ),
+    );
+  }
+
+  Widget _buildIndexLeading(BuildContext context) {
+    final theme = Theme.of(context);
+    Widget leading;
     if (isPlaying) {
       leading = SizedBox(
         width: 24,
@@ -302,12 +343,7 @@ class SongListItemWidget extends StatelessWidget {
         ),
       );
     }
-    return SizedBox(
-      width: 48,
-      child: Center(
-        child: leading,
-      ),
-    );
+    return leading;
   }
 
   Widget _buildPlayIcon(BuildContext context) {
@@ -474,11 +510,14 @@ class _SongFlexibleSpaceBarState extends State<SongFlexibleSpaceBar> {
 ///[tail] 尾部收藏按钮
 class SuspendedMusicHeader extends StatelessWidget
     implements PreferredSizeWidget {
-  SuspendedMusicHeader({this.count, this.tail});
 
   final int count;
 
   final Widget tail;
+
+  final GestureTapCallback onPlayMoreTap;
+
+  const SuspendedMusicHeader({Key key, this.count, this.tail, this.onPlayMoreTap}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

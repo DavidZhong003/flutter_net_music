@@ -80,27 +80,29 @@ class FoundPageState extends State<StatefulWidget>
     final d= DateTime.now().day;
     final day = d<10?"0$d":d.toString();
     return Container(
-      padding: EdgeInsets.only(left: 8, right: 8, top: 16, bottom: 16),
+      padding: const EdgeInsets.symmetric(vertical: 16,horizontal: 16),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
           Stack(
             children: <Widget>[
               ItemTab.large(Icons.calendar_today, "每日推荐", () {
                 Navigator.of(context).pushNamed(PathName.ROUTE_RECOMMEND_SONGS);
               }),
-              SizedBox(
-                width: 45,
-                height: 45,
-                child: Center(
-                  child: Padding(
-                    padding: const EdgeInsets.only(top: 6,left: 3),
-                    child: Text(
-                      day,
-                      style: TextStyle(
-                        fontSize: 10,
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold
+              IgnorePointer(
+                child: SizedBox(
+                  width: 45,
+                  height: 45,
+                  child: Center(
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 6,left: 3.5),
+                      child: Text(
+                        day,
+                        style: TextStyle(
+                          fontSize: 10,
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold
+                        ),
                       ),
                     ),
                   ),
