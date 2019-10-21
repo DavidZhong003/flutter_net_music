@@ -190,6 +190,7 @@ class SongListItemWidget extends StatelessWidget {
   final bool isPlaying;
   final bool haveMv;
   final int index;
+  final double leadingPaddingRight;
   final String songName;
   final String arName;
   final String albumName;
@@ -210,25 +211,28 @@ class SongListItemWidget extends StatelessWidget {
     this.onItemTap,
     this.onMvTap,
     this.albumPicUrl,
+    this.leadingPaddingRight = 4,
   }) : super(key: key);
 
   SongListItemWidget.formMusicTrackBean(MusicTrackBean bean,
       {bool isPlaying = false,
       int index,
-      String albumPicUrl ,
+      String albumPicUrl,
       GestureTapCallback onItemTap,
       GestureTapCallback onMoreTap,
+      double leadingPaddingRight,
       GestureTapCallback onMvTap})
       : haveMv = bean.haveMv(),
         songName = bean.name,
         arName = bean.getArName(),
         albumName = bean.album.name,
-        onMoreTap = onItemTap ,
+        onMoreTap = onItemTap,
         isPlaying = isPlaying,
         albumPicUrl = albumPicUrl,
         index = index,
-        onMvTap = onMvTap ,
-        onItemTap = onItemTap ;
+        onMvTap = onMvTap,
+        leadingPaddingRight = leadingPaddingRight,
+        onItemTap = onItemTap;
 
   @override
   Widget build(BuildContext context) {
@@ -244,7 +248,7 @@ class SongListItemWidget extends StatelessWidget {
               //leading
               _buildLeading(context),
               SizedBox(
-                width: 4,
+                width: leadingPaddingRight ?? 4,
               ),
               _buildContent(context, theme),
               //play icon,
@@ -510,14 +514,15 @@ class _SongFlexibleSpaceBarState extends State<SongFlexibleSpaceBar> {
 ///[tail] 尾部收藏按钮
 class SuspendedMusicHeader extends StatelessWidget
     implements PreferredSizeWidget {
-
   final int count;
 
   final Widget tail;
 
-  final GestureTapCallback onPlayMoreTap;
+  final GestureTapCallback onPlayAllTap;
 
-  const SuspendedMusicHeader({Key key, this.count, this.tail, this.onPlayMoreTap}) : super(key: key);
+  const SuspendedMusicHeader(
+      {Key key, this.count, this.tail, this.onPlayAllTap})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -556,7 +561,7 @@ class SuspendedMusicHeader extends StatelessWidget
         color: Theme.of(context).scaffoldBackgroundColor,
         elevation: 0,
         child: InkWell(
-          onTap: () {
+          onTap: onPlayAllTap??() {
             //播放全部
             StoreContainer.dispatch(PlayAllAction(context));
           },
