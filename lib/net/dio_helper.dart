@@ -53,15 +53,14 @@ class DioUtils {
           : (cacheOptions == null ? CacheOptions.defaultOption : cacheOptions);
       Response response = await dio.request(url,
           data: data, options: options);
+      if (response.statusCode == 301) {
+        navigatorKey.currentState.pushNamed(PathName.ROUTE_LOGIN);
+      }
       result = response.data;
-      if (result["code"] != null) {
-        if (result["code"] == 200) {
+      if (result["code"] != null&&result["code"] == 200) {
           if (successHandler != null) {
             StoreContainer.dispatch(successHandler(result));
           }
-        } else if (response.statusCode == 301) {
-          navigatorKey.currentState.pushNamed(PathName.ROUTE_LOGIN);
-        }
       }
     } on DioError catch (e) {
       print("doive:e$e,result = $result");
