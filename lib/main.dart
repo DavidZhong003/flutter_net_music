@@ -8,6 +8,7 @@ import 'package:flutter_net_music/utils/shared_preferences_helper.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
   SpHelper.init();
   runApp(MyApp());
   /// android 平台全透明

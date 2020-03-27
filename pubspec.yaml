@@ -42,7 +42,7 @@ dependencies:
   # 轮播图
   flutter_swiper: ^1.1.6
   # 图片加载
-  cached_network_image: ^1.1.1
+  cached_network_image: ^2.0.0-rc
   # 加载
   flutter_easyrefresh: ^1.2.7
   # cookie
