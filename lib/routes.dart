@@ -12,7 +12,7 @@ class PathName {
 
   static const ROUTE_MUSIC_PLAY = "/music/play";
 
-  static String ROUTE_RECOMMEND_SONGS="/recommend/songs";
+  static const ROUTE_RECOMMEND_SONGS="/recommend/songs";
 }
 //navigation key
 final GlobalKey<NavigatorState> navigatorKey = new GlobalKey<NavigatorState>();
